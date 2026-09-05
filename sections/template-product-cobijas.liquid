@@ -55,7 +55,8 @@
 
   .ls-micro-trust { background:#f8f8f8; padding:15px; border-radius:10px; margin-bottom:20px; width:100%; min-width:0; height:auto !important; align-self:flex-start; overflow: hidden; }
   .ls-micro-trust div { margin:6px 0; font-weight:600; }
-  .ls-micro-trust-image { display: block; width: 100% !important; max-width: 100% !important; min-width: 0; height: auto !important; aspect-ratio: 2172 / 724 !important; max-height: none !important; object-fit: contain; border-radius: 10px; }
+  .ls-micro-trust-image { display: block; width: 100% !important; height: 100% !important; max-width: none !important; min-width: 0; max-height: none !important; object-fit: fill; border-radius: 10px; }
+  .ls-micro-trust-image-wrap { aspect-ratio: 2172 / 724; padding: 0; }
   .ls-hero-right img { max-width: 100%; height: auto; }
 
   .ls-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; background: var(--ls-btn-bg); color: var(--ls-btn-text); padding: 18px; border: none; border-radius: 8px; font-size: 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(230, 0, 35, 0.3); margin-top: 10px; margin-bottom: 20px; animation: pulse 2s infinite; }
@@ -237,7 +238,7 @@
         </div>
 
         {% if section.settings.trust_image != blank %}
-        <div class="ls-micro-trust">
+        <div class="ls-micro-trust ls-micro-trust-image-wrap">
           <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" width="{{ section.settings.trust_image.width }}" height="{{ section.settings.trust_image.height }}" loading="eager">
         </div>
         {% endif %}
