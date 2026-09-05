@@ -633,6 +633,8 @@ color:#166534;
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
+    aspect-ratio: 2172 / 724;
+    object-fit: contain;
     border-radius: 10px;
   }
   .ls-hero-right img { max-width: 100%; height: auto; }
@@ -781,7 +783,7 @@ color:#166534;
 
         {% if section.settings.trust_image != blank %}
         <div class="ls-micro-trust">
-          <img src="{{ section.settings.trust_image | image_url: width: 800 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" width="{{ section.settings.trust_image.width }}" height="{{ section.settings.trust_image.height }}" loading="eager">
+          <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" width="{{ section.settings.trust_image.width }}" height="{{ section.settings.trust_image.height }}" loading="eager">
         </div>
         {% endif %}
       
