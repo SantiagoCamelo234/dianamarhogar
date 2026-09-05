@@ -53,6 +53,10 @@
   .ls-swatch-size { padding: 10px 16px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; background: #fff; transition: all 0.2s; }
   .ls-swatch-size.active { border-color: var(--ls-accent); background: var(--ls-accent); color: #fff; }
 
+  .ls-micro-trust { background:#f8f8f8; padding:15px; border-radius:10px; margin-bottom:20px; }
+  .ls-micro-trust div { margin:6px 0; font-weight:600; }
+  .ls-micro-trust-image { display: block; width: 100%; height: auto; border-radius: 10px; }
+
   .ls-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; background: var(--ls-btn-bg); color: var(--ls-btn-text); padding: 18px; border: none; border-radius: 8px; font-size: 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(230, 0, 35, 0.3); margin-top: 10px; margin-bottom: 20px; animation: pulse 2s infinite; }
   .ls-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230, 0, 35, 0.4); }
   .ls-cta span { font-size: 12px; font-weight: normal; margin-top: 4px; text-transform: none; opacity: 0.9; }
@@ -230,7 +234,13 @@
             {% endif %}
           </span>
         </div>
-      
+
+        {% if section.settings.trust_image != blank %}
+        <div class="ls-micro-trust">
+          <img src="{{ section.settings.trust_image | image_url: width: 800 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" width="{{ section.settings.trust_image.width }}" height="{{ section.settings.trust_image.height }}" loading="eager">
+        </div>
+        {% endif %}
+
         <div class="ls-description">
           {{ product.description }}
         </div>
@@ -1132,6 +1142,16 @@
       "id": "review_count",
       "label": "Número de Opiniones (Hero)",
       "default": "345"
+    },
+    {
+      "type": "header",
+      "content": "Imagen de Confianza"
+    },
+    {
+      "type": "image_picker",
+      "id": "trust_image",
+      "label": "Imagen de beneficios (envío, pago, seguridad)",
+      "info": "Se muestra debajo del precio, antes de elegir variante"
     },
     {
       "type": "text",

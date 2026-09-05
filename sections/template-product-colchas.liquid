@@ -223,6 +223,13 @@ font-size:14px;
   font-weight:600;
 }
 
+.ls-micro-trust-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
 .ls-objections{
 margin:20px 0;
 padding:15px;
@@ -427,12 +434,18 @@ color:#166534;
           </span>
         </div>
 
+        {% if section.settings.trust_image != blank %}
+        <div class="ls-micro-trust">
+          <img src="{{ section.settings.trust_image | image_url: width: 800 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" width="{{ section.settings.trust_image.width }}" height="{{ section.settings.trust_image.height }}" loading="eager">
+        </div>
+        {% else %}
         <div class="ls-micro-trust">
           <div>🚚 Envío GRATIS a toda Colombia</div>
           <div>💰 Pago contra entrega</div>
           <div>⭐ Más de 2.000 juegos vendidos</div>
           <div>🔒 Compra 100% segura</div>
         </div>
+        {% endif %}
       
         
         <div>
@@ -1457,6 +1470,16 @@ color:#166534;
       "id": "review_count",
       "label": "Número de Opiniones (Hero)",
       "default": "345"
+    },
+    {
+      "type": "header",
+      "content": "Imagen de Confianza"
+    },
+    {
+      "type": "image_picker",
+      "id": "trust_image",
+      "label": "Imagen de beneficios (envío, pago, seguridad)",
+      "info": "Se muestra debajo del precio, antes de elegir variante"
     },
     {
       "type": "text",
