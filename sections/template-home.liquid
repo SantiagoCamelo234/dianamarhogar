@@ -1,0 +1,112 @@
+<div class="hero-banner" style="background-image: url('{{ section.settings.image | image_url: width: 1600 }}'); background-color: var(--accent-pink);">
+  <div class="hero-content">
+    {% if section.settings.title != blank %}
+      <h2>{{ section.settings.title | escape }}</h2>
+    {% endif %}
+    {% if section.settings.text != blank %}
+      <p>{{ section.settings.text | escape }}</p>
+    {% endif %}
+    {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+      <a href="{{ section.settings.button_link }}" class="btn-primary" style="text-decoration: none; display: inline-block;">{{ section.settings.button_label | escape }}</a>
+    {% endif %}
+  </div>
+</div>
+
+<section class="home-products">
+  <div style="text-align: center; margin-bottom: 40px; margin-top: 30px;">
+    {% render 'custom-countdown' %}
+  </div>
+  {% if section.settings.collection_title != blank %}
+    <h3 class="home-section-title">{{ section.settings.collection_title | escape }}</h3>
+  {% endif %}
+  
+  <div class="product-grid">
+    {% assign collection = collections[section.settings.collection] %}
+    {% for product in collection.products limit: section.settings.product_limit %}
+      <a href="{{ product.url | within: collection }}" class="product-card" style="text-decoration: none; color: inherit;">
+        <div class="product-card-img">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title | escape }}" width="800" height="1000" loading="lazy">
+          {% endif %}
+        </div>
+        <h4 class="product-card-title">{{ product.title }}</h4>
+        <div class="product-card-price">
+          {% if product.compare_at_price > product.price %}
+            <span style="text-decoration: line-through; color: var(--text-light); margin-right: 6px; font-weight: normal; font-size: 0.9em;">{{ product.compare_at_price | money }}</span>
+            {% assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+            <span class="discount-badge">-{{ discount_pct }}%</span>
+          {% endif %}
+          {{ product.price | money }}
+        </div>
+      </a>
+    {% else %}
+      <p style="text-align:center; width:100%; color:var(--text-light); grid-column: 1/-1;">Asigna una colección en el Editor de Tema para mostrar productos reales aquí.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home Page Banner + Grid",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero Image (Fondo Principal)"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Hero Title",
+      "default": "Transforma tu Descanso"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Hero Text (Subtítulo)",
+      "default": "Prendas suaves y elegantes, creadas para hacer de tu cama tu lugar favorito."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Explorar Colección"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Grilla de Productos"
+    },
+    {
+      "type": "text",
+      "id": "collection_title",
+      "label": "Título de Colección",
+      "default": "Nuestros Más Vendidos"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Selecciona la colección a mostrar"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 16,
+      "step": 4,
+      "label": "Límite de Productos",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sección Principal Home",
+      "category": "Home"
+    }
+  ]
+}
+{% endschema %}

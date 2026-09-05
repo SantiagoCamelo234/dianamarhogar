@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title | default: shop.name }}</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- FAVICON -->
+  <link rel="shortcut icon" href="{{ 'LOGO.png' | file_url }}" type="image/png">
+  <link rel="apple-touch-icon" href="{{ 'LOGO.png' | file_url }}">
+  
+  <!-- Carga nuestro archivo CSS extraído -->
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  
+  <!-- Hook esencial para plugins de Shopify -->
+  {{ content_for_header }}
+</head>
+<body>
+
+  <!-- Incluye la sección del Header -->
+  {% section 'header' %}
+
+  <!-- Contenido dinámico (cambia dependiendo de la URL visitada) -->
+  <main role="main">
+    {{ content_for_layout }}
+  </main>
+
+  <!-- Incluye la sección del Footer -->
+  {% section 'footer' %}
+
+  <!-- Carga nuestro archivo JS extraído -->
+  {{ 'theme.js' | asset_url | script_tag }}
+</body>
+</html>

@@ -1,0 +1,67 @@
+{% paginate search.results by 16 %}
+<div id="view-search" class="view-section" style="display: block; animation: fadeIn 0.4s ease forwards;">
+  
+  <div class="hero-banner" style="height: 35vh; min-height: 250px; margin-bottom: 40px; background-image: url('{{ "paloderosasinmarca.png" | file_url }}');">
+    <div class="hero-content">
+      <h2>Búsqueda</h2>
+      <p>Resultados para: "{{ search.terms | escape }}"</p>
+    </div>
+  </div>
+
+  <section class="home-products" style="background-color: var(--bg-main);">
+    {% if search.performed %}
+      {% if search.results_count == 0 %}
+        <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; margin-top: 40px;">
+          No se encontraron resultados para "<strong>{{ search.terms | escape }}</strong>". Intenta usar otras palabras o revisa la ortografía.
+        </p>
+      {% else %}
+        <h3 class="home-section-title">Resultados Encontrados</h3>
+        <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; font-size: 14px; margin-top: -30px;">
+          Mostrando {{ search.results_count }} resultados
+        </p>
+
+        <div class="product-grid" id="search-grid" style="max-width: 1300px; margin: 0 auto;">
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              {% assign product = item %}
+              <a href="{{ product.url }}" class="product-card" style="text-decoration: none; color: inherit;">
+                <div class="product-card-img">
+                  {% if product.featured_image %}
+                    <img src="{{ product.featured_image | img_url: 'master' }}" alt="{{ product.title | escape }}">
+                  {% endif %}
+                </div>
+                <h4 class="product-card-title">{{ product.title }}</h4>
+                <div class="product-card-price">
+                  {% if product.compare_at_price > product.price %}
+                    <span style="text-decoration: line-through; color: var(--text-light); margin-right: 6px; font-weight: normal; font-size: 0.9em;">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                  {{ product.price | money }}
+                </div>
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; margin-top: 40px;">
+        Ingresa un término en la lupa para comenzar a buscar.
+      </p>
+    {% endif %}
+    
+    <!-- Paginación -->
+    {% if paginate.pages > 1 %}
+      <div style="text-align: center; margin-top: 50px; padding-bottom: 50px;">
+        {{ paginate | default_pagination }}
+      </div>
+    {% endif %}
+  </section>
+
+</div>
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "Resultados de Búsqueda",
+  "settings": []
+}
+{% endschema %}

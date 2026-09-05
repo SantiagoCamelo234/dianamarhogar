@@ -1,0 +1,34 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Dianamar Theme",
+    "theme_author": "Developer",
+    "theme_version": "1.0",
+    "theme_documentation_url": "https://help.shopify.com",
+    "theme_support_url": "https://help.shopify.com"
+  },
+  {
+    "name": "Cronómetro de Ofertas",
+    "settings": [
+      {
+        "type": "text",
+        "id": "countdown_text_1",
+        "label": "Texto Principal",
+        "default": "ESTAMOS DE OFERTA"
+      },
+      {
+        "type": "text",
+        "id": "countdown_text_2",
+        "label": "Texto Secundario",
+        "default": "HASTA 50% MENOS"
+      },
+      {
+        "type": "number",
+        "id": "countdown_hours",
+        "label": "Horas del Cronómetro",
+        "default": 48,
+        "info": "El cronómetro se reiniciará automáticamente al llegar a cero."
+      }
+    ]
+  }
+]

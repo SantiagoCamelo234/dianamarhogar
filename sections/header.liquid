@@ -1,0 +1,256 @@
+<!-- SIDEBAR MENU -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="sidebar" id="sidebarMenu">
+  <div class="sidebar-header">
+    <div class="logo-simulado" style="margin: 0; text-align: left; cursor: default;">
+      {% if section.settings.logo != blank %}
+        <img src="{{ section.settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" class="logo-img" width="200" height="80" style="max-height: 40px; width: auto;">
+      {% else %}
+        <div class="logo-text-container" style="margin-left: 0;">
+          <div class="logo-dianamar" style="font-size: 22px;">{{ shop.name }}</div>
+        </div>
+      {% endif %}
+    </div>
+    <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+  </div>
+  <ul class="sidebar-links">
+    {% if section.settings.menu_type == 'automatic' %}
+      {% for collection in collections %}
+        {% unless collection.handle == 'frontpage' %}
+          <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+        {% endunless %}
+      {% endfor %}
+    {% else %}
+      {% for link in linklists[section.settings.menu].links %}
+        {% if link.links != blank %}
+          <li class="has-submenu">
+            <div class="submenu-toggle" onclick="toggleSubmenu(this)">
+              {{ link.title }} <span class="submenu-icon">+</span>
+            </div>
+            <ul class="submenu">
+              {% for childlink in link.links %}
+                <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+        {% else %}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {% endif %}
+      {% else %}
+        <!-- Fallback provisional en Shopify si el menú configurado no existe -->
+        <li><a href="/collections/all">Ver Catálogo completo</a></li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+</div>
+
+<!-- BARRA DE PROMOCIÓN -->
+<div class="top-bar" style="overflow: hidden; white-space: nowrap; text-align: left;">
+  <div style="display: inline-flex; align-items: center; gap: 15vw; animation: marquee-seamless 30s linear infinite;">
+    <span>🚨 Ultimas unidades disponibles🚨</span>
+    <span>🌿 Envíos gratis a toda Colombia 🌿</span>
+    <span>🚚 Pago contra entrega a todo el país 🚚</span>
+    <!-- Contenido duplicado para el bucle infinito -->
+    <span>🚨 Ultimas unidades disponibles🚨</span>
+    <span>🇨🇴 Envíos gratis a toda Colombia  🇨🇴</span>
+    <span>🚚 Pago contra entrega a todo el país 🚚</span>
+  </div>
+  <style>
+    @keyframes marquee-seamless {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+  </style>
+</div>
+
+<!-- HEADER -->
+<header>
+  <!-- Navegación Izquierda -->
+  <div class="left-nav">
+    <div class="menu-icon" onclick="toggleSidebar()">
+      <span class="menu-text" style="font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Nuestros Productos</span>
+      <svg class="menu-hamburger" viewBox="0 0 24 24" style="display: none; width: 28px; height: 28px;"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+    </div>
+  </div>
+
+  <!-- Logo Céntrico -->
+  <a href="/" class="logo-simulado" style="display:flex; align-items:center; text-decoration:none;">
+
+  {% if section.settings.logo != blank %}
+    <img 
+      src="{{ section.settings.logo | image_url: width: 400 }}" 
+      alt="{{ shop.name }}" 
+      width="400" height="100"
+      style="max-height: {{ section.settings.logo_height }}px; width:auto; margin-right:12px;">
+  {% endif %}
+
+  <div style="display:flex; flex-direction:column; line-height:1;">
+
+    <span style="
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 500;
+      color:#6f6f6f;
+      letter-spacing: 0.5px;">
+      Dianamar
+    </span>
+
+    <span style="
+      font-family: 'Inter', sans-serif;
+      font-size:11px;
+      font-weight: 400;
+      letter-spacing:4px;
+      color:#8fa38f;
+      margin-top:2px;">
+      HOGAR
+    </span>
+
+  </div>
+</a>
+
+  <!-- Iconos Derecha -->
+  <div class="nav-icons">
+    <!-- Search Icon -->
+    <form action="/search" method="get" class="search-container">
+      <input type="text" name="q" placeholder="Buscar productos..." class="search-input" id="searchInput">
+      <svg class="search-icon-btn" viewBox="0 0 24 24" onclick="toggleSearch()"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <div class="search-close-btn" onclick="toggleSearch()">✕</div>
+    </form>
+    
+    <!-- User Icon -->
+    <a href="/account/login" style="display: flex; align-items: center;">
+      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+    </a>
+    
+    <!-- Cart Icon -->
+    <a href="/cart" class="cart-wrapper" style="cursor: pointer; text-decoration: none;">
+      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+      <div class="cart-count">{{ cart.item_count }}</div>
+    </a>
+  </div>
+</header>
+
+<!-- WhatsApp Button Removed -->
+<style>
+  .search-close-btn { display: none; }
+
+  /* RESPONSIVE: TABLETS (max-width: 900px) */
+  @media (max-width: 900px) {
+    header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .left-nav { gap: 10px; }
+    .menu-text { display: none !important; }
+    .menu-hamburger { display: block !important; }
+    .logo-simulado { margin-left: 0; }
+    .logo-img { height: 35px; }
+    .nav-icons { gap: 15px; }
+  }
+
+  /* RESPONSIVE: PHONES (max-width: 768px) */
+  @media (max-width: 768px) {
+    .top-bar { font-size: 10px; padding: 7px 10px; }
+    header { padding: 10px 15px; }
+    .logo-img { height: 30px; }
+    .logo-dianamar { font-size: 20px; }
+    .nav-icons { gap: 18px; }
+    .nav-icons svg { width: 18px; height: 18px; }
+    .sidebar { width: 280px; }
+
+    /* SEARCH OVERLAY (FIXED) */
+    .search-container.active {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 60px !important; /* Altura estimada del header */
+      background-color: #ffffff !important;
+      z-index: 99999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0 15px !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+    }
+    .search-container.active .search-icon-btn { display: none !important; }
+    .search-container.active .search-close-btn { 
+      display: flex !important; 
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 22px;
+      width: 40px;
+      height: 40px;
+      margin-left: 5px;
+      color: var(--text-main);
+      background: var(--bg-color);
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .search-container.active .search-close-btn:active { background: #eee; }
+    .search-container.active .search-input {
+      flex: 1 !important;
+      width: auto !important;
+      opacity: 1 !important;
+      height: 48px !important;
+      border: 1px solid var(--border-color) !important;
+      padding: 0 15px !important;
+      border-radius: 8px !important;
+      font-size: 16px !important;
+      display: block !important;
+    }
+  }
+
+  /* RESPONSIVE: SMALL PHONES (max-width: 480px) */
+  @media (max-width: 480px) {
+    header { padding: 8px 12px; }
+    .top-bar { font-size: 9px; padding: 6px 10px; }
+    .logo-img { height: 26px; }
+    .logo-dianamar { font-size: 18px; }
+    .nav-icons { gap: 18px; }
+    .nav-icons svg { width: 17px; height: 17px; }
+    .sidebar { width: 260px; }
+    .sidebar-header { padding: 18px 15px; }
+    .sidebar-links > li > a, .submenu-toggle { padding: 15px 18px; font-size: 13px; }
+    .submenu li a { padding: 12px 18px 12px 35px; font-size: 13px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo de la Tienda"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Altura del Logo",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "default": 35,
+      "unit": "px"
+    },
+    {
+      "type": "radio",
+      "id": "menu_type",
+      "label": "Origen del Menú",
+      "options": [
+        { "value": "automatic", "label": "Listar todas las Colecciones automáticamente" },
+        { "value": "manual", "label": "Menú manual (Configurado en Navegación)" }
+      ],
+      "default": "automatic"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menú manual a mostrar (si eliges manual arriba)",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

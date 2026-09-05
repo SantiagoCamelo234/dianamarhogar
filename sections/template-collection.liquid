@@ -1,0 +1,92 @@
+{% paginate collection.products by 12 %}
+<div id="view-collection" class="view-section" style="display: block; animation: fadeIn 0.4s ease forwards;">
+  
+  <!-- Banner tipo "Home" pero con imagen y texto de la Colección -->
+  {% assign bg_image = collection.image %}
+  {% if bg_image == blank %}
+    {% assign bg_image = section.settings.fallback_image %}
+  {% endif %}
+  <div class="hero-banner" style="background-color: var(--accent-pink); {% if bg_image %}background-image: url('{{ bg_image | image_url: width: 1600 }}');{% endif %}">
+    <div class="hero-content">
+      <h2 id="collection-title">{{ collection.title }}</h2>
+      {% if collection.description != blank %}
+        <p>{{ collection.description | strip_html }}</p>
+      {% else %}
+        <p>Prendas suaves y elegantes, creadas para hacer de tu cama tu lugar favorito.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <section class="home-products" style="background-color: var(--bg-main);">
+    <div style="text-align: center; margin-bottom: 40px; margin-top: 20px;">
+      {% render 'custom-countdown' %}
+    </div>
+    <h3 class="home-section-title">
+  Descubre 
+  {% if collection.title == 'Cobijas' 
+     or collection.title == 'Sabanas Unicolor' 
+     or collection.title == 'Fundas' 
+     or collection.title == 'Sabanas Estampadas'
+    or collection.title == 'Colchas y cubrelechos' %} 
+    nuestras
+  {% else %}
+    nuestros
+  {% endif %}
+  {{ collection.title }}
+</h3>
+    <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; font-size: 14px; margin-top: -30px;" id="collection-count">
+      Mostrando {{ collection.products_count }} resultados
+    </p>
+
+    <div class="product-grid" id="collection-grid" style="max-width: 1300px; margin: 0 auto;">
+      <!-- Iterar a través de los productos en la colección -->
+      {% for product in collection.products %}
+        <a href="{{ product.url | within: collection }}" class="product-card" style="text-decoration: none; color: inherit;">
+          <div class="product-card-img">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title | escape }}" width="800" height="1000" loading="lazy">
+            {% endif %}
+          </div>
+          <h4 class="product-card-title">{{ product.title }}</h4>
+          <div class="product-card-price">
+            {% if product.compare_at_price > product.price %}
+              <span style="text-decoration: line-through; color: var(--text-light); margin-right: 6px; font-weight: normal; font-size: 0.9em;">{{ product.compare_at_price | money }}</span>
+              {% assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+              <span class="discount-badge">-{{ discount_pct }}%</span>
+            {% endif %}
+            {{ product.price | money }}
+          </div>
+        </a>
+      {% else %}
+        <p style="grid-column: 1 / -1; text-align: center; color: var(--text-light);">No hay productos publicados en esta categoría todavía.</p>
+      {% endfor %}
+    </div>
+    
+    <!-- Paginación de Shopify -->
+    {% if paginate.pages > 1 %}
+      <div style="text-align: center; margin-top: 50px; padding-bottom: 50px;">
+        {{ paginate | default_pagination }}
+      </div>
+    {% endif %}
+    
+  </section>
+</div>
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "Collection Page",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "El fondo y el texto de este banner se jalan automáticamente desde Productos > Colecciones en tu administrador de Shopify."
+    },
+    {
+      "type": "image_picker",
+      "id": "fallback_image",
+      "label": "Imagen de Respaldo",
+      "info": "Sube una imagen aquí estándar. Esta imagen se usará siempre de fondo si no subes imagen a una de tus colecciones en el administrador."
+    }
+  ]
+}
+{% endschema %}
