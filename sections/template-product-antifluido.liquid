@@ -909,7 +909,7 @@ color:#166534;
 
         {% if section.settings.trust_image != blank %}
           <div class="ls-micro-trust ls-micro-trust-image-wrap">
-          <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" width="{{ section.settings.trust_image.width }}" height="{{ section.settings.trust_image.height }}" loading="eager">
+          <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
         </div>
         {% else %}
         <div class="ls-micro-trust">
