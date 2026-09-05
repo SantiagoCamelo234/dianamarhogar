@@ -53,9 +53,10 @@
   .ls-swatch-size { padding: 10px 16px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; background: #fff; transition: all 0.2s; }
   .ls-swatch-size.active { border-color: var(--ls-accent); background: var(--ls-accent); color: #fff; }
 
-  .ls-micro-trust { background:#f8f8f8; padding:15px; border-radius:10px; margin-bottom:20px; }
+  .ls-micro-trust { background:#f8f8f8; padding:15px; border-radius:10px; margin-bottom:20px; overflow: hidden; }
   .ls-micro-trust div { margin:6px 0; font-weight:600; }
-  .ls-micro-trust-image { display: block; width: 100%; height: auto; border-radius: 10px; }
+  .ls-micro-trust-image { display: block; width: 100% !important; max-width: 100% !important; height: auto !important; border-radius: 10px; }
+  .ls-hero-right img { max-width: 100%; height: auto; }
 
   .ls-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; background: var(--ls-btn-bg); color: var(--ls-btn-text); padding: 18px; border: none; border-radius: 8px; font-size: 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(230, 0, 35, 0.3); margin-top: 10px; margin-bottom: 20px; animation: pulse 2s infinite; }
   .ls-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230, 0, 35, 0.4); }

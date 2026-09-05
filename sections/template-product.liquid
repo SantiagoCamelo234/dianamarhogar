@@ -626,13 +626,16 @@ color:#166534;
     background: rgba(248, 250, 252, 0.6) !important;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+    overflow: hidden;
   }
   .ls-micro-trust-image {
     display: block;
-    width: 100%;
-    height: auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
     border-radius: 10px;
   }
+  .ls-hero-right img { max-width: 100%; height: auto; }
   .ls-product-card {
     border: 1px solid #f1f5f9;
   }
