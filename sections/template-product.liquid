@@ -18,7 +18,7 @@
 
   .ls-hero { display: flex; flex-wrap: wrap; gap: 30px; width: 100%; }
   .ls-hero-left, .ls-hero-right { flex: 1 1 0; width: 0; min-width: 0; max-width: 100%; }
-  .ls-hero-right { overflow: hidden; }
+  .ls-hero-right { align-self: flex-start; overflow: hidden; }
 
   .ls-gallery { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f9f9f9; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
   .ls-main-img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 65vh; }
@@ -628,6 +628,8 @@ color:#166534;
     box-shadow: 0 4px 15px rgba(0,0,0,0.01);
     width: 100%;
     min-width: 0;
+    height: auto !important;
+    align-self: flex-start;
     overflow: hidden;
   }
   .ls-micro-trust-image {
@@ -636,7 +638,8 @@ color:#166534;
     max-width: 100% !important;
     min-width: 0;
     height: auto !important;
-    aspect-ratio: 2172 / 724;
+    aspect-ratio: 2172 / 724 !important;
+    max-height: none !important;
     object-fit: contain;
     border-radius: 10px;
   }
