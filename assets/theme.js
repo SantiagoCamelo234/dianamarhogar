@@ -61,6 +61,20 @@ function toggleFooterCol(element) {
 
 (function syncMobilePrice() {
   function sync() {
+    if (window.innerWidth <= 768 && !document.querySelector('.ls-mobile-price-box')) {
+      const sourceBox = document.querySelector('.ls-hero-right .ls-price-box');
+      const gallery = document.querySelector('.ls-hero-left .ls-gallery');
+      if (sourceBox && gallery) {
+        const mobileBox = sourceBox.cloneNode(true);
+        mobileBox.classList.add('ls-mobile-price-box');
+        mobileBox.querySelectorAll('[id]').forEach((element) => element.removeAttribute('id'));
+        mobileBox.querySelector('.ls-price')?.classList.add('ls-mobile-price');
+        mobileBox.querySelector('.ls-compare')?.classList.add('ls-mobile-compare');
+        mobileBox.querySelector('.ls-save-badge')?.classList.add('ls-mobile-badge');
+        gallery.parentNode.insertBefore(mobileBox, gallery);
+      }
+    }
+
     const pairs = [
       ['#ls-price', '.ls-mobile-price'],
       ['#ls-compare', '.ls-mobile-compare'],
