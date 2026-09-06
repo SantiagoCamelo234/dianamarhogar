@@ -73,8 +73,8 @@ function toggleFooterCol(element) {
     }
 
     const mountRect = mount.getBoundingClientRect();
-    const mountVisible = mountRect.bottom > 0 && mountRect.top < window.innerHeight;
-    const shouldFloat = window.scrollY > 10 && !mountVisible;
+    const hasPassedMount = mountRect.bottom <= 0;
+    const shouldFloat = window.scrollY > 10 && hasPassedMount;
     button.classList.toggle('dianamar-easysell-floating', shouldFloat);
 
     if (shouldFloat) {
