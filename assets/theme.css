@@ -36,7 +36,7 @@
     }
 
     body .releasit-buy-now-button,
-    body .dianamar-easysell-button,
+    body .dianamar-easysell-button:not(.ls-faq-q),
     body .es-button.es-sticky-btn {
       position: fixed !important;
       left: 12px !important;
@@ -50,6 +50,18 @@
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28) !important;
       visibility: visible !important;
       opacity: 1 !important;
+    }
+
+    body .ls-faq-q.dianamar-easysell-button {
+      position: static !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      z-index: auto !important;
+      width: 100% !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      box-shadow: none !important;
     }
 
     body .dianamar-easysell-hidden {
@@ -98,6 +110,9 @@
       width: 18px;
       height: 18px;
       color: #8c9d62;
+    }
+    body #ls-lightbox {
+      display: none;
     }
 
     @media (max-width: 420px) {
