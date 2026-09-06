@@ -79,15 +79,21 @@ function toggleFooterCol(element) {
 
     if (shouldFloat) {
       button.style.setProperty('position', 'fixed', 'important');
-      button.style.setProperty('left', '12px', 'important');
-      button.style.setProperty('right', '12px', 'important');
+      button.style.setProperty('left', '50%', 'important');
+      button.style.setProperty('right', 'auto', 'important');
       button.style.setProperty('bottom', '82px', 'important');
+      button.style.setProperty('width', 'calc(100% - 24px)', 'important');
+      button.style.setProperty('max-width', '560px', 'important');
+      button.style.setProperty('transform', 'translateX(-50%)', 'important');
       button.style.setProperty('z-index', '100000', 'important');
     } else {
       button.style.setProperty('position', 'static', 'important');
       button.style.removeProperty('left');
       button.style.removeProperty('right');
       button.style.removeProperty('bottom');
+      button.style.removeProperty('width');
+      button.style.removeProperty('max-width');
+      button.style.removeProperty('transform');
       button.style.removeProperty('z-index');
     }
   }

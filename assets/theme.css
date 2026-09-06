@@ -92,12 +92,14 @@
 
     body .ls-easy-sell-mount .dianamar-easysell-floating {
       position: fixed !important;
-      left: 12px !important;
-      right: 12px !important;
+      left: 50% !important;
+      right: auto !important;
       bottom: 82px !important;
-      inset: auto 12px 82px 12px !important;
+      inset: auto auto 82px 50% !important;
       z-index: 100000 !important;
       width: calc(100% - 24px) !important;
+      max-width: 560px !important;
+      transform: translateX(-50%) !important;
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28) !important;
     }
 
