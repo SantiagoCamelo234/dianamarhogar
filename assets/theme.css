@@ -36,11 +36,12 @@
     }
 
     body .releasit-buy-now-button,
-    body .dianamar-easysell-button {
+    body .dianamar-easysell-button,
+    body .es-button.es-sticky-btn {
       position: fixed !important;
       left: 12px !important;
       right: 12px !important;
-      bottom: 18px !important;
+      bottom: 82px !important;
       z-index: 100000 !important;
       display: flex !important;
       width: calc(100% - 24px) !important;
@@ -49,6 +50,10 @@
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28) !important;
       visibility: visible !important;
       opacity: 1 !important;
+    }
+
+    body .dianamar-easysell-hidden {
+      display: none !important;
     }
 
     body .ls-micro-trust {
@@ -72,6 +77,36 @@
       border-radius: 0 !important;
     }
 
+    .ls-social-proof-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin: 0 0 18px;
+      padding: 9px 12px;
+      border: 1px solid #dfe6d8;
+      border-radius: 8px;
+      background: #f5f8f1;
+      color: #52634a;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .ls-social-proof-badge svg {
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      color: #8c9d62;
+    }
+
+    @media (max-width: 420px) {
+      .ls-social-proof-badge {
+        font-size: 12px;
+        padding: 8px 10px;
+      }
+    }
+
     body .ls-mobile-trust {
       display: none !important;
     }
@@ -80,13 +115,32 @@
       display: block !important;
     }
 
+    body .ls-comparison-section {
+      position: static !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    body .ls-comparison-section .ls-compare {
+      position: static !important;
+      height: auto !important;
+      min-height: 0 !important;
+      margin: 32px auto !important;
+      padding: 0 !important;
+    }
+
     @media (max-width: 768px) {
       .ls-easy-sell-mount {
         margin-top: 15px;
       }
 
       .ls-container {
-        padding-bottom: 100px !important;
+        padding-bottom: 164px !important;
       }
 
       body .ls-mobile-trust {
@@ -95,6 +149,40 @@
 
       body .ls-desktop-trust {
         display: none !important;
+      }
+
+      body .ls-comparison-section .ls-compare {
+        margin: 24px auto !important;
+      }
+
+      body .ls-marquee-container {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        touch-action: pan-x;
+      }
+
+      body .ls-marquee-container::-webkit-scrollbar {
+        display: none;
+      }
+
+      body .ls-marquee {
+        animation: none !important;
+        transform: none !important;
+      }
+    }
+
+    @media (min-width: 769px) {
+      body .dianamar-easysell-button,
+      body .es-button.es-sticky-btn {
+        position: static !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        box-shadow: none !important;
       }
     }
 

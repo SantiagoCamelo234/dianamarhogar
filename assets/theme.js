@@ -18,18 +18,37 @@ function toggleFooterCol(element) {
 }
 
 (function styleEasySellButton() {
+  function isGalleryVisible() {
+    const galleryElements = document.querySelectorAll('.ls-gallery, .ls-thumbnails');
+    return [...galleryElements].some((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.bottom > 0 && rect.top < window.innerHeight;
+    });
+  }
+
   function findButton() {
-    const candidates = document.querySelectorAll('button, a, input[type="submit"]');
+    const candidates = document.querySelectorAll(
+      '.releasit-buy-now-button, .es-button.es-sticky-btn'
+    );
 
     candidates.forEach((candidate) => {
-      const text = (candidate.value || candidate.textContent || '').trim().toLowerCase();
-      if (text.includes('pago contra entrega') || text.includes('easy sell')) {
-        candidate.classList.add('dianamar-easysell-button');
+      candidate.classList.add('dianamar-easysell-button');
+      if (candidate.matches('.es-button.es-sticky-btn')) {
+        if (window.innerWidth > 768) {
+          candidate.classList.remove('dianamar-easysell-hidden');
+          candidate.style.removeProperty('display');
+          return;
+        }
+        const hidden = isGalleryVisible();
+        candidate.classList.toggle('dianamar-easysell-hidden', hidden);
+        candidate.style.setProperty('display', hidden ? 'none' : 'flex', 'important');
       }
     });
   }
 
   document.addEventListener('DOMContentLoaded', findButton);
+  window.addEventListener('scroll', findButton, { passive: true });
+  window.addEventListener('resize', findButton);
   new MutationObserver(findButton).observe(document.documentElement, {
     childList: true,
     subtree: true
