@@ -35,11 +35,32 @@
       display: none;
     }
 
-    .ls-easy-sell-mount .releasit-buy-now-button {
+    body .ls-easy-sell-mount .releasit-buy-now-button {
       position: static !important;
       display: flex !important;
       width: 100% !important;
       margin: 0 !important;
+    }
+
+    body .ls-micro-trust {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      width: 100% !important;
+    }
+
+    body .ls-micro-trust-image-wrap {
+      aspect-ratio: auto !important;
+      min-height: 0 !important;
+    }
+
+    body .ls-micro-trust-image {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+      max-width: none !important;
+      border-radius: 0 !important;
     }
 
     @media (max-width: 768px) {
