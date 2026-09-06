@@ -281,7 +281,7 @@
 
         <div>
           {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
-            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
+            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}" data-available="{{ current_variant.available }}">
             <input type="hidden" name="quantity" value="1">
 
             {% unless product.has_only_default_variant %}
@@ -807,6 +807,7 @@
         "price": "{{ variant.price | money }}",
         "compare_at_price": "{{ variant.compare_at_price | money }}",
         "has_discount": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
+        "available": {{ variant.available | json }},
         "discount_pct": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
@@ -905,6 +906,7 @@
       document.getElementById('ls-variant-id').dispatchEvent(new Event('change', { bubbles: true }));
       
       var variantData = lsVariantPrices[matchingVariant.id];
+      if (window.updateEasySellAvailability) window.updateEasySellAvailability(matchingVariant.available);
       if (variantData) {
         document.querySelectorAll('#ls-price, .ls-mobile-price').forEach(function(el) { el.innerHTML = variantData.price; });
         if (variantData.has_discount) {

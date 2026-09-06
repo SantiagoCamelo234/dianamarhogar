@@ -78,6 +78,14 @@
     body .dianamar-easysell-duplicate {
       display: none !important;
     }
+
+    body .dianamar-easysell-unavailable {
+      background: #d9ddda !important;
+      color: #58605b !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+    }
     body .ls-easy-sell-mount .es-button.es-sticky-btn,
     body .ls-easy-sell-mount .releasit-buy-now-button,
     body .ls-easy-sell-mount .dianamar-easysell-button {

@@ -105,6 +105,42 @@ function toggleFooterCol(element) {
   });
 })();
 
+(function connectEasySellAvailability() {
+  let currentAvailability = true;
+
+  function applyAvailability() {
+    document.querySelectorAll('.es-button.es-sticky-btn').forEach((button) => {
+      if (!button.dataset.availableLabel) {
+        button.dataset.availableLabel = button.textContent.trim() || 'PAGO CONTRA ENTREGA';
+      }
+
+      button.disabled = !currentAvailability;
+      button.setAttribute('aria-disabled', String(!currentAvailability));
+      button.classList.toggle('dianamar-easysell-unavailable', !currentAvailability);
+      button.textContent = currentAvailability
+        ? button.dataset.availableLabel
+        : 'NO DISPONIBLE';
+    });
+  }
+
+  window.updateEasySellAvailability = function updateEasySellAvailability(available) {
+    currentAvailability = Boolean(available);
+    applyAvailability();
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const variantInput = document.querySelector('#ls-variant-id');
+    if (variantInput?.dataset.available) {
+      currentAvailability = variantInput.dataset.available === 'true';
+    }
+    applyAvailability();
+  });
+  new MutationObserver(applyAvailability).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+
 (function styleEasySellButton() {
   let mountObserver;
 
