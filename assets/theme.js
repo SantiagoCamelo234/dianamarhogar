@@ -59,6 +59,38 @@ function toggleFooterCol(element) {
   window.addEventListener('resize', initCarousels);
 })();
 
+(function syncMobilePrice() {
+  function sync() {
+    const pairs = [
+      ['#ls-price', '.ls-mobile-price'],
+      ['#ls-compare', '.ls-mobile-compare'],
+      ['#ls-badge', '.ls-mobile-badge']
+    ];
+
+    pairs.forEach(([sourceSelector, targetSelector]) => {
+      const source = document.querySelector(sourceSelector);
+      document.querySelectorAll(targetSelector).forEach((target) => {
+        if (!source) return;
+        const content = source.innerHTML.replace('🔥 ', '');
+        const display = getComputedStyle(source).display;
+        if (target.innerHTML !== content) target.innerHTML = content;
+        if (target.style.display !== display) target.style.display = display;
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    sync();
+    new MutationObserver(sync).observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['style']
+    });
+  });
+})();
+
 (function styleEasySellButton() {
   let mountObserver;
 

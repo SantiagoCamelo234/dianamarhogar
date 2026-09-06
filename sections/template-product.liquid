@@ -740,8 +740,13 @@ color:#166534;
       
         
         <div>
-          {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
-            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
+        <div class="ls-mobile-price-box">
+          <span class="ls-price ls-mobile-price">{{ current_variant.price | money }}</span>
+          <span class="ls-compare ls-mobile-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
+          <span class="ls-save-badge ls-mobile-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>-{{ current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price }}%</span>
+        </div>
+          <span class="ls-price" id="ls-price">{{ current_variant.price | money }}</span>
+          <span class="ls-compare" id="ls-compare"
             <input type="hidden" name="quantity" value="1">
 
             {% unless product.has_only_default_variant %}
@@ -1523,16 +1528,14 @@ color:#166534;
       
       var variantData = lsVariantPrices[matchingVariant.id];
       if (variantData) {
-        document.getElementById('ls-price').innerHTML = variantData.price;
+        document.querySelectorAll('#ls-price, .ls-mobile-price').forEach(function(el) { el.innerHTML = variantData.price; });
         if (variantData.has_discount) {
-          document.getElementById('ls-compare').style.display = 'inline-block';
-          document.getElementById('ls-compare').innerHTML = variantData.compare_at_price;
-          document.getElementById('ls-badge').innerHTML =
-'🔥 ' + variantData.discount_pct + '% OFF';
-          document.getElementById('ls-badge').style.display = 'inline-block';
+          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.style.display = 'inline-block'; });
+          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.innerHTML = variantData.compare_at_price; });
+          document.querySelectorAll('#ls-badge, .ls-mobile-badge').forEach(function(el) { el.innerHTML = '-' + variantData.discount_pct + '%'; });
+          document.querySelectorAll('#ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'inline-block'; });
         } else {
-          document.getElementById('ls-compare').style.display = 'none';
-          document.getElementById('ls-badge').style.display = 'none';
+          document.querySelectorAll('#ls-compare, .ls-mobile-compare, #ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'none'; });
         }
       }
 

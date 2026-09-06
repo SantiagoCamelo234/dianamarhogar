@@ -146,6 +146,41 @@
       height: 18px;
       color: #8c9d62;
     }
+    .ls-mobile-price-box {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .ls-mobile-price-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 0 0 18px;
+        padding: 12px 14px;
+        border: 1px solid #e7e8e4;
+        border-radius: 10px;
+        background: #fafbf8;
+      }
+
+      .ls-mobile-price-box .ls-price {
+        font-size: 28px;
+      }
+
+      .ls-mobile-price-box .ls-compare {
+        margin-left: auto;
+        font-size: 14px;
+      }
+
+      .ls-mobile-price-box .ls-save-badge {
+        padding: 7px 10px;
+        border-radius: 6px;
+        background: #e8f0df;
+        color: #587044;
+        font-size: 13px;
+        box-shadow: none;
+      }
+    }
 
     .ls-mobile-social-proof {
       display: none;
