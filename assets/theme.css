@@ -69,6 +69,14 @@
       border-radius: 0 !important;
     }
 
+    body .ls-mobile-trust {
+      display: none !important;
+    }
+
+    body .ls-desktop-trust {
+      display: block !important;
+    }
+
     @media (max-width: 768px) {
       .ls-easy-sell-mount {
         margin-top: 15px;
@@ -76,6 +84,14 @@
 
       .ls-container {
         padding-bottom: 100px !important;
+      }
+
+      body .ls-mobile-trust {
+        display: block !important;
+      }
+
+      body .ls-desktop-trust {
+        display: none !important;
       }
     }
 
