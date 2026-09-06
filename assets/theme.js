@@ -17,6 +17,25 @@ function toggleFooterCol(element) {
   }
 }
 
+(function styleEasySellButton() {
+  function findButton() {
+    const candidates = document.querySelectorAll('button, a, input[type="submit"]');
+
+    candidates.forEach((candidate) => {
+      const text = (candidate.value || candidate.textContent || '').trim().toLowerCase();
+      if (text.includes('pago contra entrega') || text.includes('easy sell')) {
+        candidate.classList.add('dianamar-easysell-button');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', findButton);
+  new MutationObserver(findButton).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+
 // SEARCH Toggle
 function toggleSearch() {
   const container = document.querySelector('.search-container');

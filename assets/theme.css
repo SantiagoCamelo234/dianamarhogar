@@ -35,7 +35,8 @@
       display: none;
     }
 
-    body .releasit-buy-now-button {
+    body .releasit-buy-now-button,
+    body .dianamar-easysell-button {
       position: fixed !important;
       left: 12px !important;
       right: 12px !important;
@@ -46,6 +47,8 @@
       margin: 0 !important;
       min-height: 58px !important;
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28) !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     body .ls-micro-trust {
