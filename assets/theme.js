@@ -17,6 +17,48 @@ function toggleFooterCol(element) {
   }
 }
 
+(function enableMobileColorSwipe() {
+  function initCarousels() {
+    if (window.innerWidth > 768) return;
+
+    document.querySelectorAll('.ls-marquee-container').forEach((carousel) => {
+      if (carousel.dataset.touchSwipeReady === 'true') return;
+      carousel.dataset.touchSwipeReady = 'true';
+
+      let startX = 0;
+      let startY = 0;
+      let startScrollLeft = 0;
+      let horizontalDrag = false;
+
+      carousel.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        startScrollLeft = carousel.scrollLeft;
+        horizontalDrag = false;
+      }, { passive: true });
+
+      carousel.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+
+        if (!horizontalDrag && Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
+        if (!horizontalDrag) {
+          horizontalDrag = Math.abs(deltaX) > Math.abs(deltaY);
+        }
+        if (!horizontalDrag) return;
+
+        event.preventDefault();
+        carousel.scrollLeft = startScrollLeft - deltaX;
+      }, { passive: false });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initCarousels);
+  window.addEventListener('resize', initCarousels);
+})();
+
 (function styleEasySellButton() {
   function findButton() {
     const mount = document.querySelector('[data-easy-sell-mount]');
