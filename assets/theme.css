@@ -67,6 +67,17 @@
     body .dianamar-easysell-hidden {
       display: none !important;
     }
+    body .ls-easy-sell-mount .es-button.es-sticky-btn,
+    body .ls-easy-sell-mount .releasit-buy-now-button,
+    body .ls-easy-sell-mount .dianamar-easysell-button {
+      position: static !important;
+      inset: auto !important;
+      display: flex !important;
+      width: 100% !important;
+      min-height: 58px !important;
+      margin: 0 !important;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18) !important;
+    }
 
     body .ls-micro-trust {
       background: transparent !important;

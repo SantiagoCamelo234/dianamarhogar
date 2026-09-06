@@ -18,36 +18,26 @@ function toggleFooterCol(element) {
 }
 
 (function styleEasySellButton() {
-  function isGalleryVisible() {
-    const galleryElements = document.querySelectorAll('.ls-gallery, .ls-thumbnails');
-    return [...galleryElements].some((element) => {
-      const rect = element.getBoundingClientRect();
-      return rect.bottom > 0 && rect.top < window.innerHeight;
-    });
-  }
-
   function findButton() {
+    const mount = document.querySelector('[data-easy-sell-mount]');
     const candidates = document.querySelectorAll(
       '.releasit-buy-now-button, .es-button.es-sticky-btn'
     );
 
     candidates.forEach((candidate) => {
+      if (candidate.matches('.ls-faq-q')) return;
       candidate.classList.add('dianamar-easysell-button');
       if (candidate.matches('.es-button.es-sticky-btn')) {
-        if (window.innerWidth > 768) {
-          candidate.classList.remove('dianamar-easysell-hidden');
-          candidate.style.removeProperty('display');
-          return;
+        if (window.innerWidth <= 768 && mount && !mount.contains(candidate)) {
+          mount.appendChild(candidate);
         }
-        const hidden = isGalleryVisible();
-        candidate.classList.toggle('dianamar-easysell-hidden', hidden);
-        candidate.style.setProperty('display', hidden ? 'none' : 'flex', 'important');
+        candidate.classList.remove('dianamar-easysell-hidden');
+        candidate.style.setProperty('display', 'flex', 'important');
       }
     });
   }
 
   document.addEventListener('DOMContentLoaded', findButton);
-  window.addEventListener('scroll', findButton, { passive: true });
   window.addEventListener('resize', findButton);
   new MutationObserver(findButton).observe(document.documentElement, {
     childList: true,
@@ -59,8 +49,7 @@ function toggleFooterCol(element) {
 function toggleSearch() {
   const container = document.querySelector('.search-container');
   const input = document.getElementById('searchInput');
-  
-  // Si el contenedor ya está activo y el usuario escribió algo, enviar formulario
+
   if (container.classList.contains('active') && input.value.trim() !== '') {
     container.closest('form').submit();
     return;
