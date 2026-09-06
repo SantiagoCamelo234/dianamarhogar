@@ -364,8 +364,8 @@ color:#166534;
   
   /* Urgency Bar Premium */
   .ls-urgency-bar {
-    background: linear-gradient(90deg, #e60023 0%, #ff4d4d 100%);
-    color: #ffffff;
+    background: linear-gradient(90deg, #f8ded9 0%, #fbece9 100%);
+    color: #7a4b46;
     text-align: center;
     padding: 12px 10px;
     font-weight: 700;
@@ -394,7 +394,7 @@ color:#166534;
   }
   .ls-urgency-timer {
     background: #ffffff;
-    color: #e60023;
+    color: #9a5b54;
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 800;
@@ -815,21 +815,6 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
-          <div class="ls-live-stats">
-            <div class="ls-live-visitors">
-              <span class="ls-pulse-dot"></span>
-              <span>👁️ <strong class="ls-visitor-count-val">47</strong> personas viendo ahora</span>
-            </div>
-            <div class="ls-stock-bar-container">
-              <div class="ls-stock-bar-header">
-                <span>⚠️ ¡Pocas unidades disponibles!</span>
-                
-              </div>
-              <div class="ls-stock-progress-bg">
-                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="ls-gallery" id="ls-main-gallery">
@@ -884,21 +869,6 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
-          <div class="ls-live-stats">
-            <div class="ls-live-visitors">
-              <span class="ls-pulse-dot"></span>
-              <span>👁️ <strong class="ls-visitor-count-val font-semibold">47</strong> personas viendo ahora</span>
-            </div>
-            <div class="ls-stock-bar-container">
-              <div class="ls-stock-bar-header">
-                <span>⚠️ ¡Pocas unidades disponibles!</span>
-                <span><strong class="ls-stock-left-val">12</strong> en inventario</span>
-              </div>
-              <div class="ls-stock-progress-bg">
-                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div style="text-align: center; margin-bottom: 20px;">
@@ -1974,64 +1944,6 @@ color:#166534;
     updateTimer();
     setInterval(updateTimer, 1000);
   }
-
-  // 2. Contador de Visitantes y Barra de Stock Dinámica
-  function initLiveStats() {
-    // Visitantes dinámicos
-    var visitorValElements = document.querySelectorAll('.ls-visitor-count-val');
-    function updateVisitors() {
-      // Fluctúa entre 38 y 54 personas
-      var randomVisitors = Math.floor(Math.random() * (54 - 38 + 1)) + 38;
-      visitorValElements.forEach(function(el) {
-        el.textContent = randomVisitors;
-      });
-    }
-    if (visitorValElements.length > 0) {
-      updateVisitors();
-      setInterval(updateVisitors, 4000); // Fluctúa cada 4 segs
-    }
-
-    // Progreso de stock dinámico
-    var stockValElements = document.querySelectorAll('.ls-stock-left-val');
-    var stockBarElements = document.querySelectorAll('.ls-stock-bar-val');
-    
-    var stockLeft = localStorage.getItem('ls_stock_left');
-    if (!stockLeft) {
-      stockLeft = 14;
-      localStorage.setItem('ls_stock_left', stockLeft);
-    } else {
-      stockLeft = parseInt(stockLeft);
-    }
-
-    function updateStockUI() {
-      stockValElements.forEach(function(el) {
-        el.textContent = stockLeft;
-      });
-      // La barra se calcula sobre 20 unidades como total inicial
-      var progressPct = (stockLeft / 20) * 100;
-      stockBarElements.forEach(function(bar) {
-        bar.style.width = progressPct + '%';
-      });
-    }
-
-    updateStockUI();
-
-    // Simula una venta cada cierto tiempo (entre 30s y 60s) reduciendo el stock
-    function simulateStockReduction() {
-      if (stockLeft > 3) {
-        stockLeft -= 1;
-        localStorage.setItem('ls_stock_left', stockLeft);
-        updateStockUI();
-      }
-      var nextInterval = (Math.floor(Math.random() * 30) + 30) * 1000;
-      setTimeout(simulateStockReduction, nextInterval);
-    }
-    
-    // Programar la primera reducción
-    setTimeout(simulateStockReduction, 35000);
-  }
-
-
 
   // 4. Notificaciones de Ventas Recientes (Prueba Social)
   var recentPurchases = [

@@ -316,8 +316,8 @@ color:#166534;
   
   /* Urgency Bar Premium */
   .ls-urgency-bar {
-    background: linear-gradient(90deg, #e60023 0%, #ff4d4d 100%);
-    color: #ffffff;
+    background: linear-gradient(90deg, #f8ded9 0%, #fbece9 100%);
+    color: #7a4b46;
     text-align: center;
     padding: 12px 10px;
     font-weight: 700;
@@ -338,66 +338,12 @@ color:#166534;
   }
   .ls-urgency-timer {
     background: #ffffff;
-    color: #e60023;
+    color: #9a5b54;
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 800;
     margin-left: 5px;
     display: inline-block;
-  }
-
-  /* Live Stats & Visitor Counter */
-  .ls-live-stats {
-    background: rgba(248, 250, 252, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    border-radius: 12px;
-    padding: 15px;
-    margin-top: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-  }
-  .ls-live-visitors {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #475569;
-    margin-bottom: 12px;
-  }
-  .ls-pulse-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #22c55e;
-    border-radius: 50%;
-    display: inline-block;
-  }
-
-  /* Stock Progress Bar */
-  .ls-stock-bar-container {
-    width: 100%;
-  }
-  .ls-stock-bar-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 6px;
-  }
-  .ls-stock-progress-bg {
-    width: 100%;
-    height: 8px;
-    background: #e2e8f0;
-    border-radius: 999px;
-    overflow: hidden;
-  }
-  .ls-stock-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #f59e0b, #ef4444);
-    border-radius: 999px;
-    transition: width 1.5s ease-out;
   }
 
   /* CTA Button inside Form */
@@ -698,21 +644,6 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
-          <div class="ls-live-stats">
-            <div class="ls-live-visitors">
-              <span class="ls-pulse-dot"></span>
-              <span>👁️ <strong class="ls-visitor-count-val">47</strong> personas viendo ahora</span>
-            </div>
-            <div class="ls-stock-bar-container">
-              <div class="ls-stock-bar-header">
-                <span>⚠️ ¡Pocas unidades disponibles!</span>
-                
-              </div>
-              <div class="ls-stock-progress-bg">
-                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="ls-gallery" id="ls-main-gallery">
@@ -767,24 +698,6 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
-          <div class="ls-live-stats">
-            <div class="ls-live-visitors">
-              <span class="ls-pulse-dot"></span>
-              <span>👁️ <strong class="ls-visitor-count-val font-semibold">47</strong> personas viendo ahora</span>
-            </div>
-            <div class="ls-stock-bar-container"
-                 {% if current_variant.inventory_management == "shopify" and current_variant.inventory_quantity > 0 %}
-                   data-real-stock="{{ current_variant.inventory_quantity }}"
-                 {% endif %}>
-              <div class="ls-stock-bar-header">
-                <span>⚠️ ¡Pocas unidades disponibles!</span>
-                <span><strong class="ls-stock-left-val">12</strong> en inventario</span>
-              </div>
-              <div class="ls-stock-progress-bg">
-                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div style="text-align: center; margin-bottom: 20px;">
@@ -1813,74 +1726,6 @@ color:#166534;
     setInterval(updateTimer, 1000);
   }
 
-  // 2. Contador de Visitantes y Barra de Stock Dinámica
-  function initLiveStats() {
-    // Visitantes dinámicos
-    var visitorValElements = document.querySelectorAll('.ls-visitor-count-val');
-    function updateVisitors() {
-      // Fluctúa entre 38 y 54 personas
-      var randomVisitors = Math.floor(Math.random() * (54 - 38 + 1)) + 38;
-      visitorValElements.forEach(function(el) {
-        el.textContent = randomVisitors;
-      });
-    }
-    if (visitorValElements.length > 0) {
-      updateVisitors();
-      setInterval(updateVisitors, 4000); // Fluctúa cada 4 segs
-    }
-
-    // Progreso de stock: usa el inventario REAL de Shopify si está disponible (data-real-stock),
-    // y solo recurre a un valor simulado como respaldo si el producto no trackea inventario.
-    var stockValElements = document.querySelectorAll('.ls-stock-left-val');
-    var stockBarElements = document.querySelectorAll('.ls-stock-bar-val');
-    var stockContainer = document.querySelector('.ls-stock-bar-container[data-real-stock]');
-    var usingRealStock = !!stockContainer;
-    var stockTotalForBar = 20;
-
-    var stockLeft;
-    if (usingRealStock) {
-      stockLeft = parseInt(stockContainer.getAttribute('data-real-stock'));
-      stockTotalForBar = Math.max(stockLeft, 20);
-    } else {
-      stockLeft = localStorage.getItem('ls_stock_left');
-      if (!stockLeft) {
-        stockLeft = 14;
-        localStorage.setItem('ls_stock_left', stockLeft);
-      } else {
-        stockLeft = parseInt(stockLeft);
-      }
-    }
-
-    function updateStockUI() {
-      stockValElements.forEach(function(el) {
-        el.textContent = stockLeft;
-      });
-      var progressPct = (stockLeft / stockTotalForBar) * 100;
-      stockBarElements.forEach(function(bar) {
-        bar.style.width = Math.min(progressPct, 100) + '%';
-      });
-    }
-
-    updateStockUI();
-
-    // La reducción simulada de stock SOLO corre cuando no hay inventario real conectado,
-    // para no mostrar números falsos sobre un producto que sí trackea existencias.
-    if (!usingRealStock) {
-      function simulateStockReduction() {
-        if (stockLeft > 3) {
-          stockLeft -= 1;
-          localStorage.setItem('ls_stock_left', stockLeft);
-          updateStockUI();
-        }
-        var nextInterval = (Math.floor(Math.random() * 30) + 30) * 1000;
-        setTimeout(simulateStockReduction, nextInterval);
-      }
-      setTimeout(simulateStockReduction, 35000);
-    }
-  }
-
-
-
   // 5. Acordeón FAQ (los botones ya usan onclick inline, esta función queda como no-op seguro)
   function initFaqAccordion() {
     // Los items de FAQ ya alternan la clase "active" vía onclick inline en cada botón.
@@ -1923,7 +1768,6 @@ color:#166534;
   // Inicializar todo al cargar el DOM
   document.addEventListener('DOMContentLoaded', function() {
     initUrgencyTimer();
-    initLiveStats();
     initFaqAccordion();
     initReviewLightbox();
   });
