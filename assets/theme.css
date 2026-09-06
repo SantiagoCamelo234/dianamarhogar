@@ -90,6 +90,17 @@
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18) !important;
     }
 
+    body .ls-easy-sell-mount .dianamar-easysell-floating {
+      position: fixed !important;
+      left: 12px !important;
+      right: 12px !important;
+      bottom: 82px !important;
+      inset: auto 12px 82px 12px !important;
+      z-index: 100000 !important;
+      width: calc(100% - 24px) !important;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28) !important;
+    }
+
     body .ls-micro-trust {
       background: transparent !important;
       border: 0 !important;
