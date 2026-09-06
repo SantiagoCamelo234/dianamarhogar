@@ -35,7 +35,7 @@
       display: none;
     }
 
-    body .ls-easy-sell-mount .releasit-buy-now-button {
+    body .releasit-buy-now-button {
       position: static !important;
       display: flex !important;
       width: 100% !important;
