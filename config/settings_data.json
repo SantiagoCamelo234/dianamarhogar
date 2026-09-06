@@ -473,14 +473,14 @@
     },
     "content_for_index": [],
     "blocks": {
-      "17754088914158789468": {
-        "type": "shopify://apps/easysell-cod-form/blocks/app-embed/7bfd0a95-6839-4f02-b2ee-896832dbe67e",
-        "disabled": false,
-        "settings": {}
-      },
       "9535092338106386463": {
         "type": "shopify://apps/releasit-bundle/blocks/app-embed/019c9545-b89c-75b6-a4e1-5c7cd764ca36",
         "disabled": true,
+        "settings": {}
+      },
+      "17754088914158789468": {
+        "type": "shopify://apps/easysell-cod-form/blocks/app-embed/7bfd0a95-6839-4f02-b2ee-896832dbe67e",
+        "disabled": false,
         "settings": {}
       }
     }
