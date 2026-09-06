@@ -67,6 +67,10 @@
     body .dianamar-easysell-hidden {
       display: none !important;
     }
+
+    body .dianamar-easysell-duplicate {
+      display: none !important;
+    }
     body .ls-easy-sell-mount .es-button.es-sticky-btn,
     body .ls-easy-sell-mount .releasit-buy-now-button,
     body .ls-easy-sell-mount .dianamar-easysell-button {
@@ -122,6 +126,10 @@
       height: 18px;
       color: #8c9d62;
     }
+
+    .ls-mobile-social-proof {
+      display: none;
+    }
     body #ls-lightbox {
       display: none;
     }
@@ -130,6 +138,17 @@
       .ls-social-proof-badge {
         font-size: 12px;
         padding: 8px 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .ls-hero-left .ls-mobile-social-proof {
+        display: flex;
+        margin: 15px 0 0;
+      }
+
+      .ls-hero-right > .ls-social-proof-badge {
+        display: none;
       }
     }
 

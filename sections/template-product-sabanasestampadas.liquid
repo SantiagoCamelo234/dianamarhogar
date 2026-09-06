@@ -106,6 +106,11 @@
   @media (max-width: 768px) {
     .ls-hero { flex-direction: column; gap: 20px; }
     .ls-hero-left, .ls-hero-right { min-width: 0; width: 100%; max-width: 100%; }
+    .ls-marquee-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-x; scrollbar-width: none; }
+    .ls-marquee-container::-webkit-scrollbar { display: none; }
+    .ls-marquee { animation: none !important; transform: none !important; }
+    .ls-marquee-item { scroll-snap-align: start; }
+    .ls-marquee-item img { user-select: none; -webkit-user-drag: none; }
     .ls-hero-right { padding: 0; }
     .ls-title { font-size: 26px; font-weight: 900; }
     .ls-price { font-size: 32px; }
@@ -211,6 +216,12 @@
         {% if section.settings.trust_image != blank %}
           <div class="ls-mobile-trust ls-micro-trust ls-micro-trust-image-wrap">
             <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
+          </div>
+        {% endif %}
+        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
+          <div class="ls-social-proof-badge ls-mobile-social-proof">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l-5 4.5 6.7-.8L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
+            <span>{{ section.settings.social_proof_text }}</span>
           </div>
         {% endif %}
         <div class="ls-easy-sell-mount" data-easy-sell-mount></div>

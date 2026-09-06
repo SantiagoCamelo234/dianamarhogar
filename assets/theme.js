@@ -20,19 +20,21 @@ function toggleFooterCol(element) {
 (function styleEasySellButton() {
   function findButton() {
     const mount = document.querySelector('[data-easy-sell-mount]');
-    const candidates = document.querySelectorAll(
-      '.releasit-buy-now-button, .es-button.es-sticky-btn'
-    );
+    const candidates = [...document.querySelectorAll('.es-button.es-sticky-btn')];
+    const primary = candidates[0];
 
     candidates.forEach((candidate) => {
       if (candidate.matches('.ls-faq-q')) return;
       candidate.classList.add('dianamar-easysell-button');
-      if (candidate.matches('.es-button.es-sticky-btn')) {
-        if (window.innerWidth <= 768 && mount && !mount.contains(candidate)) {
+      if (candidate === primary) {
+        if (mount && !mount.contains(candidate)) {
           mount.appendChild(candidate);
         }
-        candidate.classList.remove('dianamar-easysell-hidden');
+        candidate.classList.remove('dianamar-easysell-hidden', 'dianamar-easysell-duplicate');
         candidate.style.setProperty('display', 'flex', 'important');
+      } else {
+        candidate.classList.add('dianamar-easysell-duplicate');
+        candidate.style.setProperty('display', 'none', 'important');
       }
     });
   }
