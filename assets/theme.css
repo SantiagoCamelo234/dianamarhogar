@@ -25,6 +25,29 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    .ls-easy-sell-mount {
+      width: 100%;
+      min-height: 0;
+      margin: 20px 0 0;
+    }
+
+    .ls-easy-sell-mount:empty {
+      display: none;
+    }
+
+    .ls-easy-sell-mount .releasit-buy-now-button {
+      position: static !important;
+      display: flex !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+
+    @media (max-width: 768px) {
+      .ls-easy-sell-mount {
+        margin-top: 15px;
+      }
+    }
+
     /* BARRA DE PROMOCIÃ“N */
     .top-bar {
       background-color: var(--accent-green);

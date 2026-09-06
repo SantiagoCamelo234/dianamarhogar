@@ -17,6 +17,27 @@ function toggleFooterCol(element) {
   }
 }
 
+(function moveEasySellButton() {
+  function moveButton() {
+    const mount = document.querySelector('[data-easy-sell-mount]');
+    const button = document.querySelector('.releasit-buy-now-button');
+    const form = document.querySelector('#landing-product-form');
+
+    if (!mount || !button || mount.contains(button)) return;
+
+    mount.appendChild(button);
+    if (form && button.tagName === 'BUTTON' && !button.getAttribute('form')) {
+      button.setAttribute('form', form.id);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', moveButton);
+  new MutationObserver(moveButton).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+
 // SEARCH Toggle
 function toggleSearch() {
   const container = document.querySelector('.search-container');
