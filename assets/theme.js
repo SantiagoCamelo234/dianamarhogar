@@ -60,6 +60,20 @@ function toggleFooterCol(element) {
 })();
 
 (function styleEasySellButton() {
+  let mountObserver;
+
+  function updateButtonPosition(mount, button) {
+    if (!mount || !button || window.innerWidth > 768) {
+      button?.classList.remove('dianamar-easysell-floating');
+      return;
+    }
+
+    const mountRect = mount.getBoundingClientRect();
+    const mountVisible = mountRect.bottom > 0 && mountRect.top < window.innerHeight;
+    const shouldFloat = window.scrollY > 10 && !mountVisible;
+    button.classList.toggle('dianamar-easysell-floating', shouldFloat);
+  }
+
   function findButton() {
     const mount = document.querySelector('[data-easy-sell-mount]');
     const candidates = [...document.querySelectorAll('.es-button.es-sticky-btn')];
@@ -74,6 +88,7 @@ function toggleFooterCol(element) {
         }
         candidate.classList.remove('dianamar-easysell-hidden', 'dianamar-easysell-duplicate');
         candidate.style.setProperty('display', 'flex', 'important');
+        updateButtonPosition(mount, candidate);
       } else {
         candidate.classList.add('dianamar-easysell-duplicate');
         candidate.style.setProperty('display', 'none', 'important');
@@ -82,11 +97,21 @@ function toggleFooterCol(element) {
   }
 
   document.addEventListener('DOMContentLoaded', findButton);
+  window.addEventListener('scroll', findButton, { passive: true });
   window.addEventListener('resize', findButton);
   new MutationObserver(findButton).observe(document.documentElement, {
     childList: true,
     subtree: true
   });
+
+  function observeMount() {
+    const mount = document.querySelector('[data-easy-sell-mount]');
+    if (!mount || mountObserver) return;
+    mountObserver = new IntersectionObserver(() => findButton(), { threshold: 0 });
+    mountObserver.observe(mount);
+  }
+
+  document.addEventListener('DOMContentLoaded', observeMount);
 })();
 
 // SEARCH Toggle

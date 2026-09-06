@@ -35,21 +35,28 @@
       display: none;
     }
 
-    body .releasit-buy-now-button,
-    body .dianamar-easysell-button:not(.ls-faq-q),
-    body .es-button.es-sticky-btn {
+    body .ls-easy-sell-mount .es-button.es-sticky-btn,
+    body .ls-easy-sell-mount .releasit-buy-now-button,
+    body .ls-easy-sell-mount .dianamar-easysell-button {
+      position: static !important;
+      inset: auto !important;
+      display: flex !important;
+      width: 100% !important;
+      margin: 0 !important;
+      min-height: 58px !important;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18) !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    body .dianamar-easysell-floating {
       position: fixed !important;
       left: 12px !important;
       right: 12px !important;
       bottom: 82px !important;
       z-index: 100000 !important;
-      display: flex !important;
       width: calc(100% - 24px) !important;
-      margin: 0 !important;
-      min-height: 58px !important;
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28) !important;
-      visibility: visible !important;
-      opacity: 1 !important;
     }
 
     body .ls-faq-q.dianamar-easysell-button {
