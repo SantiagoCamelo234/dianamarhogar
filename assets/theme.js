@@ -65,6 +65,10 @@ function toggleFooterCol(element) {
   function updateButtonPosition(mount, button) {
     if (!mount || !button || window.innerWidth > 768) {
       button?.classList.remove('dianamar-easysell-floating');
+      button?.style.setProperty('position', 'static', 'important');
+      button?.style.removeProperty('left');
+      button?.style.removeProperty('right');
+      button?.style.removeProperty('bottom');
       return;
     }
 
@@ -72,6 +76,20 @@ function toggleFooterCol(element) {
     const mountVisible = mountRect.bottom > 0 && mountRect.top < window.innerHeight;
     const shouldFloat = window.scrollY > 10 && !mountVisible;
     button.classList.toggle('dianamar-easysell-floating', shouldFloat);
+
+    if (shouldFloat) {
+      button.style.setProperty('position', 'fixed', 'important');
+      button.style.setProperty('left', '12px', 'important');
+      button.style.setProperty('right', '12px', 'important');
+      button.style.setProperty('bottom', '82px', 'important');
+      button.style.setProperty('z-index', '100000', 'important');
+    } else {
+      button.style.setProperty('position', 'static', 'important');
+      button.style.removeProperty('left');
+      button.style.removeProperty('right');
+      button.style.removeProperty('bottom');
+      button.style.removeProperty('z-index');
+    }
   }
 
   function findButton() {
