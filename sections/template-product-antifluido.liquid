@@ -17,8 +17,8 @@
   .ls-urgency { background: #fff3cd; color: #856404; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ffeeba; width: 100%; }
 
   .ls-hero { display: flex; flex-wrap: wrap; gap: 30px; width: 100%; }
-  .ls-hero-left, .ls-hero-right { flex: 1 1 0; width: 0; min-width: 0; max-width: 100%; }
-  .ls-hero-right { align-self: flex-start; overflow: hidden; }
+  .ls-hero-left { flex: 1 1 50%; min-width: 0; max-width: 100%; }
+  .ls-hero-right { flex: 1 1 40%; min-width: 0; max-width: 100%; }
 
   .ls-gallery { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f9f9f9; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
   .ls-main-img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 65vh; }
@@ -216,32 +216,12 @@ font-size:14px;
   padding:15px;
   border-radius:10px;
   margin-bottom:20px;
-    width:100%;
-    min-width:0;
-    height:auto !important;
-    align-self:flex-start;
-    overflow:hidden;
 }
 
 .ls-micro-trust div{
   margin:6px 0;
   font-weight:600;
 }
-
-.ls-micro-trust-image {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  min-width: 0;
-  object-fit: fill;
-  border-radius: 10px;
-}
-.ls-micro-trust-image-wrap { aspect-ratio: 2172 / 724; padding: 0; }
-.ls-mobile-trust { display:none; }
-@media (max-width:768px) { .ls-mobile-trust { display:block; margin-bottom:20px; } .ls-desktop-trust { display:none !important; } }
-.ls-hero-right img { max-width: 100%; height: auto; }
 
 .ls-objections{
 margin:20px 0;
@@ -276,11 +256,6 @@ margin-bottom:8px;
   @media (max-width: 768px) {
     .ls-marquee-item { width: 160px; height: 160px; }
     .ls-marquee { animation-duration: 20s; }
-    .ls-marquee-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-x; scrollbar-width: none; }
-    .ls-marquee-container::-webkit-scrollbar { display: none; }
-    .ls-marquee { animation: none !important; transform: none !important; }
-    .ls-marquee-item { scroll-snap-align: start; }
-    .ls-marquee-item img { user-select: none; -webkit-user-drag: none; }
   }
 
   .ls-compare h2,
@@ -369,8 +344,8 @@ color:#166534;
   
   /* Urgency Bar Premium */
   .ls-urgency-bar {
-    background: linear-gradient(90deg, #f8ded9 0%, #fbece9 100%);
-    color: #7a4b46;
+    background: linear-gradient(90deg, #e60023 0%, #ff4d4d 100%);
+    color: #ffffff;
     text-align: center;
     padding: 12px 10px;
     font-weight: 700;
@@ -399,7 +374,7 @@ color:#166534;
   }
   .ls-urgency-timer {
     background: #ffffff;
-    color: #9a5b54;
+    color: #e60023;
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 800;
@@ -820,12 +795,21 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
-        </div>
-
-        <div class="ls-mobile-price-box">
-          <span class="ls-price ls-mobile-price">{{ current_variant.price | money }}</span>
-          <span class="ls-compare ls-mobile-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
-          <span class="ls-save-badge ls-mobile-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>-{{ current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price }}%</span>
+          <div class="ls-live-stats">
+            <div class="ls-live-visitors">
+              <span class="ls-pulse-dot"></span>
+              <span>👁️ <strong class="ls-visitor-count-val">47</strong> personas viendo ahora</span>
+            </div>
+            <div class="ls-stock-bar-container">
+              <div class="ls-stock-bar-header">
+                <span>⚠️ ¡Pocas unidades disponibles!</span>
+                
+              </div>
+              <div class="ls-stock-progress-bg">
+                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="ls-gallery" id="ls-main-gallery">
@@ -859,18 +843,6 @@ color:#166534;
           {% endfor %}
         </div>
         {% endif %}
-        {% if section.settings.trust_image != blank %}
-          <div class="ls-mobile-trust ls-micro-trust ls-micro-trust-image-wrap">
-            <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
-          </div>
-        {% endif %}
-        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
-          <div class="ls-social-proof-badge ls-mobile-social-proof">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l-5 4.5 1.4 6.5L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
-            <span>{{ section.settings.social_proof_text }}</span>
-          </div>
-        {% endif %}
-        <div class="ls-easy-sell-mount" data-easy-sell-mount></div>
       </div>
 
       <!-- Lado Derecho: Formulario y Compra -->
@@ -886,6 +858,21 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
+          <div class="ls-live-stats">
+            <div class="ls-live-visitors">
+              <span class="ls-pulse-dot"></span>
+              <span>👁️ <strong class="ls-visitor-count-val font-semibold">47</strong> personas viendo ahora</span>
+            </div>
+            <div class="ls-stock-bar-container">
+              <div class="ls-stock-bar-header">
+                <span>⚠️ ¡Pocas unidades disponibles!</span>
+                <span><strong class="ls-stock-left-val">12</strong> en inventario</span>
+              </div>
+              <div class="ls-stock-progress-bg">
+                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="text-align: center; margin-bottom: 20px;">
@@ -902,30 +889,17 @@ color:#166534;
           </span>
         </div>
 
-        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
-          <div class="ls-social-proof-badge">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l-5 4.5 1.4 6.5L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
-            <span>{{ section.settings.social_proof_text }}</span>
-          </div>
-        {% endif %}
-
-        {% if section.settings.trust_image != blank %}
-          <div class="ls-desktop-trust ls-micro-trust ls-micro-trust-image-wrap">
-          <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
-        </div>
-        {% else %}
         <div class="ls-micro-trust">
           <div>🚚 Envío GRATIS a toda Colombia</div>
           <div>💰 Pago contra entrega</div>
           <div>⭐ Más de 2.000 juegos vendidos</div>
           <div>🔒 Compra 100% segura</div>
         </div>
-        {% endif %}
       
         
         <div>
           {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
-            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}" data-available="{{ current_variant.available }}">
+            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
             <input type="hidden" name="quantity" value="1">
 
             {% unless product.has_only_default_variant %}
@@ -1599,7 +1573,6 @@ color:#166534;
         "price": "{{ variant.price | money }}",
         "compare_at_price": "{{ variant.compare_at_price | money }}",
         "has_discount": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
-        "available": {{ variant.available | json }},
         "discount_pct": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
@@ -1698,17 +1671,17 @@ color:#166534;
       document.getElementById('ls-variant-id').dispatchEvent(new Event('change', { bubbles: true }));
       
       var variantData = lsVariantPrices[matchingVariant.id];
-      if (window.updateEasySellAvailability) window.updateEasySellAvailability(matchingVariant.available);
       if (variantData) {
-        document.querySelectorAll('#ls-price, .ls-mobile-price').forEach(function(el) { el.innerHTML = variantData.price; });
+        document.getElementById('ls-price').innerHTML = variantData.price;
         if (variantData.has_discount) {
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.style.display = 'inline-block'; });
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.innerHTML = variantData.compare_at_price; });
+          document.getElementById('ls-compare').style.display = 'inline-block';
+          document.getElementById('ls-compare').innerHTML = variantData.compare_at_price;
           document.getElementById('ls-badge').innerHTML =
 '🔥 ' + variantData.discount_pct + '% OFF';
-          document.querySelectorAll('#ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'inline-block'; });
+          document.getElementById('ls-badge').style.display = 'inline-block';
         } else {
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare, #ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'none'; });
+          document.getElementById('ls-compare').style.display = 'none';
+          document.getElementById('ls-badge').style.display = 'none';
         }
       }
     }
@@ -1970,6 +1943,64 @@ color:#166534;
     setInterval(updateTimer, 1000);
   }
 
+  // 2. Contador de Visitantes y Barra de Stock Dinámica
+  function initLiveStats() {
+    // Visitantes dinámicos
+    var visitorValElements = document.querySelectorAll('.ls-visitor-count-val');
+    function updateVisitors() {
+      // Fluctúa entre 38 y 54 personas
+      var randomVisitors = Math.floor(Math.random() * (54 - 38 + 1)) + 38;
+      visitorValElements.forEach(function(el) {
+        el.textContent = randomVisitors;
+      });
+    }
+    if (visitorValElements.length > 0) {
+      updateVisitors();
+      setInterval(updateVisitors, 4000); // Fluctúa cada 4 segs
+    }
+
+    // Progreso de stock dinámico
+    var stockValElements = document.querySelectorAll('.ls-stock-left-val');
+    var stockBarElements = document.querySelectorAll('.ls-stock-bar-val');
+    
+    var stockLeft = localStorage.getItem('ls_stock_left');
+    if (!stockLeft) {
+      stockLeft = 14;
+      localStorage.setItem('ls_stock_left', stockLeft);
+    } else {
+      stockLeft = parseInt(stockLeft);
+    }
+
+    function updateStockUI() {
+      stockValElements.forEach(function(el) {
+        el.textContent = stockLeft;
+      });
+      // La barra se calcula sobre 20 unidades como total inicial
+      var progressPct = (stockLeft / 20) * 100;
+      stockBarElements.forEach(function(bar) {
+        bar.style.width = progressPct + '%';
+      });
+    }
+
+    updateStockUI();
+
+    // Simula una venta cada cierto tiempo (entre 30s y 60s) reduciendo el stock
+    function simulateStockReduction() {
+      if (stockLeft > 3) {
+        stockLeft -= 1;
+        localStorage.setItem('ls_stock_left', stockLeft);
+        updateStockUI();
+      }
+      var nextInterval = (Math.floor(Math.random() * 30) + 30) * 1000;
+      setTimeout(simulateStockReduction, nextInterval);
+    }
+    
+    // Programar la primera reducción
+    setTimeout(simulateStockReduction, 35000);
+  }
+
+
+
   // 4. Notificaciones de Ventas Recientes (Prueba Social)
   var recentPurchases = [
     { name: "Adriana M. de Bogotá", item: "1 Sábana Ajustable", time: "hace 2 minutos" },
@@ -2134,28 +2165,6 @@ color:#166534;
       "id": "review_count",
       "label": "Número de Opiniones (Hero)",
       "default": "345"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_social_proof",
-      "label": "Mostrar badge de clientes y calificación",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "social_proof_text",
-      "label": "Texto del badge social",
-      "default": "Más de 1000 clientes satisfechos · 5 estrellas en Falabella"
-    },
-    {
-      "type": "header",
-      "content": "Imagen de Confianza"
-    },
-    {
-      "type": "image_picker",
-      "id": "trust_image",
-      "label": "Imagen de beneficios (envío, pago, seguridad)",
-      "info": "Se muestra debajo del precio, antes de elegir variante"
     },
     {
       "type": "text",

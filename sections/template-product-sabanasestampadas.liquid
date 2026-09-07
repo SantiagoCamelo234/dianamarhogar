@@ -17,8 +17,8 @@
   .ls-urgency { background: #fff3cd; color: #856404; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ffeeba; width: 100%; }
 
   .ls-hero { display: flex; flex-wrap: wrap; gap: 30px; width: 100%; }
-  .ls-hero-left, .ls-hero-right { flex: 1 1 0; width: 0; min-width: 0; max-width: 100%; }
-  .ls-hero-right { align-self: flex-start; overflow: hidden; }
+  .ls-hero-left { flex: 1 1 50%; min-width: 0; max-width: 100%; }
+  .ls-hero-right { flex: 1 1 40%; min-width: 0; max-width: 100%; }
 
   .ls-gallery { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f9f9f9; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
   .ls-main-img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 65vh; }
@@ -52,14 +52,6 @@
   .ls-swatch-color.active, .ls-swatch-color:hover { border-color: #fff; box-shadow: 0 0 0 2px var(--ls-accent); transform: scale(1.05); }
   .ls-swatch-size { padding: 10px 16px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; background: #fff; transition: all 0.2s; }
   .ls-swatch-size.active { border-color: var(--ls-accent); background: var(--ls-accent); color: #fff; }
-
-  .ls-micro-trust { background:#f8f8f8; padding:15px; border-radius:10px; margin-bottom:20px; width:100%; min-width:0; height:auto !important; align-self:flex-start; overflow: hidden; }
-  .ls-micro-trust div { margin:6px 0; font-weight:600; }
-  .ls-micro-trust-image { display: block; width: 100% !important; height: 100% !important; max-width: none !important; min-width: 0; max-height: none !important; object-fit: fill; border-radius: 10px; }
-  .ls-micro-trust-image-wrap { aspect-ratio: 2172 / 724; padding: 0; }
-  .ls-mobile-trust { display:none; }
-  @media (max-width:768px) { .ls-mobile-trust { display:block; margin-bottom:20px; } .ls-desktop-trust { display:none !important; } }
-  .ls-hero-right img { max-width: 100%; height: auto; }
 
   .ls-cta { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; background: var(--ls-btn-bg); color: var(--ls-btn-text); padding: 18px; border: none; border-radius: 8px; font-size: 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(230, 0, 35, 0.3); margin-top: 10px; margin-bottom: 20px; animation: pulse 2s infinite; }
   .ls-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230, 0, 35, 0.4); }
@@ -106,11 +98,6 @@
   @media (max-width: 768px) {
     .ls-hero { flex-direction: column; gap: 20px; }
     .ls-hero-left, .ls-hero-right { min-width: 0; width: 100%; max-width: 100%; }
-    .ls-marquee-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-x; scrollbar-width: none; }
-    .ls-marquee-container::-webkit-scrollbar { display: none; }
-    .ls-marquee { animation: none !important; transform: none !important; }
-    .ls-marquee-item { scroll-snap-align: start; }
-    .ls-marquee-item img { user-select: none; -webkit-user-drag: none; }
     .ls-hero-right { padding: 0; }
     .ls-title { font-size: 26px; font-weight: 900; }
     .ls-price { font-size: 32px; }
@@ -182,12 +169,6 @@
           {% endif %}
         </div>
 
-        <div class="ls-mobile-price-box">
-          <span class="ls-price ls-mobile-price">{{ current_variant.price | money }}</span>
-          <span class="ls-compare ls-mobile-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
-          <span class="ls-save-badge ls-mobile-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>-{{ current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price }}%</span>
-        </div>
-
         <div class="ls-gallery" id="ls-main-gallery">
           {% if product.media.size > 0 %}
             {% for media in product.media %}
@@ -219,18 +200,6 @@
           {% endfor %}
         </div>
         {% endif %}
-        {% if section.settings.trust_image != blank %}
-          <div class="ls-mobile-trust ls-micro-trust ls-micro-trust-image-wrap">
-            <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
-          </div>
-        {% endif %}
-        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
-          <div class="ls-social-proof-badge ls-mobile-social-proof">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l-5 4.5 6.7-.8L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
-            <span>{{ section.settings.social_proof_text }}</span>
-          </div>
-        {% endif %}
-        <div class="ls-easy-sell-mount" data-easy-sell-mount></div>
       </div>
 
       <!-- Lado Derecho: Formulario y Compra -->
@@ -261,27 +230,14 @@
             {% endif %}
           </span>
         </div>
-
-        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
-          <div class="ls-social-proof-badge">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l6.7-.8L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
-            <span>{{ section.settings.social_proof_text }}</span>
-          </div>
-        {% endif %}
-
-        {% if section.settings.trust_image != blank %}
-        <div class="ls-desktop-trust ls-micro-trust ls-micro-trust-image-wrap">
-          <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
-        </div>
-        {% endif %}
-
+      
         <div class="ls-description">
           {{ product.description }}
         </div>
 
         <div>
           {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
-            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}" data-available="{{ current_variant.available }}">
+            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
             <input type="hidden" name="quantity" value="1">
 
             {% unless product.has_only_default_variant %}
@@ -807,7 +763,6 @@
         "price": "{{ variant.price | money }}",
         "compare_at_price": "{{ variant.compare_at_price | money }}",
         "has_discount": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
-        "available": {{ variant.available | json }},
         "discount_pct": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
@@ -906,16 +861,16 @@
       document.getElementById('ls-variant-id').dispatchEvent(new Event('change', { bubbles: true }));
       
       var variantData = lsVariantPrices[matchingVariant.id];
-      if (window.updateEasySellAvailability) window.updateEasySellAvailability(matchingVariant.available);
       if (variantData) {
-        document.querySelectorAll('#ls-price, .ls-mobile-price').forEach(function(el) { el.innerHTML = variantData.price; });
+        document.getElementById('ls-price').innerHTML = variantData.price;
         if (variantData.has_discount) {
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.style.display = 'inline-block'; });
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.innerHTML = variantData.compare_at_price; });
+          document.getElementById('ls-compare').style.display = 'inline-block';
+          document.getElementById('ls-compare').innerHTML = variantData.compare_at_price;
           document.getElementById('ls-badge').innerHTML = '-' + variantData.discount_pct + '%';
-          document.querySelectorAll('#ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'inline-block'; });
+          document.getElementById('ls-badge').style.display = 'inline-block';
         } else {
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare, #ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'none'; });
+          document.getElementById('ls-compare').style.display = 'none';
+          document.getElementById('ls-badge').style.display = 'none';
         }
       }
     }
@@ -1177,28 +1132,6 @@
       "id": "review_count",
       "label": "Número de Opiniones (Hero)",
       "default": "345"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_social_proof",
-      "label": "Mostrar badge de clientes y calificación",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "social_proof_text",
-      "label": "Texto del badge social",
-      "default": "Más de 1000 clientes satisfechos · 5 estrellas en Falabella"
-    },
-    {
-      "type": "header",
-      "content": "Imagen de Confianza"
-    },
-    {
-      "type": "image_picker",
-      "id": "trust_image",
-      "label": "Imagen de beneficios (envío, pago, seguridad)",
-      "info": "Se muestra debajo del precio, antes de elegir variante"
     },
     {
       "type": "text",

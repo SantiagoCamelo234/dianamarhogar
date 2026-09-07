@@ -17,8 +17,8 @@
   .ls-urgency { background: #fff3cd; color: #856404; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #ffeeba; width: 100%; }
 
   .ls-hero { display: flex; flex-wrap: wrap; gap: 30px; width: 100%; }
-  .ls-hero-left, .ls-hero-right { flex: 1 1 0; width: 0; min-width: 0; max-width: 100%; }
-  .ls-hero-right { align-self: flex-start; overflow: hidden; }
+  .ls-hero-left { flex: 1 1 50%; min-width: 0; max-width: 100%; }
+  .ls-hero-right { flex: 1 1 40%; min-width: 0; max-width: 100%; }
 
   .ls-gallery { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f9f9f9; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
   .ls-main-img { width: 100%; height: auto; display: block; object-fit: cover; max-height: 65vh; }
@@ -48,6 +48,19 @@
   line-height: 1;
   white-space: nowrap;
   box-shadow: 0 6px 20px rgba(239,68,68,.35);
+  animation: pulse-discount 1.5s infinite;
+}
+
+@keyframes pulse-discount {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
   .ls-description { font-size: 15px; line-height: 1.6; color: #444; margin-bottom: 25px; }
@@ -72,6 +85,10 @@
     50% { transform: scale(1.02); }
     100% { transform: scale(1); }
   }
+
+  .ls-trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; margin-top: 10px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+  .ls-trust-item { font-size: 12px; font-weight: bold; color: #555; }
+  .ls-trust-item svg { width: 28px; height: 28px; margin-bottom: 5px; color: var(--ls-success); }
 
   .ls-section-title { text-align: center; font-size: 24px; font-weight: 800; margin: 40px 0 30px; color: var(--ls-accent); }
 
@@ -206,6 +223,17 @@ font-size:14px;
   font-weight:600;
 }
 
+.ls-objections{
+margin:20px 0;
+padding:15px;
+background:#f4f4f4;
+border-radius:10px;
+}
+
+.ls-objections div{
+margin-bottom:8px;
+}
+
   .ls-review-hidden { display: none !important; }
   .ls-show-more-btn { margin: 30px auto 0; padding: 12px 25px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 20px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: block; text-align: center; }
   .ls-show-more-btn:hover { background: #e0e0e0; }
@@ -228,11 +256,6 @@ font-size:14px;
   @media (max-width: 768px) {
     .ls-marquee-item { width: 160px; height: 160px; }
     .ls-marquee { animation-duration: 20s; }
-    .ls-marquee-container { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-x; scrollbar-width: none; }
-    .ls-marquee-container::-webkit-scrollbar { display: none; }
-    .ls-marquee { animation: none !important; transform: none !important; }
-    .ls-marquee-item { scroll-snap-align: start; }
-    .ls-marquee-item img { user-select: none; -webkit-user-drag: none; }
   }
 
   .ls-compare h2,
@@ -321,8 +344,8 @@ color:#166534;
   
   /* Urgency Bar Premium */
   .ls-urgency-bar {
-    background: linear-gradient(90deg, #f8ded9 0%, #fbece9 100%);
-    color: #7a4b46;
+    background: linear-gradient(90deg, #e60023 0%, #ff4d4d 100%);
+    color: #ffffff;
     text-align: center;
     padding: 12px 10px;
     font-weight: 700;
@@ -341,14 +364,92 @@ color:#166534;
     max-width: 1200px;
     margin: 0 auto;
   }
+  .ls-urgency-badge {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
   .ls-urgency-timer {
     background: #ffffff;
-    color: #9a5b54;
+    color: #e60023;
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 800;
     margin-left: 5px;
     display: inline-block;
+  }
+
+  /* Live Stats & Visitor Counter */
+  .ls-live-stats {
+    background: rgba(248, 250, 252, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+  .ls-live-visitors {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 12px;
+  }
+  .ls-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: ls-pulse 1.5s infinite;
+  }
+  @keyframes ls-pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+  }
+
+  /* Stock Progress Bar */
+  .ls-stock-bar-container {
+    width: 100%;
+  }
+  .ls-stock-bar-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+  .ls-stock-progress-bg {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .ls-stock-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    border-radius: 999px;
+    transition: width 1.5s ease-out;
   }
 
   /* CTA Button inside Form */
@@ -371,6 +472,7 @@ color:#166534;
     box-shadow: 0 6px 20px rgba(230, 0, 35, 0.35) !important;
     margin-top: 15px !important;
     margin-bottom: 15px !important;
+    animation: ls-btn-pulse 2s infinite !important;
   }
   .ls-cta:hover {
     transform: translateY(-2px) !important;
@@ -480,6 +582,89 @@ color:#166534;
     to { transform: translateY(0); }
   }
 
+  /* Social Proof Notification Toast */
+  .ls-notification-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    padding: 12px 35px 12px 12px;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    max-width: 320px;
+    border: 1px solid #e2e8f0;
+    transform: translateY(150%);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .ls-notification-toast.active {
+    transform: translateY(0);
+  }
+  .ls-toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ls-toast-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+    flex-shrink: 0;
+  }
+  .ls-toast-text {
+    min-width: 0;
+  }
+  .ls-toast-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 2px 0;
+  }
+  .ls-toast-desc {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0 0 3px 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ls-toast-verified {
+    font-size: 10px;
+    color: #22c55e;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .ls-toast-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px;
+    line-height: 1;
+  }
+  .ls-toast-close:hover {
+    color: #475569;
+  }
+  @media (max-width: 768px) {
+    .ls-notification-toast {
+      left: 10px;
+      right: 10px;
+      bottom: 75px; /* Queda por encima del sticky bar */
+      max-width: calc(100% - 20px);
+    }
+  }
+
   /* FAQ Accordion Transitions */
   .ls-faq-item {
     border-bottom: 1px solid var(--ls-border);
@@ -521,7 +706,7 @@ color:#166534;
   }
  .ls-faq-q.active + .ls-faq-a {
     display: block;
-  }
+
   /* Lightbox for Reviews */
   .ls-lightbox {
     display: none;
@@ -572,37 +757,12 @@ color:#166534;
   .ls-swatch-size {
     border-radius: 8px !important;
   }
-  .ls-micro-trust {
+  .ls-objections, .ls-micro-trust {
     border: 1px solid rgba(226, 232, 240, 0.8) !important;
     background: rgba(248, 250, 252, 0.6) !important;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.01);
-    width: 100%;
-    min-width: 0;
-    height: auto !important;
-    align-self: flex-start;
-    overflow: hidden;
   }
-  .ls-micro-trust-image {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    min-width: 0;
-    object-fit: fill;
-    border-radius: 10px;
-  }
-  .ls-micro-trust-image-wrap {
-    aspect-ratio: 2172 / 724;
-    padding: 0;
-  }
-  .ls-mobile-trust { display: none; }
-  @media (max-width: 768px) {
-    .ls-mobile-trust { display: block; margin-bottom: 20px; }
-    .ls-desktop-trust { display: none !important; }
-  }
-  .ls-hero-right img { max-width: 100%; height: auto; }
   .ls-product-card {
     border: 1px solid #f1f5f9;
   }
@@ -619,18 +779,13 @@ color:#166534;
 </style>
 
 {% assign current_variant = product.selected_or_first_available_variant %}
-{% assign color_option_position = 0 %}
-{% for option in product.options_with_values %}
-  {% assign option_name_downcase = option.name | downcase %}
-  {% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}
-    {% assign color_option_position = option.position %}
-  {% endif %}
-{% endfor %}
 <div class="ls-container" id="product-section-{{ section.id }}">
   {% if section.settings.show_urgency %}
     <div class="ls-urgency-bar">
       <div class="ls-urgency-content">
+        <span class="ls-urgency-badge">🔥 OFERTA LIMITADA</span>
         <span class="ls-urgency-text">{{ section.settings.urgency_text }}</span>
+        
       </div>
     </div>
   {% endif %}
@@ -649,6 +804,21 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
+          <div class="ls-live-stats">
+            <div class="ls-live-visitors">
+              <span class="ls-pulse-dot"></span>
+              <span>👁️ <strong class="ls-visitor-count-val">47</strong> personas viendo ahora</span>
+            </div>
+            <div class="ls-stock-bar-container">
+              <div class="ls-stock-bar-header">
+                <span>⚠️ ¡Pocas unidades disponibles!</span>
+                
+              </div>
+              <div class="ls-stock-progress-bg">
+                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="ls-gallery" id="ls-main-gallery">
@@ -673,7 +843,7 @@ color:#166534;
         {% if product.media.size > 1 %}
         <div class="ls-thumbnails">
           {% for media in product.media %}
-            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
+            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
               <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="75" height="75" loading="eager" fetchpriority="high" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
               {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; padding-left: 2px; pointer-events: none;">▶</div>
@@ -682,18 +852,6 @@ color:#166534;
           {% endfor %}
         </div>
         {% endif %}
-        {% if section.settings.trust_image != blank %}
-          <div class="ls-mobile-trust ls-micro-trust ls-micro-trust-image-wrap">
-            <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
-          </div>
-        {% endif %}
-        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
-          <div class="ls-social-proof-badge ls-mobile-social-proof">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l-5 4.5 1.4 6.5L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
-            <span>{{ section.settings.social_proof_text }}</span>
-          </div>
-        {% endif %}
-        <div class="ls-easy-sell-mount" data-easy-sell-mount></div>
       </div>
 
       <!-- Lado Derecho: Formulario y Compra -->
@@ -709,6 +867,24 @@ color:#166534;
           {% if section.settings.subheadline != blank %}
             <p class="ls-subtitle">{{ section.settings.subheadline }}</p>
           {% endif %}
+          <div class="ls-live-stats">
+            <div class="ls-live-visitors">
+              <span class="ls-pulse-dot"></span>
+              <span>👁️ <strong class="ls-visitor-count-val font-semibold">47</strong> personas viendo ahora</span>
+            </div>
+            <div class="ls-stock-bar-container"
+                 {% if current_variant.inventory_management == "shopify" and current_variant.inventory_quantity > 0 %}
+                   data-real-stock="{{ current_variant.inventory_quantity }}"
+                 {% endif %}>
+              <div class="ls-stock-bar-header">
+                <span>⚠️ ¡Pocas unidades disponibles!</span>
+                <span><strong class="ls-stock-left-val">12</strong> en inventario</span>
+              </div>
+              <div class="ls-stock-progress-bg">
+                <div class="ls-stock-progress-bar ls-stock-bar-val" style="width: 82%;"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style="text-align: center; margin-bottom: 20px;">
@@ -725,28 +901,17 @@ color:#166534;
           </span>
         </div>
 
-        {% if section.settings.show_social_proof and section.settings.social_proof_text != blank %}
-          <div class="ls-social-proof-badge">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 2.8 6.2L21.5 9l-5 4.5 1.4 6.5L12 16.7 6.1 20l1.4-6.5-5-4.5 6.7-.8L12 2Z"></path></svg>
-            <span>{{ section.settings.social_proof_text }}</span>
-          </div>
-        {% endif %}
-
-        {% if section.settings.trust_image != blank %}
-        <div class="ls-desktop-trust ls-micro-trust ls-micro-trust-image-wrap">
-          <img src="{{ section.settings.trust_image | image_url: width: 1600 }}" alt="{{ section.settings.trust_image.alt | default: 'Beneficios de compra' | escape }}" class="ls-micro-trust-image" loading="eager" style="display:block;width:100%;height:100%;max-width:100%;">
+        <div class="ls-micro-trust">
+          <div>🚚 Envío GRATIS a toda Colombia</div>
+          <div>💰 Pago contra entrega</div>
+          <div>⭐ Más de 2.000 juegos vendidos</div>
+          <div>🔒 Compra 100% segura</div>
         </div>
-        {% endif %}
       
         
         <div>
-        <div class="ls-mobile-price-box">
-          <span class="ls-price ls-mobile-price">{{ current_variant.price | money }}</span>
-          <span class="ls-compare ls-mobile-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
-          <span class="ls-save-badge ls-mobile-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>-{{ current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price }}%</span>
-        </div>
-          <span class="ls-price" id="ls-price">{{ current_variant.price | money }}</span>
-          <span class="ls-compare" id="ls-compare"
+          {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
+            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
             <input type="hidden" name="quantity" value="1">
 
             {% unless product.has_only_default_variant %}
@@ -801,6 +966,27 @@ color:#166534;
           {% endform %}
         </div>
 
+        <div class="ls-objections">
+          <div>🚚 Entrega de 2 a 5 días hábiles</div>
+          <div>↩️ Cambios por defectos de fabricación</div>
+          <div>💳 Pago al recibir</div>
+          <div>📞 Soporte por WhatsApp</div>
+        </div>
+      
+        <div class="ls-trust">
+          <div class="ls-trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ls-accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg>
+            <br>Compra Segura
+          </div>
+          <div class="ls-trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ls-accent)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <br>Pago Contra Entrega
+          </div>
+          <div class="ls-trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ls-accent)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <br>Envío Rápido
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1360,20 +1546,39 @@ color:#166534;
     {% endif %}
     <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
       {% if section.settings.logistics_img_1 != blank %}
-        <img src="{{ section.settings.logistics_img_1 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain;" width="100" height="35" loading="lazy">
+        <img src="{{ section.settings.logistics_img_1 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.3s;" onmouseover="this.style.filter='grayscale(0%)'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(100%)'; this.style.opacity='0.6';" width="100" height="35" loading="lazy">
       {% endif %}
       {% if section.settings.logistics_img_2 != blank %}
-        <img src="{{ section.settings.logistics_img_2 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain;" width="100" height="35" loading="lazy">
+        <img src="{{ section.settings.logistics_img_2 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.3s;" onmouseover="this.style.filter='grayscale(0%)'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(100%)'; this.style.opacity='0.6';" width="100" height="35" loading="lazy">
       {% endif %}
       {% if section.settings.logistics_img_3 != blank %}
-        <img src="{{ section.settings.logistics_img_3 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain;" width="100" height="35" loading="lazy">
+        <img src="{{ section.settings.logistics_img_3 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.3s;" onmouseover="this.style.filter='grayscale(0%)'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(100%)'; this.style.opacity='0.6';" width="100" height="35" loading="lazy">
       {% endif %}
       {% if section.settings.logistics_img_4 != blank %}
-        <img src="{{ section.settings.logistics_img_4 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain;" width="100" height="35" loading="lazy">
+        <img src="{{ section.settings.logistics_img_4 | image_url: width: 200 }}" alt="Transportadora" style="max-height: 35px; width: auto; object-fit: contain; filter: grayscale(100%); opacity: 0.6; transition: all 0.3s;" onmouseover="this.style.filter='grayscale(0%)'; this.style.opacity='1';" onmouseout="this.style.filter='grayscale(100%)'; this.style.opacity='0.6';" width="100" height="35" loading="lazy">
       {% endif %}
   </div>
 
 
+  <!-- NOTIFICACIÓN PRUEBA SOCIAL -->
+  <div class="ls-notification-toast" id="ls-notification-toast">
+    <div class="ls-toast-content">
+      {% if product.featured_image %}
+        <img src="{{ product.featured_image | image_url: width: 100 }}" id="ls-toast-image" alt="Producto" class="ls-toast-img">
+      {% endif %}
+      <div class="ls-toast-text">
+        <p class="ls-toast-title" id="ls-toast-title">Juan de Bogotá</p>
+        <p class="ls-toast-desc" id="ls-toast-desc">Acaba de pedir 1 Sábana Premium hace 4 minutos</p>
+        <span class="ls-toast-verified">
+          <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" style="display:inline-block; vertical-align:middle; margin-right:2px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path></svg>
+          Compra Verificada
+        </span>
+      </div>
+    </div>
+    <button class="ls-toast-close" onclick="closeToast()">&times;</button>
+  </div>
+
+  
   </div>
 
 <script>
@@ -1383,7 +1588,6 @@ color:#166534;
         "price": "{{ variant.price | money }}",
         "compare_at_price": "{{ variant.compare_at_price | money }}",
         "has_discount": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
-        "available": {{ variant.available | json }},
         "discount_pct": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
@@ -1410,65 +1614,19 @@ color:#166534;
   }
 
   var lsProductJson = {{ product | json }};
-  var lsColorOptionIndex = {{ color_option_position }};
-  {% assign color_option_index0 = color_option_position | minus: 1 %}
-  var lsMediaColorMap = {
-    {% for media in product.media %}
-      "{{ media.id }}": [
-        {% if color_option_position > 0 %}
-          {% assign media_image = product.images | where: 'id', media.id | first %}
-          {% if media_image %}
-            {% for v in media_image.variants %}
-              "{{ v.options[color_option_index0] | escape }}"{% unless forloop.last %},{% endunless %}
-            {% endfor %}
-          {% endif %}
-        {% endif %}
-      ]{% unless forloop.last %},{% endunless %}
-    {% endfor %}
-  };
-
-  function filterGalleryByColor(colorValue) {
-    if (!lsColorOptionIndex || lsColorOptionIndex <= 0) return;
-
-    var visibleIds = [];
-    document.querySelectorAll('.ls-media-item').forEach(function(item) {
-      var mediaId = item.getAttribute('data-media-id');
-      var colors = lsMediaColorMap[mediaId] || [];
-      var show = colors.length === 0 || colors.indexOf(colorValue) !== -1;
-      if (show) visibleIds.push(mediaId);
-    });
-
-    if (visibleIds.length === 0) return;
-
-    document.querySelectorAll('.ls-thumb-wrapper').forEach(function(thumb) {
-      var mediaId = thumb.getAttribute('data-media-id');
-      thumb.style.display = visibleIds.indexOf(mediaId) !== -1 ? '' : 'none';
-    });
-
-    var currentVisible = document.querySelector('.ls-media-item:not([style*="display: none"])');
-    var currentId = currentVisible ? currentVisible.getAttribute('data-media-id') : null;
-    if (!currentId || visibleIds.indexOf(currentId) === -1) {
-      var thumb = document.querySelector('.ls-thumb-wrapper[data-media-id="' + visibleIds[0] + '"]');
-      changeLsMedia(thumb, visibleIds[0]);
-    }
-  }
 
   function selectLsVariant(swatch) {
     var optionIndex = parseInt(swatch.getAttribute('data-option-index'));
     var value = swatch.getAttribute('data-value');
-
+    
     var container = swatch.closest('.ls-variant-group');
     container.querySelectorAll('.ls-swatch-color, .ls-swatch-size').forEach(el => el.classList.remove('active'));
     swatch.classList.add('active');
-
+    
     document.getElementById('ls-val-' + optionIndex).textContent = value;
-
+    
     updateAvailableOptions(optionIndex, value);
     updateLsVariant(false);
-
-    if (optionIndex === lsColorOptionIndex) {
-      filterGalleryByColor(value);
-    }
   }
 
   function updateAvailableOptions(changedOptionIndex, changedValue) {
@@ -1528,16 +1686,17 @@ color:#166534;
       document.getElementById('ls-variant-id').dispatchEvent(new Event('change', { bubbles: true }));
       
       var variantData = lsVariantPrices[matchingVariant.id];
-      if (window.updateEasySellAvailability) window.updateEasySellAvailability(matchingVariant.available);
       if (variantData) {
-        document.querySelectorAll('#ls-price, .ls-mobile-price').forEach(function(el) { el.innerHTML = variantData.price; });
+        document.getElementById('ls-price').innerHTML = variantData.price;
         if (variantData.has_discount) {
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.style.display = 'inline-block'; });
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare').forEach(function(el) { el.innerHTML = variantData.compare_at_price; });
-          document.querySelectorAll('#ls-badge, .ls-mobile-badge').forEach(function(el) { el.innerHTML = '-' + variantData.discount_pct + '%'; });
-          document.querySelectorAll('#ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'inline-block'; });
+          document.getElementById('ls-compare').style.display = 'inline-block';
+          document.getElementById('ls-compare').innerHTML = variantData.compare_at_price;
+          document.getElementById('ls-badge').innerHTML =
+'🔥 ' + variantData.discount_pct + '% OFF';
+          document.getElementById('ls-badge').style.display = 'inline-block';
         } else {
-          document.querySelectorAll('#ls-compare, .ls-mobile-compare, #ls-badge, .ls-mobile-badge').forEach(function(el) { el.style.display = 'none'; });
+          document.getElementById('ls-compare').style.display = 'none';
+          document.getElementById('ls-badge').style.display = 'none';
         }
       }
 
@@ -1605,13 +1764,6 @@ color:#166534;
       var value = firstActive.getAttribute('data-value');
       updateAvailableOptions(optionIndex, value);
       updateLsVariant();
-    }
-
-    if (lsColorOptionIndex > 0) {
-      var activeColorSwatch = document.querySelector('.ls-swatch-color.active[data-option-index="' + lsColorOptionIndex + '"]');
-      if (activeColorSwatch) {
-        filterGalleryByColor(activeColorSwatch.getAttribute('data-value'));
-      }
     }
   });
 
@@ -1749,6 +1901,127 @@ color:#166534;
     setInterval(updateTimer, 1000);
   }
 
+  // 2. Contador de Visitantes y Barra de Stock Dinámica
+  function initLiveStats() {
+    // Visitantes dinámicos
+    var visitorValElements = document.querySelectorAll('.ls-visitor-count-val');
+    function updateVisitors() {
+      // Fluctúa entre 38 y 54 personas
+      var randomVisitors = Math.floor(Math.random() * (54 - 38 + 1)) + 38;
+      visitorValElements.forEach(function(el) {
+        el.textContent = randomVisitors;
+      });
+    }
+    if (visitorValElements.length > 0) {
+      updateVisitors();
+      setInterval(updateVisitors, 4000); // Fluctúa cada 4 segs
+    }
+
+    // Progreso de stock: usa el inventario REAL de Shopify si está disponible (data-real-stock),
+    // y solo recurre a un valor simulado como respaldo si el producto no trackea inventario.
+    var stockValElements = document.querySelectorAll('.ls-stock-left-val');
+    var stockBarElements = document.querySelectorAll('.ls-stock-bar-val');
+    var stockContainer = document.querySelector('.ls-stock-bar-container[data-real-stock]');
+    var usingRealStock = !!stockContainer;
+    var stockTotalForBar = 20;
+
+    var stockLeft;
+    if (usingRealStock) {
+      stockLeft = parseInt(stockContainer.getAttribute('data-real-stock'));
+      stockTotalForBar = Math.max(stockLeft, 20);
+    } else {
+      stockLeft = localStorage.getItem('ls_stock_left');
+      if (!stockLeft) {
+        stockLeft = 14;
+        localStorage.setItem('ls_stock_left', stockLeft);
+      } else {
+        stockLeft = parseInt(stockLeft);
+      }
+    }
+
+    function updateStockUI() {
+      stockValElements.forEach(function(el) {
+        el.textContent = stockLeft;
+      });
+      var progressPct = (stockLeft / stockTotalForBar) * 100;
+      stockBarElements.forEach(function(bar) {
+        bar.style.width = Math.min(progressPct, 100) + '%';
+      });
+    }
+
+    updateStockUI();
+
+    // La reducción simulada de stock SOLO corre cuando no hay inventario real conectado,
+    // para no mostrar números falsos sobre un producto que sí trackea existencias.
+    if (!usingRealStock) {
+      function simulateStockReduction() {
+        if (stockLeft > 3) {
+          stockLeft -= 1;
+          localStorage.setItem('ls_stock_left', stockLeft);
+          updateStockUI();
+        }
+        var nextInterval = (Math.floor(Math.random() * 30) + 30) * 1000;
+        setTimeout(simulateStockReduction, nextInterval);
+      }
+      setTimeout(simulateStockReduction, 35000);
+    }
+  }
+
+
+
+  // 4. Notificaciones de Ventas Recientes (Prueba Social)
+  var recentPurchases = [
+    { name: "Adriana M. de Bogotá", item: "1 Sábana Ajustable", time: "hace 2 minutos" },
+    { name: "Milena P. de Medellín", item: "Sábanas Premium Unicolor", time: "hace 5 minutos" },
+    { name: "Liliana R. de Cali", item: "Combo Juego de Sábanas", time: "hace 3 minutos" },
+    { name: "Yolanda G. de Barranquilla", item: "Juego de Sábanas King", time: "hace 7 minutos" },
+    { name: "Diana S. de Bucaramanga", item: "Sábanas Queen Premium", time: "hace 4 minutos" },
+    { name: "Sandra M. de Pereira", item: "Sábanas Semidoble", time: "hace 9 minutos" },
+    { name: "Carolina T. de Manizales", item: "Juego de Sábanas Premium", time: "hace 6 minutos" },
+    { name: "Martha C. de Ibagué", item: "Juego de Sábanas Unicolor", time: "hace 11 minutos" }
+  ];
+
+  var currentPurchaseIndex = 0;
+
+  function showPurchaseNotification() {
+    var toast = document.getElementById('ls-notification-toast');
+    if (!toast) return;
+
+    var purchase = recentPurchases[currentPurchaseIndex];
+    document.getElementById('ls-toast-title').textContent = purchase.name;
+    document.getElementById('ls-toast-desc').textContent = "Pidió " + purchase.item + " " + purchase.time;
+    
+    // Activa la animación
+    toast.classList.add('active');
+
+    // Cambia al siguiente para el próximo ciclo
+    currentPurchaseIndex = (currentPurchaseIndex + 1) % recentPurchases.length;
+
+    // Oculta la notificación tras 5.5 segundos
+    setTimeout(function() {
+      closeToast();
+    }, 5500);
+  }
+
+  function closeToast() {
+    var toast = document.getElementById('ls-notification-toast');
+    if (toast) {
+      toast.classList.remove('active');
+    }
+  }
+
+  // Hacer que closeToast sea accesible globalmente (para el botón inline onclick)
+  window.closeToast = closeToast;
+
+  function initSocialProof() {
+    // Iniciar notificaciones después de 6 segundos de carga de página
+    setTimeout(function() {
+      showPurchaseNotification();
+      // Repetir cada 15 segundos
+      setInterval(showPurchaseNotification, 15000);
+    }, 6000);
+  }
+
   // 5. Acordeón FAQ (los botones ya usan onclick inline, esta función queda como no-op seguro)
   function initFaqAccordion() {
     // Los items de FAQ ya alternan la clase "active" vía onclick inline en cada botón.
@@ -1791,6 +2064,8 @@ color:#166534;
   // Inicializar todo al cargar el DOM
   document.addEventListener('DOMContentLoaded', function() {
     initUrgencyTimer();
+    initLiveStats();
+    initSocialProof();
     initFaqAccordion();
     initReviewLightbox();
   });
@@ -1844,28 +2119,6 @@ color:#166534;
       "id": "review_count",
       "label": "Número de Opiniones (Hero)",
       "default": "345"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_social_proof",
-      "label": "Mostrar badge de clientes y calificación",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "social_proof_text",
-      "label": "Texto del badge social",
-      "default": "Más de 1000 clientes satisfechos · 5 estrellas en Falabella"
-    },
-    {
-      "type": "header",
-      "content": "Imagen de Confianza"
-    },
-    {
-      "type": "image_picker",
-      "id": "trust_image",
-      "label": "Imagen de beneficios (envío, pago, seguridad)",
-      "info": "Se muestra debajo del precio, antes de elegir variante"
     },
     {
       "type": "header",
