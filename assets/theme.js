@@ -17,23 +17,6 @@ function toggleFooterCol(element) {
   }
 }
 
-// SEARCH Toggle
-function toggleSearch() {
-  const container = document.querySelector('.search-container');
-  const input = document.getElementById('searchInput');
-  
-  // Si el contenedor ya está activo y el usuario escribió algo, enviar formulario
-  if (container.classList.contains('active') && input.value.trim() !== '') {
-    container.closest('form').submit();
-    return;
-  }
-
-  container.classList.toggle('active');
-  if (container.classList.contains('active')) {
-    input.focus();
-  }
-}
-
 let isLoginMode = true;
 
 function toggleAuthMode() {

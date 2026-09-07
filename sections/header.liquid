@@ -108,32 +108,10 @@
   </div>
 </a>
 
-  <!-- Iconos Derecha -->
-  <div class="nav-icons">
-    <!-- Search Icon -->
-    <form action="/search" method="get" class="search-container">
-      <input type="text" name="q" placeholder="Buscar productos..." class="search-input" id="searchInput">
-      <svg class="search-icon-btn" viewBox="0 0 24 24" onclick="toggleSearch()"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-      <div class="search-close-btn" onclick="toggleSearch()">✕</div>
-    </form>
-    
-    <!-- User Icon -->
-    <a href="/account/login" style="display: flex; align-items: center;">
-      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-    </a>
-    
-    <!-- Cart Icon -->
-    <a href="/cart" class="cart-wrapper" style="cursor: pointer; text-decoration: none;">
-      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-      <div class="cart-count">{{ cart.item_count }}</div>
-    </a>
-  </div>
 </header>
 
 <!-- WhatsApp Button Removed -->
 <style>
-  .search-close-btn { display: none; }
-
   /* RESPONSIVE: TABLETS (max-width: 900px) */
   @media (max-width: 900px) {
     header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -142,7 +120,6 @@
     .menu-hamburger { display: block !important; }
     .logo-simulado { margin-left: 0; }
     .logo-img { height: 35px; }
-    .nav-icons { gap: 15px; }
   }
 
   /* RESPONSIVE: PHONES (max-width: 768px) */
@@ -151,54 +128,7 @@
     header { padding: 10px 15px; }
     .logo-img { height: 30px; }
     .logo-dianamar { font-size: 20px; }
-    .nav-icons { gap: 18px; }
-    .nav-icons svg { width: 18px; height: 18px; }
     .sidebar { width: 280px; }
-
-    /* SEARCH OVERLAY (FIXED) */
-    .search-container.active {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 60px !important; /* Altura estimada del header */
-      background-color: #ffffff !important;
-      z-index: 99999 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      padding: 0 15px !important;
-      box-sizing: border-box !important;
-      margin: 0 !important;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
-    }
-    .search-container.active .search-icon-btn { display: none !important; }
-    .search-container.active .search-close-btn { 
-      display: flex !important; 
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 22px;
-      width: 40px;
-      height: 40px;
-      margin-left: 5px;
-      color: var(--text-main);
-      background: var(--bg-color);
-      border-radius: 50%;
-      transition: background 0.2s;
-    }
-    .search-container.active .search-close-btn:active { background: #eee; }
-    .search-container.active .search-input {
-      flex: 1 !important;
-      width: auto !important;
-      opacity: 1 !important;
-      height: 48px !important;
-      border: 1px solid var(--border-color) !important;
-      padding: 0 15px !important;
-      border-radius: 8px !important;
-      font-size: 16px !important;
-      display: block !important;
-    }
   }
 
   /* RESPONSIVE: SMALL PHONES (max-width: 480px) */
@@ -207,8 +137,6 @@
     .top-bar { font-size: 9px; padding: 6px 10px; }
     .logo-img { height: 26px; }
     .logo-dianamar { font-size: 18px; }
-    .nav-icons { gap: 18px; }
-    .nav-icons svg { width: 17px; height: 17px; }
     .sidebar { width: 260px; }
     .sidebar-header { padding: 18px 15px; }
     .sidebar-links > li > a, .submenu-toggle { padding: 15px 18px; font-size: 13px; }
