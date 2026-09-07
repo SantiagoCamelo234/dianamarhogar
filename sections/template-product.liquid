@@ -143,19 +143,7 @@
     .ls-container { padding-bottom: 80px; }
   }
 
-  .ls-micro-trust{
-  background:#f8f8f8;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
-
-.ls-micro-trust div{
-  margin:6px 0;
-  font-weight:600;
-}
-
-.ls-objections{
+  .ls-objections{
 margin:20px 0;
 padding:15px;
 background:#f4f4f4;
@@ -508,7 +496,7 @@ color:#166534;
   .ls-swatch-size {
     border-radius: 8px !important;
   }
-  .ls-objections, .ls-micro-trust {
+  .ls-objections {
     border: 1px solid rgba(226, 232, 240, 0.8) !important;
     background: rgba(248, 250, 252, 0.6) !important;
     backdrop-filter: blur(10px);
@@ -613,14 +601,6 @@ color:#166534;
           </span>
         </div>
 
-        <div class="ls-micro-trust">
-          <div>🚚 Envío GRATIS a toda Colombia</div>
-          <div>💰 Pago contra entrega</div>
-          <div>⭐ Más de 2.000 juegos vendidos</div>
-          <div>🔒 Compra 100% segura</div>
-        </div>
-      
-        
         <div>
           {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
             <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
@@ -679,6 +659,10 @@ color:#166534;
         </div>
 
         <div class="ls-objections">
+          <div>🚚 Envío GRATIS a toda Colombia</div>
+          <div>💰 Pago contra entrega</div>
+          <div>⭐ Más de 2.000 juegos vendidos</div>
+          <div>🔒 Compra 100% segura</div>
           <div>🚚 Entrega de 2 a 5 días hábiles</div>
           <div>↩️ Cambios por defectos de fabricación</div>
           <div>💳 Pago al recibir</div>
