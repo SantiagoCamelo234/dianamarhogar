@@ -619,7 +619,7 @@ color:#166534;
               {% for option in product.options_with_values %}
                 {% assign option_name_downcase = option.name | downcase %}
                 <div class="ls-variant-group">
-                  <label class="ls-variant-label">{{ option.name }}: <span id="ls-val-{{ option.position }}">{{ option.selected_value }}</span></label>
+                  <label class="ls-variant-label">{{ option.name }}: <span id="ls-val-{{ option.position }}">Selecciona una opción</span></label>
                   <div class="ls-swatches">
                     {% for value in option.values %}
                       {% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}
@@ -630,8 +630,8 @@ color:#166534;
                             {% break %}
                           {% endif %}
                         {% endfor %}
-                        <div class="ls-swatch-color {% if option.selected_value == value %}active{% endif %}" 
-                             data-option-index="{{ option.position }}" 
+                        <div class="ls-swatch-color"
+                             data-option-index="{{ option.position }}"
                              data-value="{{ value | escape }}"
                              onclick="selectLsVariant(this)"
                              {% if variant_img != '' %}
@@ -642,8 +642,8 @@ color:#166534;
                              title="{{ value }}">
                         </div>
                       {% else %}
-                        <div class="ls-swatch-size {% if option.selected_value == value %}active{% endif %}" 
-                             data-option-index="{{ option.position }}" 
+                        <div class="ls-swatch-size"
+                             data-option-index="{{ option.position }}"
                              data-value="{{ value | escape }}"
                              onclick="selectLsVariant(this)">
                           {{ value }}
@@ -1398,8 +1398,17 @@ color:#166534;
     swatch.classList.add('active');
     
     document.getElementById('ls-val-' + optionIndex).textContent = value;
-    
+
     updateAvailableOptions(optionIndex, value);
+
+    // Como ya no hay talla preseleccionada por defecto, elegir un color no
+    // siempre resuelve una variante completa todavía. Filtramos la galería de
+    // inmediato con el valor de color recién elegido, sin esperar a que
+    // updateLsVariant() encuentre una variante completa (color + talla).
+    if (lsGalleryData.colorOptionIndex > 0 && optionIndex === lsGalleryData.colorOptionIndex) {
+      applyLsGalleryVariantFilter(value);
+    }
+
     updateLsVariant(false);
   }
 
@@ -1540,13 +1549,13 @@ color:#166534;
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    var firstActive = document.querySelector('.ls-variant-group .active');
-    if (firstActive) {
-      var optionIndex = parseInt(firstActive.getAttribute('data-option-index'));
-      var value = firstActive.getAttribute('data-value');
-      updateAvailableOptions(optionIndex, value);
-      updateLsVariant();
-    }
+    // Ningún swatch (color ni talla) viene marcado como activo por defecto: el
+    // comprador debe elegir explícitamente. El precio/botón de compra ya
+    // funcionan igual porque el input oculto "id" arranca con
+    // product.selected_or_first_available_variant (ver más arriba en Liquid).
+    // Lo único que falta inicializar es la galería: sin color elegido se
+    // muestra la vista general (solo fotos "portada", de todos los colores).
+    applyLsGalleryVariantFilter('');
   });
 
   function toggleReviewForm() {
