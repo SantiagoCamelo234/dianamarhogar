@@ -552,7 +552,8 @@ color:#166534;
         <div class="ls-gallery" id="ls-main-gallery">
           {% if product.media.size > 0 %}
             {% for media in product.media %}
-              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
+              {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
+              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
                 {% case media.media_type %}
                   {% when 'video' %}
                     {{ media | video_tag: controls: true, autoplay: true, loop: true, style: "width: 100%; height: auto; max-height: 65vh; display: block;" }}
@@ -571,7 +572,8 @@ color:#166534;
         {% if product.media.size > 1 %}
         <div class="ls-thumbnails">
           {% for media in product.media %}
-            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
+            {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
+            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
               <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="75" height="75" loading="eager" fetchpriority="high" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
               {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; padding-left: 2px; pointer-events: none;">▶</div>
@@ -1302,10 +1304,38 @@ color:#166534;
     return matchingIds;
   }
 
+  {% comment %}
+    Primera vista al entrar a la página: dentro de lo que ya sea visible para el
+    color preseleccionado, se restringe además a las imágenes cuyo NOMBRE DE
+    ARCHIVO contiene "portada" (ej. "producto-portada-gris-plata.jpg"), sin
+    importar su alt. Esto solo corre una vez; en cuanto el comprador cambia de
+    color manualmente, la galería vuelve al filtro normal por alt/color y
+    muestra todas las fotos de ese color (ver lsVisibleMediaIdsForColor).
+    Si el color preseleccionado no tiene ninguna imagen "portada" en el nombre
+    de archivo, no se restringe nada y se deja el filtro normal por color.
+  {% endcomment %}
+  var lsIsInitialGalleryLoad = true;
+
   function applyLsGalleryVariantFilter(colorValue) {
     var visibleIds = lsVisibleMediaIdsForColor(colorValue);
     var mediaItems = document.querySelectorAll('#ls-main-gallery .ls-media-item');
     var thumbs = document.querySelectorAll('.ls-thumb-wrapper');
+
+    if (lsIsInitialGalleryLoad) {
+      var portadaIds = [];
+      mediaItems.forEach(function (item) {
+        var id = parseInt(item.getAttribute('data-media-id'), 10);
+        var visibleForColor = !visibleIds || visibleIds.indexOf(id) !== -1;
+        var filename = (item.getAttribute('data-filename') || '').toLowerCase();
+        if (visibleForColor && filename.indexOf('portada') !== -1) {
+          portadaIds.push(id);
+        }
+      });
+      if (portadaIds.length > 0) {
+        visibleIds = portadaIds;
+      }
+      lsIsInitialGalleryLoad = false;
+    }
 
     var firstVisibleId = null;
     mediaItems.forEach(function (item) {
