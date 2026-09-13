@@ -29,6 +29,10 @@
   .ls-thumb { width: 75px; height: 75px; flex-shrink: 0; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: all 0.3s ease; scroll-snap-align: start; }
   .ls-thumb.active, .ls-thumb:hover { border-color: var(--ls-accent); opacity: 1; transform: translateY(-2px); }
 
+  /* Galería filtrada por variante: oculta imágenes/thumbnails que no pertenecen
+     al bloque de la variante seleccionada, sin duplicar ni eliminar nada del DOM. */
+  .ls-media-variant-hidden, .ls-thumb-variant-hidden { display: none !important; }
+
   .ls-reviews-snippet { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 10px; color: #555; }
   .ls-stars { color: #f5a623; font-size: 16px; letter-spacing: 2px; }
 
@@ -564,7 +568,7 @@ color:#166534;
         {% if product.media.size > 1 %}
         <div class="ls-thumbnails">
           {% for media in product.media %}
-            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
+            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
               <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="75" height="75" loading="eager" fetchpriority="high" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
               {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; padding-left: 2px; pointer-events: none;">▶</div>
@@ -1171,6 +1175,19 @@ color:#166534;
 
   </div>
 
+{% comment %}
+  Índice (1-based) de la opción de color, usando la misma convención que ya usan
+  los swatches más abajo (option_name contiene "color" o "colour"). Si el producto
+  no tiene una opción de color, queda en 0 y la galería nunca se filtra.
+{% endcomment %}
+{% assign ls_color_option_index = 0 %}
+{% for option in product.options_with_values %}
+  {% assign ls_opt_name_dc = option.name | downcase %}
+  {% if ls_opt_name_dc contains 'color' or ls_opt_name_dc contains 'colour' %}
+    {% assign ls_color_option_index = option.position %}
+  {% endif %}
+{% endfor %}
+
 <script>
   var lsVariantPrices = {
     {% for variant in product.variants %}
@@ -1182,6 +1199,142 @@ color:#166534;
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
   };
+
+  {% comment %}
+    Datos reales de Shopify para agrupar imágenes por variante:
+    - mediaOrder: el orden real de product.media (igual orden que ya usa la galería).
+    - anchorPairs: por cada variante con featured_media asignada en el admin, el par
+      [id de esa imagen, valor de la opción de color de esa variante]. Esto viene
+      directamente de variant.featured_media/variant.options - NUNCA del texto del
+      nombre del color ni del nombre de archivo de la imagen.
+  {% endcomment %}
+  var lsGalleryData = {
+    colorOptionIndex: {{ ls_color_option_index }},
+    mediaOrder: [{% for media in product.media %}{{ media.id }}{% unless forloop.last %},{% endunless %}{% endfor %}],
+    anchorPairs: [
+      {% if ls_color_option_index > 0 %}
+        {% assign ls_color_zero_index = ls_color_option_index | minus: 1 %}
+        {% for variant in product.variants %}
+          {% if variant.featured_media %}
+            [{{ variant.featured_media.id }}, {{ variant.options[ls_color_zero_index] | json }}]{% unless forloop.last %},{% endunless %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    ]
+  };
+
+  {% comment %}
+    Agrupa product.media en bloques "imagen ancla -> siguiente ancla" usando
+    lsGalleryData. Ver comentarios internos para el caso donde esta estrategia
+    puede producir una asociación incorrecta (imagen no-ancla que en realidad
+    pertenece a más de un color).
+  {% endcomment %}
+  var lsGalleryGroups = (function buildLsGalleryGroups() {
+    var data = lsGalleryData;
+    if (!data.colorOptionIndex || data.colorOptionIndex < 1 || !data.anchorPairs.length) {
+      // Sin opción de color, o ninguna variante tiene featured_media configurada
+      // todavía en el admin: no hay nada que filtrar, la galería se comporta
+      // exactamente igual que antes de este cambio.
+      return null;
+    }
+
+    var mediaOrder = data.mediaOrder;
+
+    // position en product.media -> lista de colores cuya imagen ancla cae ahí.
+    // Puede haber más de un color por posición si la MISMA imagen fue asignada
+    // como featured_media de variantes de colores distintos (Requisito 4).
+    var positionToColors = {};
+    data.anchorPairs.forEach(function (pair) {
+      var mediaId = pair[0];
+      var color = pair[1];
+      var pos = mediaOrder.indexOf(mediaId);
+      if (pos === -1) return; // La imagen destacada de la variante ya no está en product.media.
+      if (!positionToColors[pos]) positionToColors[pos] = [];
+      if (positionToColors[pos].indexOf(color) === -1) positionToColors[pos].push(color);
+    });
+
+    var anchorPositions = Object.keys(positionToColors).map(Number).sort(function (a, b) { return a - b; });
+    if (anchorPositions.length === 0) return null;
+
+    // Imágenes generales: todo lo anterior a la primera imagen ancla. Se muestran
+    // siempre, para cualquier variante (Requisito 3).
+    var sharedMediaIds = mediaOrder.slice(0, anchorPositions[0]);
+
+    // Bloques consecutivos: de cada ancla hasta la siguiente ancla (de cualquier
+    // color). Si un mismo color tiene varias anclas no contiguas (p. ej. porque el
+    // merchant asignó featured_media a dos tallas distintas del mismo color en
+    // posiciones separadas), sus imágenes se acumulan igual: todas terminan
+    // visibles para ese color aunque no queden una al lado de la otra.
+    //
+    // LIMITACIÓN CONOCIDA (no se oculta, se documenta según lo pedido): esta
+    // estrategia asume que toda imagen NO-ancla pertenece únicamente al bloque en
+    // el que cae físicamente. Si el merchant necesita que una foto intermedia
+    // (que no es featured_media de nadie) se muestre para dos colores distintos,
+    // esta lógica no puede detectarlo — esa imagen solo aparecerá en el bloque del
+    // color en el que está posicionada. La única forma 100% correcta de cubrir ese
+    // caso sería marcar esa imagen como featured_media de una variante de cada
+    // color (ver instrucciones de admin), o repetirla en la posición de ambos
+    // bloques subiéndola dos veces a la galería.
+    var groups = {};
+    for (var i = 0; i < anchorPositions.length; i++) {
+      var start = anchorPositions[i];
+      var end = (i + 1 < anchorPositions.length) ? anchorPositions[i + 1] : mediaOrder.length;
+      var blockMediaIds = mediaOrder.slice(start, end);
+      positionToColors[start].forEach(function (color) {
+        groups[color] = (groups[color] || []).concat(blockMediaIds);
+      });
+    }
+
+    return { groups: groups, shared: sharedMediaIds };
+  })();
+
+  function lsVisibleMediaIdsForColor(colorValue) {
+    // null = no filtrar, mostrar todas las imágenes (comportamiento actual).
+    if (!lsGalleryGroups || !colorValue) return null;
+    var blockIds = lsGalleryGroups.groups[colorValue];
+    if (!blockIds || blockIds.length === 0) {
+      // Este color todavía no tiene ninguna imagen ancla configurada en el admin.
+      // Estrategia razonable: mostrar solo las imágenes generales en vez de fotos
+      // de otro color, o en vez de dejar la galería vacía.
+      return lsGalleryGroups.shared.slice();
+    }
+    return lsGalleryGroups.shared.concat(blockIds);
+  }
+
+  function applyLsGalleryVariantFilter(colorValue) {
+    var visibleIds = lsVisibleMediaIdsForColor(colorValue);
+    var mediaItems = document.querySelectorAll('#ls-main-gallery .ls-media-item');
+    var thumbs = document.querySelectorAll('.ls-thumb-wrapper');
+
+    var firstVisibleId = null;
+    mediaItems.forEach(function (item) {
+      var id = parseInt(item.getAttribute('data-media-id'), 10);
+      var visible = !visibleIds || visibleIds.indexOf(id) !== -1;
+      item.classList.toggle('ls-media-variant-hidden', !visible);
+      if (visible && firstVisibleId === null) firstVisibleId = id;
+    });
+
+    thumbs.forEach(function (thumb) {
+      var id = parseInt(thumb.getAttribute('data-media-id'), 10);
+      var visible = !visibleIds || visibleIds.indexOf(id) !== -1;
+      thumb.classList.toggle('ls-thumb-variant-hidden', !visible);
+    });
+
+    // Si la imagen actualmente activa quedó oculta por el filtro (cambiamos de
+    // bloque), saltamos a la primera imagen visible del nuevo bloque: pasa a ser
+    // la imagen principal y su thumbnail queda marcado como activo (Requisito 6).
+    var activeVisibleItem = null;
+    mediaItems.forEach(function (item) {
+      if (item.style.display !== 'none' && !item.classList.contains('ls-media-variant-hidden')) {
+        activeVisibleItem = item;
+      }
+    });
+
+    if (!activeVisibleItem && firstVisibleId !== null) {
+      var firstThumb = document.querySelector('.ls-thumb-wrapper[data-media-id="' + firstVisibleId + '"]');
+      changeLsMedia(firstThumb, firstVisibleId);
+    }
+  }
 
   function changeLsMedia(thumb, mediaId) {
     document.querySelectorAll('.ls-media-item').forEach(el => {
@@ -1292,6 +1445,14 @@ color:#166534;
 
       var stickyPrice = document.getElementById('ls-sticky-price');
       if (stickyPrice) { stickyPrice.innerHTML = variantData.price; }
+
+      // Filtra la galería según el color de la variante recién seleccionada.
+      // Reutiliza matchingVariant, ya calculado arriba: no se agrega ningún
+      // listener ni lógica de selección de variante nueva.
+      if (lsGalleryData.colorOptionIndex > 0) {
+        var lsColorValue = matchingVariant.options[lsGalleryData.colorOptionIndex - 1];
+        applyLsGalleryVariantFilter(lsColorValue);
+      }
     }
   }
 
@@ -1423,21 +1584,24 @@ color:#166534;
       }
 
       function navigateGallery(direction) {
-        var items = Array.from(document.querySelectorAll('.ls-media-item'));
+        // Solo recorre las imágenes visibles para la variante actual: el índice
+        // se recalcula siempre sobre el bloque activo, nunca sobre imágenes
+        // ocultas por el filtro de variante (Requisito 6).
+        var items = Array.from(document.querySelectorAll('.ls-media-item:not(.ls-media-variant-hidden)'));
         if(items.length <= 1) return;
-        
+
         var currentIndex = items.findIndex(function(el) {
           return el.style.display !== 'none';
         });
-        
+
         if (currentIndex === -1) currentIndex = 0;
-        
+
         var nextIndex = currentIndex + direction;
         if (nextIndex < 0) nextIndex = items.length - 1;
         if (nextIndex >= items.length) nextIndex = 0;
-        
+
         var nextMediaId = items[nextIndex].getAttribute('data-media-id');
-        var thumb = document.querySelector('.ls-thumb-wrapper[onclick*="' + nextMediaId + '"]');
+        var thumb = document.querySelector('.ls-thumb-wrapper[data-media-id="' + nextMediaId + '"]');
         
         changeLsMedia(thumb, nextMediaId);
         
