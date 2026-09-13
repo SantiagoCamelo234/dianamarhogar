@@ -1300,6 +1300,26 @@ color:#166534;
       if (matchingIds.indexOf(mediaId) === -1) matchingIds.push(mediaId);
     });
 
+    {% comment %}
+      Diagnóstico temporal: solo escribe en la consola del navegador (F12),
+      invisible para el comprador. Ayuda a ver, foto por foto, cuál alt no
+      coincidió exactamente con el color elegido (typo, texto extra, tilde no
+      normalizada, etc.). Se puede borrar este bloque una vez que todas las
+      fotos estén etiquetadas correctamente.
+    {% endcomment %}
+    if (window.console && console.debug) {
+      var debugRows = [];
+      allItems.forEach(function (item) {
+        debugRows.push({
+          mediaId: item.getAttribute('data-media-id'),
+          altCrudo: item.getAttribute('data-color'),
+          altNormalizado: lsNormalizeColor(item.getAttribute('data-color')),
+          coincideExacto: lsNormalizeColor(item.getAttribute('data-color')) === targetColor
+        });
+      });
+      console.debug('[Galería LS] Color elegido: "' + colorValue + '" (normalizado: "' + targetColor + '")', debugRows);
+    }
+
     if (matchingIds.length === 0) return null; // Respaldo: mostrar todas.
     return matchingIds;
   }
@@ -1458,9 +1478,16 @@ color:#166534;
       }
     });
 
+    // Solo se comparan las posiciones que el comprador YA eligió. Si todavía
+    // falta una opción (ej. talla), no se ignora la elección hecha: se toma la
+    // primera variante que sí respeta lo ya seleccionado, en vez de quedarse
+    // pegado en la variante original de la carga de la página. Así el input
+    // oculto "id" (el que leen apps externas como el formulario COD) siempre
+    // refleja el color/talla que el comprador tocó por última vez, no un
+    // valor por defecto viejo.
     var matchingVariant = lsProductJson.variants.find(function(variant) {
       return variant.options.every(function(opt, i) {
-        return opt === selectedOptions[i];
+        return selectedOptions[i] === undefined || opt === selectedOptions[i];
       });
     });
 
