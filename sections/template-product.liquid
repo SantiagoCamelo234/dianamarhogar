@@ -29,8 +29,11 @@
   .ls-thumb { width: 75px; height: 75px; flex-shrink: 0; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: all 0.3s ease; scroll-snap-align: start; }
   .ls-thumb.active, .ls-thumb:hover { border-color: var(--ls-accent); opacity: 1; transform: translateY(-2px); }
 
-  /* Galería filtrada por variante: oculta imágenes/thumbnails que no pertenecen
-     al bloque de la variante seleccionada, sin duplicar ni eliminar nada del DOM. */
+  /* Galería filtrada por color: oculta imágenes/miniaturas cuyo alt (data-color)
+     no coincide exactamente con el color seleccionado, sin duplicar ni eliminar
+     nada del DOM. Cualquier foto nueva debe etiquetarse en el admin con el Alt
+     text igual al nombre del color en minúsculas (ver comentario junto a
+     lsVisibleMediaIdsForColor más abajo para la lista de colores válidos). */
   .ls-media-variant-hidden, .ls-thumb-variant-hidden { display: none !important; }
 
   .ls-reviews-snippet { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 10px; color: #555; }
@@ -549,7 +552,7 @@ color:#166534;
         <div class="ls-gallery" id="ls-main-gallery">
           {% if product.media.size > 0 %}
             {% for media in product.media %}
-              <div class="ls-media-item" data-media-id="{{ media.id }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
+              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
                 {% case media.media_type %}
                   {% when 'video' %}
                     {{ media | video_tag: controls: true, autoplay: true, loop: true, style: "width: 100%; height: auto; max-height: 65vh; display: block;" }}
@@ -568,7 +571,7 @@ color:#166534;
         {% if product.media.size > 1 %}
         <div class="ls-thumbnails">
           {% for media in product.media %}
-            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
+            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
               <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="75" height="75" loading="eager" fetchpriority="high" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
               {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; padding-left: 2px; pointer-events: none;">▶</div>
@@ -1201,104 +1204,63 @@ color:#166534;
   };
 
   {% comment %}
-    Datos reales de Shopify para agrupar imágenes por variante:
-    - mediaOrder: el orden real de product.media (igual orden que ya usa la galería).
-    - anchorPairs: por cada variante con featured_media asignada en el admin, el par
-      [id de esa imagen, valor de la opción de color de esa variante]. Esto viene
-      directamente de variant.featured_media/variant.options - NUNCA del texto del
-      nombre del color ni del nombre de archivo de la imagen.
+    IMPORTANTE PARA EL ADMIN: la galería se filtra por color usando el atributo
+    ALT de cada imagen/miniatura (ver data-color en el HTML de arriba). Cualquier
+    foto nueva que se suba al producto DEBE etiquetarse en el admin de Shopify con
+    el "Alt text" igual al nombre exacto del color, en minúsculas y sin tildes ni
+    texto adicional (ej. alt="beige", alt="azul indigo", alt="palo de rosa").
+    Colores válidos actualmente: beige, gris plata, gris oscuro, azul bebe, negro,
+    azul indigo, azul oscuro, verde manzana, blanco, lila, palo de rosa.
+    Si una foto no tiene el alt correcto, no aparecerá al filtrar por ese color
+    (solo se verá si ningún color tiene coincidencias y la galería cae al
+    respaldo de "mostrar todas").
   {% endcomment %}
   var lsGalleryData = {
-    colorOptionIndex: {{ ls_color_option_index }},
-    mediaOrder: [{% for media in product.media %}{{ media.id }}{% unless forloop.last %},{% endunless %}{% endfor %}],
-    anchorPairs: [
-      {% if ls_color_option_index > 0 %}
-        {% assign ls_color_zero_index = ls_color_option_index | minus: 1 %}
-        {% for variant in product.variants %}
-          {% if variant.featured_media %}
-            [{{ variant.featured_media.id }}, {{ variant.options[ls_color_zero_index] | json }}]{% unless forloop.last %},{% endunless %}
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-    ]
+    colorOptionIndex: {{ ls_color_option_index }}
   };
 
   {% comment %}
-    Agrupa product.media en bloques "imagen ancla -> siguiente ancla" usando
-    lsGalleryData. Ver comentarios internos para el caso donde esta estrategia
-    puede producir una asociación incorrecta (imagen no-ancla que en realidad
-    pertenece a más de un color).
+    Normaliza un color (minúsculas, sin tildes) para comparar sin depender de
+    que el texto venga exactamente igual en todos lados (ej. "azul bebé" vs
+    "azul bebe").
   {% endcomment %}
-  var lsGalleryGroups = (function buildLsGalleryGroups() {
-    var data = lsGalleryData;
-    if (!data.colorOptionIndex || data.colorOptionIndex < 1 || !data.anchorPairs.length) {
-      // Sin opción de color, o ninguna variante tiene featured_media configurada
-      // todavía en el admin: no hay nada que filtrar, la galería se comporta
-      // exactamente igual que antes de este cambio.
-      return null;
-    }
+  var lsCombiningMarksRegex = new RegExp(
+    '[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g'
+  ); // Rango Unicode U+0300-U+036F (diacriticos combinables) tras normalize('NFD').
 
-    var mediaOrder = data.mediaOrder;
+  function lsNormalizeColor(str) {
+    return (str || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(lsCombiningMarksRegex, '');
+  }
 
-    // position en product.media -> lista de colores cuya imagen ancla cae ahí.
-    // Puede haber más de un color por posición si la MISMA imagen fue asignada
-    // como featured_media de variantes de colores distintos (Requisito 4).
-    var positionToColors = {};
-    data.anchorPairs.forEach(function (pair) {
-      var mediaId = pair[0];
-      var color = pair[1];
-      var pos = mediaOrder.indexOf(mediaId);
-      if (pos === -1) return; // La imagen destacada de la variante ya no está en product.media.
-      if (!positionToColors[pos]) positionToColors[pos] = [];
-      if (positionToColors[pos].indexOf(color) === -1) positionToColors[pos].push(color);
+  {% comment %}
+    Filtra la galería (imagen principal + miniaturas) para mostrar SOLO las
+    imágenes cuyo atributo alt (data-color, copiado del alt real de la imagen)
+    coincida EXACTAMENTE con el color seleccionado. Comparación exacta -no
+    includes- para que "azul" no matchee a la vez "azul bebe", "azul indigo" y
+    "azul oscuro".
+    Si ninguna imagen coincide (foto nueva sin etiquetar, o color aún no
+    fotografiado), no se filtra nada y se muestran todas como respaldo, para
+    nunca dejar la galería vacía.
+  {% endcomment %}
+  function lsVisibleMediaIdsForColor(colorValue) {
+    var targetColor = lsNormalizeColor(colorValue);
+    if (!targetColor) return null;
+
+    var allItems = document.querySelectorAll('#ls-main-gallery .ls-media-item[data-media-id]');
+    var matchingIds = [];
+    allItems.forEach(function (item) {
+      if (lsNormalizeColor(item.getAttribute('data-color')) === targetColor) {
+        matchingIds.push(parseInt(item.getAttribute('data-media-id'), 10));
+      }
     });
 
-    var anchorPositions = Object.keys(positionToColors).map(Number).sort(function (a, b) { return a - b; });
-    if (anchorPositions.length === 0) return null;
-
-    // Imágenes generales: todo lo anterior a la primera imagen ancla. Se muestran
-    // siempre, para cualquier variante (Requisito 3).
-    var sharedMediaIds = mediaOrder.slice(0, anchorPositions[0]);
-
-    // Bloques consecutivos: de cada ancla hasta la siguiente ancla (de cualquier
-    // color). Si un mismo color tiene varias anclas no contiguas (p. ej. porque el
-    // merchant asignó featured_media a dos tallas distintas del mismo color en
-    // posiciones separadas), sus imágenes se acumulan igual: todas terminan
-    // visibles para ese color aunque no queden una al lado de la otra.
-    //
-    // LIMITACIÓN CONOCIDA (no se oculta, se documenta según lo pedido): esta
-    // estrategia asume que toda imagen NO-ancla pertenece únicamente al bloque en
-    // el que cae físicamente. Si el merchant necesita que una foto intermedia
-    // (que no es featured_media de nadie) se muestre para dos colores distintos,
-    // esta lógica no puede detectarlo — esa imagen solo aparecerá en el bloque del
-    // color en el que está posicionada. La única forma 100% correcta de cubrir ese
-    // caso sería marcar esa imagen como featured_media de una variante de cada
-    // color (ver instrucciones de admin), o repetirla en la posición de ambos
-    // bloques subiéndola dos veces a la galería.
-    var groups = {};
-    for (var i = 0; i < anchorPositions.length; i++) {
-      var start = anchorPositions[i];
-      var end = (i + 1 < anchorPositions.length) ? anchorPositions[i + 1] : mediaOrder.length;
-      var blockMediaIds = mediaOrder.slice(start, end);
-      positionToColors[start].forEach(function (color) {
-        groups[color] = (groups[color] || []).concat(blockMediaIds);
-      });
-    }
-
-    return { groups: groups, shared: sharedMediaIds };
-  })();
-
-  function lsVisibleMediaIdsForColor(colorValue) {
-    // null = no filtrar, mostrar todas las imágenes (comportamiento actual).
-    if (!lsGalleryGroups || !colorValue) return null;
-    var blockIds = lsGalleryGroups.groups[colorValue];
-    if (!blockIds || blockIds.length === 0) {
-      // Este color todavía no tiene ninguna imagen ancla configurada en el admin.
-      // Estrategia razonable: mostrar solo las imágenes generales en vez de fotos
-      // de otro color, o en vez de dejar la galería vacía.
-      return lsGalleryGroups.shared.slice();
-    }
-    return lsGalleryGroups.shared.concat(blockIds);
+    if (matchingIds.length === 0) return null; // Respaldo: mostrar todas.
+    return matchingIds;
   }
 
   function applyLsGalleryVariantFilter(colorValue) {
@@ -1321,8 +1283,8 @@ color:#166534;
     });
 
     // Si la imagen actualmente activa quedó oculta por el filtro (cambiamos de
-    // bloque), saltamos a la primera imagen visible del nuevo bloque: pasa a ser
-    // la imagen principal y su thumbnail queda marcado como activo (Requisito 6).
+    // color), saltamos a la primera imagen visible del nuevo subconjunto: pasa
+    // a ser la imagen principal y su thumbnail queda marcado como activo.
     var activeVisibleItem = null;
     mediaItems.forEach(function (item) {
       if (item.style.display !== 'none' && !item.classList.contains('ls-media-variant-hidden')) {
