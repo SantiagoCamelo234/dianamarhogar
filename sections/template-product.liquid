@@ -1214,9 +1214,27 @@ color:#166534;
     Si una foto no tiene el alt correcto, no aparecerá al filtrar por ese color
     (solo se verá si ningún color tiene coincidencias y la galería cae al
     respaldo de "mostrar todas").
+
+    RED DE SEGURIDAD: si en el admin se asignó una "Imagen destacada" (featured
+    image) a una variante de un color (el mecanismo nativo de Shopify para fijar
+    la portada de esa variante), esa imagen SIEMPRE se incluye para ese color,
+    aunque su alt todavía no esté etiquetado o tenga un typo. Esto evita que la
+    portada de un color desaparezca solo por faltar el alt - pero para que
+    aparezca en el orden/lugar correcto y sea 100% consistente, sigue siendo
+    mejor práctica etiquetar también su alt con el nombre del color.
   {% endcomment %}
   var lsGalleryData = {
-    colorOptionIndex: {{ ls_color_option_index }}
+    colorOptionIndex: {{ ls_color_option_index }},
+    featuredMediaPairs: [
+      {% if ls_color_option_index > 0 %}
+        {% assign ls_color_zero_index = ls_color_option_index | minus: 1 %}
+        {% for variant in product.variants %}
+          {% if variant.featured_media %}
+            [{{ variant.featured_media.id }}, {{ variant.options[ls_color_zero_index] | json }}]{% unless forloop.last %},{% endunless %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    ]
   };
 
   {% comment %}
@@ -1238,11 +1256,28 @@ color:#166534;
   }
 
   {% comment %}
+    Mapa color normalizado -> ids de media asignados como "Featured image" de
+    alguna variante de ese color (ver lsGalleryData.featuredMediaPairs). Es la
+    red de seguridad descrita arriba, independiente del alt.
+  {% endcomment %}
+  var lsFeaturedMediaByColor = (function buildLsFeaturedMediaByColor() {
+    var map = {};
+    (lsGalleryData.featuredMediaPairs || []).forEach(function (pair) {
+      var mediaId = pair[0];
+      var color = lsNormalizeColor(pair[1]);
+      if (!map[color]) map[color] = [];
+      if (map[color].indexOf(mediaId) === -1) map[color].push(mediaId);
+    });
+    return map;
+  })();
+
+  {% comment %}
     Filtra la galería (imagen principal + miniaturas) para mostrar SOLO las
     imágenes cuyo atributo alt (data-color, copiado del alt real de la imagen)
     coincida EXACTAMENTE con el color seleccionado. Comparación exacta -no
     includes- para que "azul" no matchee a la vez "azul bebe", "azul indigo" y
-    "azul oscuro".
+    "azul oscuro". A esas se les suma la imagen "Featured image" de la variante
+    (si el admin asignó una), aunque su alt no coincida todavía.
     Si ninguna imagen coincide (foto nueva sin etiquetar, o color aún no
     fotografiado), no se filtra nada y se muestran todas como respaldo, para
     nunca dejar la galería vacía.
@@ -1257,6 +1292,10 @@ color:#166534;
       if (lsNormalizeColor(item.getAttribute('data-color')) === targetColor) {
         matchingIds.push(parseInt(item.getAttribute('data-media-id'), 10));
       }
+    });
+
+    (lsFeaturedMediaByColor[targetColor] || []).forEach(function (mediaId) {
+      if (matchingIds.indexOf(mediaId) === -1) matchingIds.push(mediaId);
     });
 
     if (matchingIds.length === 0) return null; // Respaldo: mostrar todas.
