@@ -29,8 +29,11 @@
   .ls-thumb { width: 75px; height: 75px; flex-shrink: 0; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: all 0.3s ease; scroll-snap-align: start; }
   .ls-thumb.active, .ls-thumb:hover { border-color: var(--ls-accent); opacity: 1; transform: translateY(-2px); }
 
-  /* Galería filtrada por variante: oculta imágenes/thumbnails que no pertenecen
-     al bloque de la variante seleccionada, sin duplicar ni eliminar nada del DOM. */
+  /* Galería filtrada por color: oculta imágenes/miniaturas cuyo alt (data-color)
+     no coincide exactamente con el color seleccionado, sin duplicar ni eliminar
+     nada del DOM. Cualquier foto nueva debe etiquetarse en el admin con el Alt
+     text igual al nombre del color en minúsculas (ver comentario junto a
+     lsVisibleMediaIdsForColor más abajo para la lista de colores válidos). */
   .ls-media-variant-hidden, .ls-thumb-variant-hidden { display: none !important; }
 
   .ls-reviews-snippet { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 10px; color: #555; }
@@ -182,8 +185,7 @@ margin-bottom:8px;
     .ls-marquee { animation-duration: 20s; }
   }
 
-
-.ls-features-box{
+  .ls-features-box{
 background:#fff;
 border:1px solid #e5e7eb;
 border-radius:18px;
@@ -437,7 +439,7 @@ color:#166534;
     font-weight: 400;
     transition: transform 0.3s ease;
   }
-  .ls-faq-q.active::after {
+ .ls-faq-q.active::after {
     content: '-';
   }
   .ls-faq-a {
@@ -445,8 +447,9 @@ color:#166534;
     display: none;
     color: #555;
     line-height: 1.6;
+    
   }
-  .ls-faq-q.active + .ls-faq-a {
+ .ls-faq-q.active + .ls-faq-a {
     display: block;
   }
 
@@ -506,6 +509,14 @@ color:#166534;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.01);
   }
+  /* Badge de garantía */
+  .ls-guarantee {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+    padding: 14px; margin-bottom: 15px;
+  }
+  .ls-guarantee strong { display: block; font-size: 14px; color: #166534; margin-bottom: 2px; }
+  .ls-guarantee p { margin: 0; font-size: 13px; color: #15803d; line-height: 1.4; }
 
 </style>
 
@@ -516,6 +527,7 @@ color:#166534;
       <div class="ls-urgency-content">
         <span class="ls-urgency-badge">🔥 OFERTA LIMITADA</span>
         <span class="ls-urgency-text">{{ section.settings.urgency_text }}</span>
+
       </div>
       {% render 'custom-countdown' %}
     </div>
@@ -540,7 +552,8 @@ color:#166534;
         <div class="ls-gallery" id="ls-main-gallery">
           {% if product.media.size > 0 %}
             {% for media in product.media %}
-              <div class="ls-media-item" data-media-id="{{ media.id }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
+              {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
+              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
                 {% case media.media_type %}
                   {% when 'video' %}
                     {{ media | video_tag: controls: true, autoplay: true, loop: true, style: "width: 100%; height: auto; max-height: 65vh; display: block;" }}
@@ -559,7 +572,8 @@ color:#166534;
         {% if product.media.size > 1 %}
         <div class="ls-thumbnails">
           {% for media in product.media %}
-            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
+            {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
+            <div class="ls-thumb-wrapper ls-thumb {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')" style="cursor: pointer; position: relative;">
               <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="75" height="75" loading="eager" fetchpriority="high" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
               {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; padding-left: 2px; pointer-events: none;">▶</div>
@@ -605,7 +619,7 @@ color:#166534;
               {% for option in product.options_with_values %}
                 {% assign option_name_downcase = option.name | downcase %}
                 <div class="ls-variant-group">
-                  <label class="ls-variant-label">{{ option.name }}: <span id="ls-val-{{ option.position }}">{{ option.selected_value }}</span></label>
+                  <label class="ls-variant-label">{{ option.name }}: <span id="ls-val-{{ option.position }}">Selecciona una opción</span></label>
                   <div class="ls-swatches">
                     {% for value in option.values %}
                       {% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}
@@ -616,8 +630,8 @@ color:#166534;
                             {% break %}
                           {% endif %}
                         {% endfor %}
-                        <div class="ls-swatch-color {% if option.selected_value == value %}active{% endif %}" 
-                             data-option-index="{{ option.position }}" 
+                        <div class="ls-swatch-color"
+                             data-option-index="{{ option.position }}"
                              data-value="{{ value | escape }}"
                              onclick="selectLsVariant(this)"
                              {% if variant_img != '' %}
@@ -628,8 +642,8 @@ color:#166534;
                              title="{{ value }}">
                         </div>
                       {% else %}
-                        <div class="ls-swatch-size {% if option.selected_value == value %}active{% endif %}" 
-                             data-option-index="{{ option.position }}" 
+                        <div class="ls-swatch-size"
+                             data-option-index="{{ option.position }}"
                              data-value="{{ value | escape }}"
                              onclick="selectLsVariant(this)">
                           {{ value }}
@@ -640,12 +654,20 @@ color:#166534;
                 </div>
               {% endfor %}
             {% endunless %}
-            <input type="hidden" name="add" value="1">
+
+            {% if section.settings.show_guarantee_badge %}
+            <div class="ls-guarantee">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#22c55e" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"></path><path d="M9 12l2 2 4-4"></path></svg>
+              <div>
+                <strong>{{ section.settings.guarantee_title | default: "Garantía de satisfacción" }}</strong>
+                <p>{{ section.settings.guarantee_text | default: "Si el producto llega con defecto de fabricación, lo cambiamos sin costo." }}</p>
+              </div>
+            </div>
+            {% endif %}
           {% endform %}
         </div>
 
         <div class="ls-objections">
-          <div>🚚 Envío GRATIS a toda Colombia</div>
           <div>💰 Pago contra entrega</div>
           <div>⭐ Más de 2.000 juegos vendidos</div>
           <div>🔒 Compra 100% segura</div>
@@ -736,23 +758,23 @@ color:#166534;
   <div class="ls-features-box">
 
 <div class="ls-features-header">
-✨ ¿Por qué elegir este Protector de Colchón 100% Impermeable?
+✨ ¿Por qué elegir estas sábanas unicolor?
 </div>
 
 <ul class="ls-feature-list">
-<li>✔ 100% impermeable: protege contra líquidos y derrames</li>
-<li>✔ Tela suave, transpirable y silenciosa para un descanso cómodo</li>
-<li>✔ Ajuste perfecto con elásticos reforzados que no se deslizan</li>
-<li>✔ Barrera antialérgica y antiácaros para mayor higiene</li>
-<li>✔ Ayuda a prolongar la vida útil de tu colchón manteniéndolo como nuevo</li>
+<li>✔ Suaves y cómodas desde el primer uso</li>
+<li>✔ Colores elegantes que combinan con todo</li>
+<li>✔ No se motosean ni pierden color</li>
+<li>✔ Ajuste perfecto al colchón</li>
+<li>✔ Ideales para un look limpio y moderno</li>
 </ul>
 
 <div class="ls-includes">
 <h4>📦 Incluye</h4>
 
-<div>✔ 1 Protector de colchón 100% Impermeable + ENVIO GRATIS</div>
-
-
+<div>✔ 1 sábana ajustable</div>
+<div>✔ 1 sobre sábana</div>
+<div>✔ Fundas de almohada (Tamaño sencillo solo incluye una funda)</div>
 
 </div>
 
@@ -1155,12 +1177,6 @@ color:#166534;
   </div>
 
 
-  <!-- LIGHTBOX PARA RESEÑAS -->
-  <div class="ls-lightbox" id="ls-lightbox" onclick="closeLightbox()">
-    <span class="ls-lightbox-close" onclick="closeLightbox()">&times;</span>
-    <img class="ls-lightbox-content" id="ls-lightbox-img" alt="Ampliación de reseña">
-  </div>
-
   </div>
 
 {% comment %}
@@ -1189,17 +1205,28 @@ color:#166534;
   };
 
   {% comment %}
-    Datos reales de Shopify para agrupar imágenes por variante:
-    - mediaOrder: el orden real de product.media (igual orden que ya usa la galería).
-    - anchorPairs: por cada variante con featured_media asignada en el admin, el par
-      [id de esa imagen, valor de la opción de color de esa variante]. Esto viene
-      directamente de variant.featured_media/variant.options - NUNCA del texto del
-      nombre del color ni del nombre de archivo de la imagen.
+    IMPORTANTE PARA EL ADMIN: la galería se filtra por color usando el atributo
+    ALT de cada imagen/miniatura (ver data-color en el HTML de arriba). Cualquier
+    foto nueva que se suba al producto DEBE etiquetarse en el admin de Shopify con
+    el "Alt text" igual al nombre exacto del color, en minúsculas y sin tildes ni
+    texto adicional (ej. alt="beige", alt="azul indigo", alt="palo de rosa").
+    Colores válidos actualmente: beige, gris plata, gris oscuro, azul bebe, negro,
+    azul indigo, azul oscuro, verde manzana, blanco, lila, palo de rosa.
+    Si una foto no tiene el alt correcto, no aparecerá al filtrar por ese color
+    (solo se verá si ningún color tiene coincidencias y la galería cae al
+    respaldo de "mostrar todas").
+
+    RED DE SEGURIDAD: si en el admin se asignó una "Imagen destacada" (featured
+    image) a una variante de un color (el mecanismo nativo de Shopify para fijar
+    la portada de esa variante), esa imagen SIEMPRE se incluye para ese color,
+    aunque su alt todavía no esté etiquetado o tenga un typo. Esto evita que la
+    portada de un color desaparezca solo por faltar el alt - pero para que
+    aparezca en el orden/lugar correcto y sea 100% consistente, sigue siendo
+    mejor práctica etiquetar también su alt con el nombre del color.
   {% endcomment %}
   var lsGalleryData = {
     colorOptionIndex: {{ ls_color_option_index }},
-    mediaOrder: [{% for media in product.media %}{{ media.id }}{% unless forloop.last %},{% endunless %}{% endfor %}],
-    anchorPairs: [
+    featuredMediaPairs: [
       {% if ls_color_option_index > 0 %}
         {% assign ls_color_zero_index = ls_color_option_index | minus: 1 %}
         {% for variant in product.variants %}
@@ -1212,87 +1239,122 @@ color:#166534;
   };
 
   {% comment %}
-    Agrupa product.media en bloques "imagen ancla -> siguiente ancla" usando
-    lsGalleryData. Ver comentarios internos para el caso donde esta estrategia
-    puede producir una asociación incorrecta (imagen no-ancla que en realidad
-    pertenece a más de un color).
+    Normaliza un color (minúsculas, sin tildes) para comparar sin depender de
+    que el texto venga exactamente igual en todos lados (ej. "azul bebé" vs
+    "azul bebe").
   {% endcomment %}
-  var lsGalleryGroups = (function buildLsGalleryGroups() {
-    var data = lsGalleryData;
-    if (!data.colorOptionIndex || data.colorOptionIndex < 1 || !data.anchorPairs.length) {
-      // Sin opción de color, o ninguna variante tiene featured_media configurada
-      // todavía en el admin: no hay nada que filtrar, la galería se comporta
-      // exactamente igual que antes de este cambio.
-      return null;
-    }
+  var lsCombiningMarksRegex = new RegExp(
+    '[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g'
+  ); // Rango Unicode U+0300-U+036F (diacriticos combinables) tras normalize('NFD').
 
-    var mediaOrder = data.mediaOrder;
+  function lsNormalizeColor(str) {
+    return (str || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(lsCombiningMarksRegex, '');
+  }
 
-    // position en product.media -> lista de colores cuya imagen ancla cae ahí.
-    // Puede haber más de un color por posición si la MISMA imagen fue asignada
-    // como featured_media de variantes de colores distintos (Requisito 4).
-    var positionToColors = {};
-    data.anchorPairs.forEach(function (pair) {
+  {% comment %}
+    Mapa color normalizado -> ids de media asignados como "Featured image" de
+    alguna variante de ese color (ver lsGalleryData.featuredMediaPairs). Es la
+    red de seguridad descrita arriba, independiente del alt.
+  {% endcomment %}
+  var lsFeaturedMediaByColor = (function buildLsFeaturedMediaByColor() {
+    var map = {};
+    (lsGalleryData.featuredMediaPairs || []).forEach(function (pair) {
       var mediaId = pair[0];
-      var color = pair[1];
-      var pos = mediaOrder.indexOf(mediaId);
-      if (pos === -1) return; // La imagen destacada de la variante ya no está en product.media.
-      if (!positionToColors[pos]) positionToColors[pos] = [];
-      if (positionToColors[pos].indexOf(color) === -1) positionToColors[pos].push(color);
+      var color = lsNormalizeColor(pair[1]);
+      if (!map[color]) map[color] = [];
+      if (map[color].indexOf(mediaId) === -1) map[color].push(mediaId);
     });
-
-    var anchorPositions = Object.keys(positionToColors).map(Number).sort(function (a, b) { return a - b; });
-    if (anchorPositions.length === 0) return null;
-
-    // Imágenes generales: todo lo anterior a la primera imagen ancla. Se muestran
-    // siempre, para cualquier variante (Requisito 3).
-    var sharedMediaIds = mediaOrder.slice(0, anchorPositions[0]);
-
-    // Bloques consecutivos: de cada ancla hasta la siguiente ancla (de cualquier
-    // color). Si un mismo color tiene varias anclas no contiguas (p. ej. porque el
-    // merchant asignó featured_media a dos tallas distintas del mismo color en
-    // posiciones separadas), sus imágenes se acumulan igual: todas terminan
-    // visibles para ese color aunque no queden una al lado de la otra.
-    //
-    // LIMITACIÓN CONOCIDA (no se oculta, se documenta según lo pedido): esta
-    // estrategia asume que toda imagen NO-ancla pertenece únicamente al bloque en
-    // el que cae físicamente. Si el merchant necesita que una foto intermedia
-    // (que no es featured_media de nadie) se muestre para dos colores distintos,
-    // esta lógica no puede detectarlo — esa imagen solo aparecerá en el bloque del
-    // color en el que está posicionada. La única forma 100% correcta de cubrir ese
-    // caso sería marcar esa imagen como featured_media de una variante de cada
-    // color (ver instrucciones de admin), o repetirla en la posición de ambos
-    // bloques subiéndola dos veces a la galería.
-    var groups = {};
-    for (var i = 0; i < anchorPositions.length; i++) {
-      var start = anchorPositions[i];
-      var end = (i + 1 < anchorPositions.length) ? anchorPositions[i + 1] : mediaOrder.length;
-      var blockMediaIds = mediaOrder.slice(start, end);
-      positionToColors[start].forEach(function (color) {
-        groups[color] = (groups[color] || []).concat(blockMediaIds);
-      });
-    }
-
-    return { groups: groups, shared: sharedMediaIds };
+    return map;
   })();
 
+  {% comment %}
+    Filtra la galería (imagen principal + miniaturas) para mostrar SOLO las
+    imágenes cuyo atributo alt (data-color, copiado del alt real de la imagen)
+    coincida EXACTAMENTE con el color seleccionado. Comparación exacta -no
+    includes- para que "azul" no matchee a la vez "azul bebe", "azul indigo" y
+    "azul oscuro". A esas se les suma la imagen "Featured image" de la variante
+    (si el admin asignó una), aunque su alt no coincida todavía.
+    Si ninguna imagen coincide (foto nueva sin etiquetar, o color aún no
+    fotografiado), no se filtra nada y se muestran todas como respaldo, para
+    nunca dejar la galería vacía.
+  {% endcomment %}
   function lsVisibleMediaIdsForColor(colorValue) {
-    // null = no filtrar, mostrar todas las imágenes (comportamiento actual).
-    if (!lsGalleryGroups || !colorValue) return null;
-    var blockIds = lsGalleryGroups.groups[colorValue];
-    if (!blockIds || blockIds.length === 0) {
-      // Este color todavía no tiene ninguna imagen ancla configurada en el admin.
-      // Estrategia razonable: mostrar solo las imágenes generales en vez de fotos
-      // de otro color, o en vez de dejar la galería vacía.
-      return lsGalleryGroups.shared.slice();
+    var targetColor = lsNormalizeColor(colorValue);
+    if (!targetColor) return null;
+
+    var allItems = document.querySelectorAll('#ls-main-gallery .ls-media-item[data-media-id]');
+    var matchingIds = [];
+    allItems.forEach(function (item) {
+      if (lsNormalizeColor(item.getAttribute('data-color')) === targetColor) {
+        matchingIds.push(parseInt(item.getAttribute('data-media-id'), 10));
+      }
+    });
+
+    (lsFeaturedMediaByColor[targetColor] || []).forEach(function (mediaId) {
+      if (matchingIds.indexOf(mediaId) === -1) matchingIds.push(mediaId);
+    });
+
+    {% comment %}
+      Diagnóstico temporal: solo escribe en la consola del navegador (F12),
+      invisible para el comprador. Ayuda a ver, foto por foto, cuál alt no
+      coincidió exactamente con el color elegido (typo, texto extra, tilde no
+      normalizada, etc.). Se puede borrar este bloque una vez que todas las
+      fotos estén etiquetadas correctamente.
+    {% endcomment %}
+    if (window.console && console.debug) {
+      var debugRows = [];
+      allItems.forEach(function (item) {
+        debugRows.push({
+          mediaId: item.getAttribute('data-media-id'),
+          altCrudo: item.getAttribute('data-color'),
+          altNormalizado: lsNormalizeColor(item.getAttribute('data-color')),
+          coincideExacto: lsNormalizeColor(item.getAttribute('data-color')) === targetColor
+        });
+      });
+      console.debug('[Galería LS] Color elegido: "' + colorValue + '" (normalizado: "' + targetColor + '")', debugRows);
     }
-    return lsGalleryGroups.shared.concat(blockIds);
+
+    if (matchingIds.length === 0) return null; // Respaldo: mostrar todas.
+    return matchingIds;
   }
+
+  {% comment %}
+    Primera vista al entrar a la página: dentro de lo que ya sea visible para el
+    color preseleccionado, se restringe además a las imágenes cuyo NOMBRE DE
+    ARCHIVO contiene "portada" (ej. "producto-portada-gris-plata.jpg"), sin
+    importar su alt. Esto solo corre una vez; en cuanto el comprador cambia de
+    color manualmente, la galería vuelve al filtro normal por alt/color y
+    muestra todas las fotos de ese color (ver lsVisibleMediaIdsForColor).
+    Si el color preseleccionado no tiene ninguna imagen "portada" en el nombre
+    de archivo, no se restringe nada y se deja el filtro normal por color.
+  {% endcomment %}
+  var lsIsInitialGalleryLoad = true;
 
   function applyLsGalleryVariantFilter(colorValue) {
     var visibleIds = lsVisibleMediaIdsForColor(colorValue);
     var mediaItems = document.querySelectorAll('#ls-main-gallery .ls-media-item');
     var thumbs = document.querySelectorAll('.ls-thumb-wrapper');
+
+    if (lsIsInitialGalleryLoad) {
+      var portadaIds = [];
+      mediaItems.forEach(function (item) {
+        var id = parseInt(item.getAttribute('data-media-id'), 10);
+        var visibleForColor = !visibleIds || visibleIds.indexOf(id) !== -1;
+        var filename = (item.getAttribute('data-filename') || '').toLowerCase();
+        if (visibleForColor && filename.indexOf('portada') !== -1) {
+          portadaIds.push(id);
+        }
+      });
+      if (portadaIds.length > 0) {
+        visibleIds = portadaIds;
+      }
+      lsIsInitialGalleryLoad = false;
+    }
 
     var firstVisibleId = null;
     mediaItems.forEach(function (item) {
@@ -1309,8 +1371,8 @@ color:#166534;
     });
 
     // Si la imagen actualmente activa quedó oculta por el filtro (cambiamos de
-    // bloque), saltamos a la primera imagen visible del nuevo bloque: pasa a ser
-    // la imagen principal y su thumbnail queda marcado como activo (Requisito 6).
+    // color), saltamos a la primera imagen visible del nuevo subconjunto: pasa
+    // a ser la imagen principal y su thumbnail queda marcado como activo.
     var activeVisibleItem = null;
     mediaItems.forEach(function (item) {
       if (item.style.display !== 'none' && !item.classList.contains('ls-media-variant-hidden')) {
@@ -1355,8 +1417,17 @@ color:#166534;
     swatch.classList.add('active');
     
     document.getElementById('ls-val-' + optionIndex).textContent = value;
-    
+
     updateAvailableOptions(optionIndex, value);
+
+    // Como ya no hay talla preseleccionada por defecto, elegir un color no
+    // siempre resuelve una variante completa todavía. Filtramos la galería de
+    // inmediato con el valor de color recién elegido, sin esperar a que
+    // updateLsVariant() encuentre una variante completa (color + talla).
+    if (lsGalleryData.colorOptionIndex > 0 && optionIndex === lsGalleryData.colorOptionIndex) {
+      applyLsGalleryVariantFilter(value);
+    }
+
     updateLsVariant(false);
   }
 
@@ -1406,9 +1477,16 @@ color:#166534;
       }
     });
 
+    // Solo se comparan las posiciones que el comprador YA eligió. Si todavía
+    // falta una opción (ej. talla), no se ignora la elección hecha: se toma la
+    // primera variante que sí respeta lo ya seleccionado, en vez de quedarse
+    // pegado en la variante original de la carga de la página. Así el input
+    // oculto "id" (el que leen apps externas como el formulario COD) siempre
+    // refleja el color/talla que el comprador tocó por última vez, no un
+    // valor por defecto viejo.
     var matchingVariant = lsProductJson.variants.find(function(variant) {
       return variant.options.every(function(opt, i) {
-        return opt === selectedOptions[i];
+        return selectedOptions[i] === undefined || opt === selectedOptions[i];
       });
     });
 
@@ -1431,6 +1509,9 @@ color:#166534;
         }
       }
 
+      var stickyPrice = document.getElementById('ls-sticky-price');
+      if (stickyPrice) { stickyPrice.innerHTML = variantData.price; }
+
       // Filtra la galería según el color de la variante recién seleccionada.
       // Reutiliza matchingVariant, ya calculado arriba: no se agrega ningún
       // listener ni lógica de selección de variante nueva.
@@ -1440,8 +1521,6 @@ color:#166534;
       }
     }
   }
-
-
 
   if (typeof Shopify === 'undefined') {
     Shopify = {};
@@ -1496,13 +1575,13 @@ color:#166534;
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    var firstActive = document.querySelector('.ls-variant-group .active');
-    if (firstActive) {
-      var optionIndex = parseInt(firstActive.getAttribute('data-option-index'));
-      var value = firstActive.getAttribute('data-value');
-      updateAvailableOptions(optionIndex, value);
-      updateLsVariant();
-    }
+    // Ningún swatch (color ni talla) viene marcado como activo por defecto: el
+    // comprador debe elegir explícitamente. El precio/botón de compra ya
+    // funcionan igual porque el input oculto "id" arranca con
+    // product.selected_or_first_available_variant (ver más arriba en Liquid).
+    // Lo único que falta inicializar es la galería: sin color elegido se
+    // muestra la vista general (solo fotos "portada", de todos los colores).
+    applyLsGalleryVariantFilter('');
   });
 
   function toggleReviewForm() {
@@ -1642,33 +1721,13 @@ color:#166534;
     setInterval(updateTimer, 1000);
   }
 
-  // 5. Acordeón FAQ con transición de altura fluida
+  // 5. Acordeón FAQ (los botones ya usan onclick inline, esta función queda como no-op seguro)
   function initFaqAccordion() {
-    var faqQuestions = document.querySelectorAll('.ls-faq-q');
-    
-    faqQuestions.forEach(function(q) {
-      // Quitar onclick inline original
-      q.removeAttribute('onclick');
-      
-      q.addEventListener('click', function(e) {
-        var item = this.parentNode;
-        var answer = item.querySelector('.ls-faq-a');
-        var isActive = item.classList.contains('active');
-        
-        // Cerrar todos los demás FAQ items
-        document.querySelectorAll('.ls-faq-item').forEach(function(el) {
-          el.classList.remove('active');
-          var ans = el.querySelector('.ls-faq-a');
-          if (ans) ans.style.maxHeight = null;
-        });
-        
-        if (!isActive) {
-          item.classList.add('active');
-          answer.style.maxHeight = answer.scrollHeight + "px";
-        }
-      });
-    });
+    // Los items de FAQ ya alternan la clase "active" vía onclick inline en cada botón.
+    // Esta función se mantiene únicamente para no romper la cadena de inicialización.
+    return true;
   }
+  window.initFaqAccordion = initFaqAccordion;
 
   // 6. Lightbox de imágenes de reseñas
   function initReviewLightbox() {
@@ -1708,6 +1767,12 @@ color:#166534;
     initReviewLightbox();
   });
 </script>
+
+<!-- Lightbox de reseñas (requerido por openLightbox/closeLightbox) -->
+<div id="ls-lightbox" class="ls-lightbox" onclick="closeLightbox()">
+  <span class="ls-lightbox-close" onclick="closeLightbox()">&times;</span>
+  <img class="ls-lightbox-content" id="ls-lightbox-img" onclick="event.stopPropagation()">
+</div>
 
 {% schema %}
 {
@@ -1753,16 +1818,26 @@ color:#166534;
       "default": "345"
     },
     {
-      "type": "text",
-      "id": "cta_text",
-      "label": "Texto del Botón Principal",
-      "default": "PIDE AHORA Y PAGA EN CASA"
+      "type": "header",
+      "content": "Garantía"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_guarantee_badge",
+      "label": "Mostrar badge de garantía",
+      "default": true
     },
     {
       "type": "text",
-      "id": "cta_subtext",
-      "label": "Subtexto del Botón",
-      "default": "Envío Gratis a Toda Colombia 🚚"
+      "id": "guarantee_title",
+      "label": "Título Garantía",
+      "default": "Garantía de satisfacción"
+    },
+    {
+      "type": "textarea",
+      "id": "guarantee_text",
+      "label": "Texto Garantía",
+      "default": "Si el producto llega con defecto de fabricación, lo cambiamos sin costo."
     },
     {
       "type": "header",
