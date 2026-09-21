@@ -392,8 +392,6 @@
           "headline": "Protege Tu Colchón de Derrames, Manchas y Accidentes",
           "subheadline": "Protector impermeable premium. Protección 100% contra líquidos, ajuste perfecto a tu colchón y máxima comodidad garantizada.",
           "review_count": "+10",
-          "cta_text": "PIDE AHORA Y PAGA EN CASA",
-          "cta_subtext": "Envío Gratis a Toda Colombia 🚚",
           "benefits_title": "¿Por qué miles de colombianas las prefieren?",
           "benefit_1_title": "100% Impermeable",
           "benefit_1_text": "Protege tu colchón de líquidos, derrames y accidentes.",
@@ -479,6 +477,11 @@
       "9535092338106386463": {
         "type": "shopify://apps/releasit-bundle/blocks/app-embed/019c9545-b89c-75b6-a4e1-5c7cd764ca36",
         "disabled": true,
+        "settings": {}
+      },
+      "13669795325273674392": {
+        "type": "shopify://apps/releasit-cod-form/blocks/app-embed/72faf214-4174-4fec-886b-0d0e8d3af9a2",
+        "disabled": false,
         "settings": {}
       }
     }
