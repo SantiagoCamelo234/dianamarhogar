@@ -1135,6 +1135,11 @@ color:#166534;
     if (matchingVariant) {
       document.getElementById('ls-variant-id').value = matchingVariant.id;
       document.getElementById('ls-variant-id').dispatchEvent(new Event('change', { bubbles: true }));
+
+      // ReleasIT lee la variante desde ?variant= en la URL; sin esto usa la variante por defecto.
+      var lsUrl = new URL(window.location.href);
+      lsUrl.searchParams.set('variant', matchingVariant.id);
+      window.history.replaceState({}, '', lsUrl.toString());
       
       var variantData = lsVariantPrices[matchingVariant.id];
       if (variantData) {
