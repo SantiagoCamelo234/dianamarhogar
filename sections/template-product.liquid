@@ -1491,9 +1491,30 @@ color:#166534;
     });
 
     if (matchingVariant) {
-      document.getElementById('ls-variant-id').value = matchingVariant.id;
-      document.getElementById('ls-variant-id').dispatchEvent(new Event('change', { bubbles: true }));
-      
+      var variantIdInput = document.getElementById('ls-variant-id');
+      variantIdInput.value = matchingVariant.id;
+
+      // Disparar múltiples eventos para asegurar que ReleasIT y otros plugins reconozcan el cambio
+      variantIdInput.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+      variantIdInput.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+
+      // Evento personalizado para compatibilidad con scripts que escuchan cambios de variante
+      try {
+        variantIdInput.dispatchEvent(new CustomEvent('releasit-variant-changed', {
+          bubbles: true,
+          detail: { variantId: matchingVariant.id }
+        }));
+      } catch (e) {}
+
+      // Pequeño delay para que ReleasIT pueda releer el formulario
+      setTimeout(function() {
+        var form = document.getElementById('landing-product-form');
+        if (form) {
+          form.dispatchEvent(new Event('change', { bubbles: true }));
+          form.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }, 100);
+
       var variantData = lsVariantPrices[matchingVariant.id];
       if (variantData) {
         document.getElementById('ls-price').innerHTML = variantData.price;
@@ -1582,6 +1603,20 @@ color:#166534;
     // Lo único que falta inicializar es la galería: sin color elegido se
     // muestra la vista general (solo fotos "portada", de todos los colores).
     applyLsGalleryVariantFilter('');
+
+    // Listener de formulario para asegurar que ReleasIT siempre lee la variante correcta
+    var form = document.getElementById('landing-product-form');
+    if (form) {
+      // Escuchar cualquier intento de envío del formulario
+      form.addEventListener('submit', function() {
+        updateLsVariant(false);
+      }, true);
+
+      // También vigilar clicks en cualquier botón dentro del formulario
+      form.addEventListener('click', function(e) {
+        updateLsVariant(false);
+      }, true);
+    }
   });
 
   function toggleReviewForm() {
