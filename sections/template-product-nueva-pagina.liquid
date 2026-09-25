@@ -40,6 +40,9 @@
     isolation: isolate;
   }
 
+  /* Sin franja en blanco entre la página y el footer */
+  body:has(.nv-page) footer { margin-top: 0; }
+
   /* Fondo animado con las portadas de las sábanas */
   .nv-bg { position: sticky; top: 0; height: 100vh; margin-bottom: -100vh; overflow: hidden; z-index: -1; pointer-events: none; }
   .nv-bg-mosaic { position: absolute; top: -40%; left: -40%; width: 180%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; transform: rotate(-8deg); animation: nv-bg-drift 70s linear infinite; }
@@ -120,11 +123,11 @@
   .nv-trustline b { color: var(--nv-ok); }
 
   /* Botón de ReleasIT dentro del formulario */
-  #landing-product-form .releasit-buy-now-button { width: 100% !important; }
-  /* Copias del botón de ReleasIT en el resto de la página */
+  /* Puntos donde ReleasIT dibuja su botón (uno arriba y uno en cada sección de pedido) */
   .nv-rsi-slot { width: 100%; }
   .nv-final .nv-rsi-slot { max-width: 460px; }
-  .nv-rsi-slot .releasit-buy-now-button.nv-rsi-clone { position: static !important; width: 100% !important; margin: 0 !important; }
+  /* El botón rojo solo aparece si ReleasIT no cargó su botón */
+  .nv-rsi-slot:has(._rsi-buy-now-button) .nv-rsi-fallback { display: none; }
 
   /* Cifras */
   .nv-stats { background: var(--nv-ink); color: #fff; padding-block: 28px; }
@@ -258,16 +261,8 @@
     .nv-kit, .nv-steps { grid-template-columns: 1fr; }
   }
   @media (max-width: 768px) {
-    /* Botón de ReleasIT fijo abajo en celular */
-    .releasit-buy-now-button:not(.nv-rsi-clone) {
-      position: fixed !important;
-      bottom: 15px; left: 15px; right: 15px;
-      width: calc(100% - 30px) !important;
-      z-index: 9999 !important;
-      margin: 0 !important;
-      box-shadow: 0 4px 15px rgba(0,0,0,.2) !important;
-    }
-    .nv-page { padding-bottom: 80px; }
+    /* Espacio para el botón fijo de ReleasIT: al final del footer, no entre la página y el footer */
+    body:has(.nv-page) footer { padding-bottom: 100px; }
     .nv-marquee-item { width: 160px; height: 160px; }
   }
   @media (max-width: 600px) {
@@ -423,7 +418,8 @@
 
             {% if s.urgency_note != blank %}<div class="nv-urgency">⚠️ {{ s.urgency_note }}</div>{% endif %}
 
-            {% comment %} Aquí ReleasIT inserta su botón "Comprar / Pago contra entrega". {% endcomment %}
+            {% comment %} ReleasIT dibuja su botón en cada elemento #rsi-button-hook de la página. {% endcomment %}
+            <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
           {% endform %}
         </div>
 
@@ -679,7 +675,7 @@
               <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
             </button>
           {% endfor %}
-          <div class="nv-rsi-slot"><button type="button" class="nv-btn nv-btn-cta nv-btn-block" onclick="nvOrderNow()">Ordenar ahora · Pago al recibir</button></div>
+          <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div><button type="button" class="nv-btn nv-btn-cta nv-btn-block nv-rsi-fallback" onclick="nvOrderNow()">Ordenar ahora · Pago al recibir</button></div>
         </div>
       </div>
     </section>
@@ -770,7 +766,7 @@
       <h2>{{ s.final_title }}</h2>
       <p>{{ s.final_text }}</p>
       {% if s.final_stock != blank %}<p class="nv-stock">{{ s.final_stock }}</p>{% endif %}
-      <div class="nv-rsi-slot"><button type="button" class="nv-btn nv-btn-cta" onclick="nvOrderNow()">Realizar mi pedido</button></div>
+      <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div><button type="button" class="nv-btn nv-btn-cta nv-btn-block nv-rsi-fallback" onclick="nvOrderNow()">Realizar mi pedido</button></div>
       <div class="nv-trustline">
         <span><b>✔</b> Sin tarjeta</span>
         <span><b>✔</b> Sin pagar en línea</span>
@@ -1074,54 +1070,13 @@
     if (btn) { btn.click(); } else { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
 
-  /* ---------- Todos los botones de pedido son el botón de ReleasIT ----------
-     ReleasIT inserta un solo botón (en el formulario de arriba). Cuando aparece,
-     lo copiamos tal cual (mismo diseño y texto) en cada .nv-rsi-slot de la
-     página. Al tocar una copia se activa el botón original, así el formulario
-     de ReleasIT abre con la variante elegida. Si ReleasIT cambia su botón
-     (ej. al cambiar de variante), las copias se actualizan solas. */
+  /* ---------- Botones de ReleasIT ----------
+     ReleasIT dibuja su propio botón verde dentro de cada #rsi-button-hook
+     (arriba, en "Oferta por cantidad" y en "Última llamada"). Todos son botones
+     reales de ReleasIT y abren su formulario directamente. */
   function nvOriginalRsiButton() {
-    return document.querySelector('#nv-comprar .releasit-buy-now-button:not(.nv-rsi-clone)') ||
-           document.querySelector('.releasit-buy-now-button:not(.nv-rsi-clone)');
+    return document.querySelector("#nv-comprar ._rsi-buy-now-button") || document.querySelector("._rsi-buy-now-button");
   }
-
-  function nvSyncRsiClones() {
-    var original = nvOriginalRsiButton();
-    if (!original) return;
-    document.querySelectorAll('.nv-rsi-slot').forEach(function (slot) {
-      var clone = original.cloneNode(true);
-      clone.removeAttribute('id');
-      clone.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });
-      clone.classList.add('nv-rsi-clone');
-      if (clone.tagName === 'BUTTON') clone.type = 'button';
-      slot.innerHTML = '';
-      slot.appendChild(clone);
-    });
-  }
-
-  (function nvWatchRsiButton() {
-    var syncTimer = null;
-    function scheduleSync() {
-      clearTimeout(syncTimer);
-      syncTimer = setTimeout(nvSyncRsiClones, 60);
-    }
-    function watchOriginal(original) {
-      nvSyncRsiClones();
-      var target = document.getElementById('nv-comprar').contains(original) ? document.getElementById('nv-comprar') : original.parentNode;
-      new MutationObserver(scheduleSync).observe(target, { childList: true, subtree: true, attributes: true, characterData: true });
-    }
-    function start() {
-      var found = nvOriginalRsiButton();
-      if (found) { watchOriginal(found); return; }
-      var waiter = new MutationObserver(function () {
-        var btn = nvOriginalRsiButton();
-        if (btn) { waiter.disconnect(); watchOriginal(btn); }
-      });
-      waiter.observe(document.body, { childList: true, subtree: true });
-      setTimeout(function () { waiter.disconnect(); }, 20000); // Si ReleasIT no carga, quedan los botones de respaldo.
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
-  })();
 
   /* ---------- Lightbox de reseñas ---------- */
   function nvOpenLightbox(src) {
@@ -1133,12 +1088,10 @@
 
   // Si tocan el botón de ReleasIT sin haber elegido color y tamaño, se los pedimos
   // antes de abrir el formulario, para que no llegue una variante que no eligieron.
-  // Las copias nunca actúan por sí solas: siempre redirigen al botón original.
   document.addEventListener('click', function (e) {
-    var btn = e.target.closest && e.target.closest('.releasit-buy-now-button');
+    var btn = e.target.closest && e.target.closest('._rsi-buy-now-button');
     if (!btn) return;
-    var isClone = btn.classList.contains('nv-rsi-clone');
-    if (!isClone && !nvMissingGroups().length) return;
+    if (!nvMissingGroups().length) return;
     e.preventDefault();
     e.stopImmediatePropagation();
     nvOrderNow();
