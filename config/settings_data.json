@@ -144,6 +144,7 @@
       "template-product-nueva-pagina": {
         "type": "template-product-nueva-pagina",
         "settings": {
+          "show_bg_covers": true,
           "badge_left": "⭐ 4.9 · Clientes felices",
           "rating_text": "4.9/5 · +2.000 juegos vendidos",
           "headline": "Renueva tu habitación con sábanas suaves y de ajuste perfecto",

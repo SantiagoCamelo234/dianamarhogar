@@ -35,6 +35,20 @@
     line-height: 1.55;
     width: 100%;
     overflow-x: hidden;
+    overflow-x: clip; /* clip (no hidden) para que el fondo y la galería "sticky" funcionen */
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Fondo animado con las portadas de las sábanas */
+  .nv-bg { position: sticky; top: 0; height: 100vh; margin-bottom: -100vh; overflow: hidden; z-index: -1; pointer-events: none; }
+  .nv-bg-mosaic { position: absolute; top: -40%; left: -40%; width: 180%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; transform: rotate(-8deg); animation: nv-bg-drift 70s linear infinite; }
+  .nv-bg-tile { aspect-ratio: 1; border-radius: 18px; background-size: cover; background-position: center; opacity: .16; }
+  @keyframes nv-bg-drift { from { translate: 0 0; } to { translate: 0 calc(-50% - 9px); } }
+  @media (max-width: 768px) {
+    .nv-bg-mosaic { grid-template-columns: repeat(4, 1fr); gap: 12px; width: 200%; left: -50%; }
+    .nv-bg-tile { opacity: .14; }
+    @keyframes nv-bg-drift { from { translate: 0 0; } to { translate: 0 calc(-50% - 6px); } }
   }
   .nv-page *, .nv-page *::before, .nv-page *::after { box-sizing: border-box; }
   .nv-page h1, .nv-page h2, .nv-page h3 { font-family: "Young Serif", Georgia, "Times New Roman", serif; color: var(--nv-ink); font-weight: 400; text-wrap: balance; margin: 0; }
@@ -42,7 +56,7 @@
   .nv-page img { max-width: 100%; }
   .nv-wrap { max-width: 1120px; margin-inline: auto; padding-inline: 16px; }
   .nv-sec { padding-block: 56px; }
-  .nv-alt { background: var(--nv-blush-2); }
+  .nv-alt { background: rgba(255, 247, 245, .72); }
   .nv-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--nv-coral); }
   .nv-head { display: grid; gap: 8px; text-align: center; max-width: 640px; margin: 0 auto 32px; }
   .nv-head h2 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; }
@@ -58,7 +72,7 @@
   .nv-page .nv-btn:focus-visible, .nv-page .ls-swatch-color:focus-visible, .nv-page .ls-swatch-size:focus-visible, .nv-page .nv-tier:focus-visible, .nv-page summary:focus-visible { outline: 3px solid var(--nv-coral); outline-offset: 2px; }
 
   /* HERO */
-  .nv-hero { padding-block: 28px 48px; background: linear-gradient(180deg, var(--nv-blush-2), var(--nv-paper)); }
+  .nv-hero { padding-block: 28px 48px; background: linear-gradient(180deg, rgba(255,247,245,.85), rgba(255,255,255,.55)); }
   .nv-hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: start; }
   .nv-hero-grid > * { min-width: 0; }
   .nv-gallery-col { display: grid; gap: 12px; position: sticky; top: 16px; }
@@ -280,6 +294,29 @@
 {% assign s = section.settings %}
 
 <div class="nv-page" id="product-section-{{ section.id }}">
+
+  {% comment %} Fondo animado: usa las mismas imágenes del "Carrusel de colores" (portadas). {% endcomment %}
+  {% if s.show_bg_covers %}
+    {% assign nv_bg_urls = '' %}
+    {% for i in (1..15) %}
+      {% assign ck = 'color_image_' | append: i %}
+      {% if s[ck] != blank %}
+        {% assign nv_url = s[ck] | image_url: width: 400 %}
+        {% assign nv_bg_urls = nv_bg_urls | append: nv_url | append: '|' %}
+      {% endif %}
+    {% endfor %}
+    {% assign nv_bg_list = nv_bg_urls | split: '|' %}
+    {% if nv_bg_list.size > 0 %}
+      <div class="nv-bg" aria-hidden="true">
+        <div class="nv-bg-mosaic">
+          {% for n in (0..47) %}
+            {% assign nv_i = n | modulo: 24 | modulo: nv_bg_list.size %}
+            <div class="nv-bg-tile" style="background-image: url('{{ nv_bg_list[nv_i] }}');"></div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
 
   <!-- HERO -->
   <section class="nv-hero">
@@ -1542,6 +1579,12 @@
       "id": "carousel_title",
       "label": "Título",
       "default": "Colores que combinan con todo"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bg_covers",
+      "label": "Usar estas portadas como fondo animado de la página",
+      "default": true
     },
     {
       "type": "image_picker",
