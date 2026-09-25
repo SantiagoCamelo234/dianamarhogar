@@ -1,0 +1,1984 @@
+{% comment %}
+  NUEVA PÁGINA DE PRODUCTO
+  Plantilla: templates/product.nueva-pagina.liquid
+  Para usarla: Admin de Shopify > Productos > (producto) > Plantilla del tema > "nueva-pagina".
+
+  La compra la maneja ReleasIT: su botón se inserta automáticamente dentro del
+  formulario de producto de abajo (#landing-product-form). Los botones
+  "Pedir ahora" del resto de la página abren ese mismo botón de ReleasIT, así
+  que la variante (color + tamaño) elegida siempre viaja al formulario.
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap">
+
+<style>
+  .nv-page {
+    --nv-coral: #E8746A;
+    --nv-coral-soft: #F4A99C;
+    --nv-blush: #FCEFEC;
+    --nv-blush-2: #FFF7F5;
+    --nv-cta: #e60023;
+    --nv-cta-dark: #b8001a;
+    --nv-ink: #2c2c2c;
+    --nv-text: #4a3f3d;
+    --nv-muted: #8a7a77;
+    --nv-line: #F0DEDA;
+    --nv-paper: #ffffff;
+    --nv-ok: #15803d;
+    --nv-star: #f5a623;
+    background: var(--nv-paper);
+    color: var(--nv-text);
+    font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .nv-page *, .nv-page *::before, .nv-page *::after { box-sizing: border-box; }
+  .nv-page h1, .nv-page h2, .nv-page h3 { font-family: "Young Serif", Georgia, "Times New Roman", serif; color: var(--nv-ink); font-weight: 400; text-wrap: balance; margin: 0; }
+  .nv-page p { margin: 0; }
+  .nv-page img { max-width: 100%; }
+  .nv-wrap { max-width: 1120px; margin-inline: auto; padding-inline: 16px; }
+  .nv-sec { padding-block: 56px; }
+  .nv-alt { background: var(--nv-blush-2); }
+  .nv-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--nv-coral); }
+  .nv-head { display: grid; gap: 8px; text-align: center; max-width: 640px; margin: 0 auto 32px; }
+  .nv-head h2 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; }
+  .nv-head p { color: var(--nv-muted); }
+
+  /* Barra superior */
+  .nv-announce { background: linear-gradient(90deg, var(--nv-coral), var(--nv-coral-soft)); color: #fff; font-weight: 700; font-size: 14px; text-align: center; padding: 10px 16px; }
+  .nv-announce .custom-countdown-wrapper { margin: 10px 0 4px; }
+  .nv-announce .countdown-text-1, .nv-announce .countdown-text-2, .nv-announce .countdown-sep { color: #fff; }
+  .nv-announce .countdown-label { color: rgba(255,255,255,.9); }
+
+  /* Botones */
+  .nv-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; font: inherit; font-weight: 700; border-radius: 10px; padding: 16px 22px; text-decoration: none; transition: transform .15s, background .15s; text-align: center; }
+  .nv-btn-cta { background: var(--nv-cta); color: #fff !important; font-size: 17px; box-shadow: 0 6px 18px rgba(230,0,35,.25); }
+  .nv-btn-cta:hover { background: var(--nv-cta-dark); transform: translateY(-1px); }
+  .nv-btn-ghost { background: transparent; color: var(--nv-ink) !important; border: 1.5px solid var(--nv-line); }
+  .nv-btn-ghost:hover { border-color: var(--nv-coral); }
+  .nv-btn-block { width: 100%; }
+  .nv-page .nv-btn:focus-visible, .nv-page .ls-swatch-color:focus-visible, .nv-page .ls-swatch-size:focus-visible, .nv-page .nv-tier:focus-visible, .nv-page summary:focus-visible { outline: 3px solid var(--nv-coral); outline-offset: 2px; }
+
+  /* HERO */
+  .nv-hero { padding-block: 28px 48px; background: linear-gradient(180deg, var(--nv-blush-2), var(--nv-paper)); }
+  .nv-hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: start; }
+  .nv-hero-grid > * { min-width: 0; }
+  .nv-gallery-col { display: grid; gap: 12px; position: sticky; top: 16px; }
+  .ls-gallery { position: relative; width: 100%; border-radius: 18px; overflow: hidden; background: var(--nv-blush); }
+  .ls-media-item img, .ls-media-item video { width: 100%; height: auto; display: block; object-fit: cover; max-height: 70vh; }
+  .ls-media-variant-hidden, .ls-thumb-variant-hidden { display: none !important; }
+  .nv-badge-float { position: absolute; top: 14px; left: 14px; z-index: 2; background: #fff; color: var(--nv-ink); font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,.08); pointer-events: none; }
+  .nv-badge-float.nv-r { left: auto; right: 14px; background: var(--nv-cta); color: #fff; }
+  .ls-thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+  .ls-thumb-wrapper { width: 74px; height: 74px; flex-shrink: 0; border-radius: 10px; border: 2px solid transparent; opacity: .65; cursor: pointer; scroll-snap-align: start; transition: all .2s; overflow: hidden; }
+  .ls-thumb-wrapper.active, .ls-thumb-wrapper:hover { border-color: var(--nv-coral); opacity: 1; }
+
+  .nv-buy { display: grid; gap: 18px; }
+  .nv-stars { color: var(--nv-star); letter-spacing: 2px; font-size: 16px; }
+  .nv-rating { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--nv-muted); }
+  .nv-hero h1 { font-size: clamp(28px, 4.2vw, 42px); line-height: 1.12; }
+  .nv-lead { font-size: 17px; }
+  .nv-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .nv-pill { background: var(--nv-blush); color: var(--nv-ink); font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; }
+
+  .nv-price-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-block: 4px; }
+  .nv-price { font-size: 34px; font-weight: 800; color: var(--nv-ink); line-height: 1; font-variant-numeric: tabular-nums; }
+  .nv-compare { color: var(--nv-muted); text-decoration: line-through; font-size: 18px; }
+  .nv-save { background: var(--nv-coral); color: #fff; font-weight: 800; font-size: 15px; padding: 6px 14px; border-radius: 999px; box-shadow: 0 6px 20px rgba(232,116,106,.35); }
+
+  .ls-form { display: grid; gap: 18px; }
+  .ls-variant-group { display: grid; gap: 8px; }
+  .ls-variant-group.nv-missing { animation: nv-shake .4s; }
+  .ls-variant-group.nv-missing .ls-variant-label span { color: var(--nv-cta); font-weight: 700; }
+  @keyframes nv-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .ls-variant-label { font-weight: 700; color: var(--nv-ink); font-size: 14px; }
+  .ls-variant-label span { font-weight: 500; color: var(--nv-coral); }
+  .ls-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .ls-swatch-color { width: 48px; height: 48px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--nv-line); cursor: pointer; background-color: #eee; transition: transform .15s, box-shadow .15s; }
+  .ls-swatch-color:hover { transform: scale(1.06); }
+  .ls-swatch-color.active { box-shadow: 0 0 0 2.5px var(--nv-coral); }
+  .ls-swatch-size { font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid var(--nv-line); background: #fff; color: var(--nv-ink); cursor: pointer; transition: all .15s; }
+  .ls-swatch-size.active { border-color: var(--nv-coral); background: var(--nv-blush); }
+
+  .nv-urgency { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-weight: 600; }
+  .nv-guarantee-mini { display: flex; gap: 12px; align-items: flex-start; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; }
+  .nv-guarantee-mini strong { display: block; font-size: 14px; color: #166534; }
+  .nv-guarantee-mini p { font-size: 13px; color: var(--nv-ok); line-height: 1.4; }
+  .nv-trustline { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: 13px; color: var(--nv-muted); }
+  .nv-trustline b { color: var(--nv-ok); }
+
+  /* Botón de ReleasIT dentro del formulario */
+  #landing-product-form .releasit-buy-now-button { width: 100% !important; border-radius: 10px !important; }
+
+  /* Cifras */
+  .nv-stats { background: var(--nv-ink); color: #fff; padding-block: 28px; }
+  .nv-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center; }
+  .nv-stat b { display: block; font-family: "Young Serif", Georgia, serif; font-size: 30px; color: var(--nv-coral-soft); font-weight: 400; }
+  .nv-stat span { font-size: 14px; opacity: .85; }
+
+  /* Problema */
+  .nv-problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .nv-problem-grid.nv-single { grid-template-columns: 1fr; max-width: 720px; margin-inline: auto; }
+  .nv-problem-img { width: 100%; border-radius: 18px; display: block; object-fit: cover; aspect-ratio: 4 / 3; }
+  .nv-problem-copy { display: grid; gap: 16px; }
+  .nv-problem-copy h2 { font-size: clamp(26px, 4vw, 36px); }
+  .nv-pains { display: grid; gap: 10px; }
+  .nv-pain { display: flex; gap: 12px; align-items: flex-start; }
+  .nv-pain i { flex: none; width: 24px; height: 24px; border-radius: 50%; background: #fde2e2; color: var(--nv-cta); display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 13px; margin-top: 1px; }
+  .nv-solution { background: var(--nv-blush); border-radius: 12px; padding: 16px 18px; font-weight: 600; color: var(--nv-ink); }
+
+  /* Qué incluye */
+  .nv-kit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .nv-kit-item { background: #fff; border: 1px solid var(--nv-line); border-radius: 14px; padding: 22px; display: grid; gap: 10px; align-content: start; }
+  .nv-kit-item svg { width: 56px; height: 56px; }
+  .nv-kit-item h3 { font-size: 20px; }
+  .nv-kit-item p { font-size: 15px; }
+
+  /* Pasos */
+  .nv-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .nv-step { border-top: 3px solid var(--nv-coral); padding-top: 16px; display: grid; gap: 6px; align-content: start; }
+  .nv-step .nv-n { font-family: "Young Serif", Georgia, serif; font-size: 34px; color: var(--nv-coral); line-height: 1; }
+  .nv-step h3 { font-size: 19px; }
+
+  /* Guía de medidas */
+  .nv-size-img { display: block; margin-inline: auto; width: 100%; max-width: 900px; height: auto; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,.08); }
+
+  /* Colores */
+  .nv-marquee-box { overflow: hidden; width: 100%; }
+  .nv-marquee { display: flex; width: max-content; gap: 14px; animation: nv-marquee 30s linear infinite; }
+  .nv-marquee:hover { animation-play-state: paused; }
+  .nv-marquee-item { flex-shrink: 0; width: 230px; height: 230px; border-radius: 14px; overflow: hidden; }
+  .nv-marquee-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  @keyframes nv-marquee { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 7px)); } }
+
+  /* Videos */
+  .nv-videos { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .nv-videos video { width: 100%; display: block; border-radius: 14px; background: #000; }
+
+  /* Reseñas */
+  .nv-rev-summary { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; font-weight: 600; color: var(--nv-ink); }
+  .nv-reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+  .nv-review { background: #fff; border: 1px solid var(--nv-line); border-radius: 14px; padding: 18px; display: grid; gap: 10px; }
+  .nv-review-hidden { display: none; }
+  .nv-rev-head { display: flex; gap: 10px; align-items: center; }
+  .nv-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--nv-coral-soft); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
+  .nv-rev-name { font-weight: 700; color: var(--nv-ink); font-size: 15px; }
+  .nv-verified { color: var(--nv-ok); font-size: 12px; font-weight: 600; }
+  .nv-review-img { width: 100%; height: auto; max-height: 280px; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
+  .nv-more { display: block; margin: 24px auto 0; background: #fff; border: 1.5px solid var(--nv-line); color: var(--nv-ink); font: inherit; font-weight: 700; padding: 12px 24px; border-radius: 999px; cursor: pointer; }
+  .nv-more:hover { border-color: var(--nv-coral); }
+
+  /* Oferta por cantidad */
+  .nv-tiers { display: grid; gap: 14px; max-width: 620px; margin-inline: auto; }
+  .nv-tier { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; background: #fff; border: 2px solid var(--nv-line); border-radius: 14px; padding: 18px; cursor: pointer; text-align: left; font: inherit; color: inherit; width: 100%; }
+  .nv-tier.active { border-color: var(--nv-coral); background: var(--nv-blush-2); }
+  .nv-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--nv-line); }
+  .nv-tier.active .nv-radio { border: 6px solid var(--nv-coral); }
+  .nv-tier-name { font-weight: 700; color: var(--nv-ink); display: block; }
+  .nv-tier-sub { font-size: 13px; color: var(--nv-muted); }
+  .nv-tier-price { text-align: right; font-weight: 800; color: var(--nv-ink); font-variant-numeric: tabular-nums; }
+  .nv-tier-price s { display: block; font-weight: 500; font-size: 13px; color: var(--nv-muted); }
+  .nv-tag { position: absolute; top: -11px; right: 16px; background: var(--nv-cta); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+  .nv-tag.nv-soft { background: var(--nv-coral); }
+
+  /* Comparativa */
+  .nv-cmp-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 720px; margin: 0 auto 20px; }
+  .nv-cmp-imgs figure { margin: 0; display: grid; gap: 8px; text-align: center; font-weight: 700; color: var(--nv-ink); font-size: 14px; }
+  .nv-cmp-imgs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; }
+  .nv-table-box { overflow-x: auto; border: 1px solid var(--nv-line); border-radius: 14px; background: #fff; max-width: 820px; margin-inline: auto; }
+  .nv-table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 460px; }
+  .nv-table th, .nv-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--nv-line); }
+  .nv-table th { background: var(--nv-blush); color: var(--nv-ink); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+  .nv-table tr:last-child td { border-bottom: 0; }
+  .nv-table th:nth-child(2), .nv-table td:nth-child(2) { background: #fff8f6; text-align: center; }
+  .nv-table th:nth-child(3), .nv-table td:nth-child(3) { text-align: center; }
+  .nv-yes { color: var(--nv-ok); font-weight: 800; }
+  .nv-no { color: #c24; font-weight: 800; }
+
+  /* Garantía */
+  .nv-guarantee { background: var(--nv-coral); color: #fff; border-radius: 22px; padding: 40px 28px; display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; }
+  .nv-guarantee h2 { color: #fff; font-size: clamp(26px, 4vw, 34px); }
+  .nv-guarantee p { margin-top: 8px; max-width: 60ch; }
+  .nv-seal { width: 120px; height: 120px; border-radius: 50%; border: 3px dashed rgba(255,255,255,.85); display: grid; place-items: center; text-align: center; font-weight: 800; font-size: 13px; line-height: 1.2; }
+
+  /* FAQ */
+  .nv-faq { max-width: 760px; margin-inline: auto; display: grid; gap: 10px; }
+  .nv-faq details { background: #fff; border: 1px solid var(--nv-line); border-radius: 12px; padding: 0 18px; }
+  .nv-faq summary { cursor: pointer; list-style: none; padding: 16px 0; font-weight: 700; color: var(--nv-ink); display: flex; justify-content: space-between; gap: 12px; }
+  .nv-faq summary::-webkit-details-marker { display: none; }
+  .nv-faq summary::after { content: "+"; color: var(--nv-coral); font-size: 22px; line-height: 1; }
+  .nv-faq details[open] summary::after { content: "–"; }
+  .nv-faq details p { padding-bottom: 16px; }
+
+  /* Transportadoras */
+  .nv-carriers { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 28px; }
+  .nv-carriers img { max-height: 38px; width: auto; object-fit: contain; }
+
+  /* Cierre */
+  .nv-final { background: var(--nv-ink); color: #fff; text-align: center; }
+  .nv-final h2 { color: #fff; font-size: clamp(28px, 4.5vw, 42px); }
+  .nv-final-inner { display: grid; gap: 16px; justify-items: center; max-width: 620px; margin-inline: auto; }
+  .nv-final p { opacity: .85; }
+  .nv-final .nv-stock { color: var(--nv-coral-soft); font-weight: 700; opacity: 1; }
+  .nv-final .nv-trustline { color: rgba(255,255,255,.75); }
+  .nv-final .nv-trustline b { color: #7ee2a0; }
+
+  /* Lightbox reseñas */
+  .nv-lightbox { position: fixed; inset: 0; z-index: 100000; background: rgba(0,0,0,.9); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .nv-lightbox.open { display: flex; }
+  .nv-lightbox img { max-width: 92%; max-height: 85vh; border-radius: 8px; }
+  .nv-lightbox button { position: absolute; top: 12px; right: 18px; background: none; border: 0; color: #fff; font-size: 40px; cursor: pointer; }
+
+  @media (max-width: 900px) {
+    .nv-reviews { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 860px) {
+    .nv-hero-grid, .nv-problem-grid { grid-template-columns: 1fr; gap: 24px; }
+    .nv-gallery-col { position: static; }
+  }
+  @media (max-width: 760px) {
+    .nv-kit, .nv-steps { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    /* Botón de ReleasIT fijo abajo en celular */
+    .releasit-buy-now-button {
+      position: fixed !important;
+      bottom: 15px; left: 15px; right: 15px;
+      width: calc(100% - 30px) !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,.2) !important;
+    }
+    .nv-page { padding-bottom: 80px; }
+    .nv-marquee-item { width: 160px; height: 160px; }
+  }
+  @media (max-width: 600px) {
+    .nv-reviews, .nv-stats-grid { grid-template-columns: 1fr; }
+    .nv-guarantee { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nv-page *, .nv-marquee { animation: none !important; transition: none !important; }
+  }
+</style>
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign s = section.settings %}
+
+<div class="nv-page" id="product-section-{{ section.id }}">
+
+  {% if s.show_urgency %}
+    <div class="nv-announce">
+      {{ s.urgency_text }}
+      {% if s.show_countdown %}{% render 'custom-countdown' %}{% endif %}
+    </div>
+  {% endif %}
+
+  <!-- HERO -->
+  <section class="nv-hero">
+    <div class="nv-wrap nv-hero-grid">
+      <div class="nv-gallery-col">
+        <div class="ls-gallery" id="ls-main-gallery">
+          {% if s.badge_left != blank %}<span class="nv-badge-float">{{ s.badge_left }}</span>{% endif %}
+          {% if current_variant.compare_at_price > current_variant.price %}
+            {% assign nv_pct = current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price %}
+            <span class="nv-badge-float nv-r" id="nv-badge-float">-{{ nv_pct }}%</span>
+          {% endif %}
+          {% if product.media.size > 0 %}
+            {% for media in product.media %}
+              {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
+              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
+                {% case media.media_type %}
+                  {% when 'video' %}
+                    {{ media | video_tag: controls: true, autoplay: true, loop: true, muted: true }}
+                  {% when 'external_video' %}
+                    {{ media | external_video_tag }}
+                  {% else %}
+                    <img src="{{ media | image_url: width: 900 }}" alt="{{ media.alt | default: product.title | escape }}" width="900" height="900" {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+                {% endcase %}
+              </div>
+            {% endfor %}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag }}
+          {% endif %}
+        </div>
+
+        {% if product.media.size > 1 %}
+          <div class="ls-thumbnails">
+            {% for media in product.media %}
+              {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
+              <div class="ls-thumb-wrapper {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')">
+                <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="74" height="74" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="nv-buy">
+        <div class="nv-rating"><span class="nv-stars">★★★★★</span> {{ s.rating_text }}</div>
+        <h1>{{ s.headline | default: product.title }}</h1>
+        {% if s.subheadline != blank %}<p class="nv-lead">{{ s.subheadline }}</p>{% endif %}
+
+        <div class="nv-pills">
+          {% for i in (1..6) %}
+            {% assign pill_key = 'pill_' | append: i %}
+            {% if s[pill_key] != blank %}<span class="nv-pill">✔ {{ s[pill_key] }}</span>{% endif %}
+          {% endfor %}
+        </div>
+
+        <div class="nv-price-row">
+          <span class="nv-price" id="ls-price">{{ current_variant.price | money }}</span>
+          <span class="nv-compare" id="ls-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
+          <span class="nv-save" id="ls-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>
+            {% if current_variant.compare_at_price > current_variant.price %}Ahorras {{ current_variant.compare_at_price | minus: current_variant.price | money }}{% endif %}
+          </span>
+        </div>
+
+        <div id="nv-comprar">
+          {% form 'product', product, id: 'landing-product-form', class: 'ls-form releasit-form' %}
+            <input type="hidden" name="id" id="ls-variant-id" value="{{ current_variant.id }}">
+            <input type="hidden" name="quantity" id="ls-quantity" value="1">
+
+            {% unless product.has_only_default_variant %}
+              {% for option in product.options_with_values %}
+                {% assign option_name_downcase = option.name | downcase %}
+                <div class="ls-variant-group">
+                  <label class="ls-variant-label">{{ option.name }}: <span id="ls-val-{{ option.position }}">Selecciona una opción</span></label>
+                  <div class="ls-swatches">
+                    {% for value in option.values %}
+                      {% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}
+                        {% assign variant_img = '' %}
+                        {% for v in product.variants %}
+                          {% if v.options contains value and v.featured_image %}
+                            {% assign variant_img = v.featured_image | image_url: width: 120 %}
+                            {% break %}
+                          {% endif %}
+                        {% endfor %}
+                        <div class="ls-swatch-color" role="button" tabindex="0"
+                             data-option-index="{{ option.position }}"
+                             data-value="{{ value | escape }}"
+                             onclick="selectLsVariant(this)"
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectLsVariant(this);}"
+                             {% if variant_img != '' %}
+                             style="background-image: url('{{ variant_img }}'); background-size: cover; background-position: center;"
+                             {% endif %}
+                             title="{{ value }}" aria-label="{{ value }}"></div>
+                      {% else %}
+                        <div class="ls-swatch-size" role="button" tabindex="0"
+                             data-option-index="{{ option.position }}"
+                             data-value="{{ value | escape }}"
+                             onclick="selectLsVariant(this)"
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectLsVariant(this);}">{{ value }}</div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            {% endunless %}
+
+            {% if s.urgency_note != blank %}<div class="nv-urgency">⚠️ {{ s.urgency_note }}</div>{% endif %}
+
+            {% comment %} Aquí ReleasIT inserta su botón "Comprar / Pago contra entrega". {% endcomment %}
+          {% endform %}
+        </div>
+
+        {% if s.guarantee_title != blank %}
+          <div class="nv-guarantee-mini">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#22c55e" stroke-width="2" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"></path><path d="M9 12l2 2 4-4"></path></svg>
+            <div><strong>{{ s.guarantee_title }}</strong><p>{{ s.guarantee_text }}</p></div>
+          </div>
+        {% endif %}
+
+        {% if s.include_1_title != blank %}
+          <a class="nv-btn nv-btn-ghost nv-btn-block" href="#nv-incluye">↓ Ver qué incluye</a>
+        {% endif %}
+
+        <div class="nv-trustline">
+          <span><b>✔</b> Pago contra entrega</span>
+          <span><b>✔</b> {{ s.shipping_time }}</span>
+          <span><b>✔</b> Compra 100% segura</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIFRAS -->
+  {% if s.stat_1_value != blank %}
+    <div class="nv-stats">
+      <div class="nv-wrap nv-stats-grid">
+        {% for i in (1..3) %}
+          {% assign sv = 'stat_' | append: i | append: '_value' %}
+          {% assign sl = 'stat_' | append: i | append: '_label' %}
+          {% if s[sv] != blank %}<div class="nv-stat"><b>{{ s[sv] }}</b><span>{{ s[sl] }}</span></div>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- EL PROBLEMA -->
+  {% if s.problem_title != blank %}
+    <section class="nv-sec">
+      <div class="nv-wrap nv-problem-grid {% if s.problem_image == blank %}nv-single{% endif %}">
+        {% if s.problem_image != blank %}
+          <img class="nv-problem-img" src="{{ s.problem_image | image_url: width: 900 }}" alt="{{ s.problem_title | escape }}" width="900" height="675" loading="lazy">
+        {% endif %}
+        <div class="nv-problem-copy">
+          <span class="nv-eyebrow">El problema real</span>
+          <h2>{{ s.problem_title }}</h2>
+          <div class="nv-pains">
+            {% for i in (1..4) %}
+              {% assign pk = 'pain_' | append: i %}
+              {% if s[pk] != blank %}<div class="nv-pain"><i>✕</i><p>{{ s[pk] }}</p></div>{% endif %}
+            {% endfor %}
+          </div>
+          {% if s.solution_text != blank %}<p class="nv-solution">{{ s.solution_text }}</p>{% endif %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- QUÉ INCLUYE -->
+  {% if s.include_1_title != blank %}
+    <section class="nv-sec nv-alt" id="nv-incluye">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Qué incluye</span>
+          <h2>{{ s.include_title }}</h2>
+          {% if s.include_subtitle != blank %}<p>{{ s.include_subtitle }}</p>{% endif %}
+        </div>
+        <div class="nv-kit">
+          {% for i in (1..3) %}
+            {% assign it = 'include_' | append: i | append: '_title' %}
+            {% assign ix = 'include_' | append: i | append: '_text' %}
+            {% if s[it] != blank %}
+              <div class="nv-kit-item">
+                {% case i %}
+                  {% when 1 %}<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="14" width="44" height="28" rx="6" fill="#F4A99C"/><path d="M6 20 Q6 14 12 14 M50 20 Q50 14 44 14 M6 36 Q6 42 12 42 M50 36 Q50 42 44 42" stroke="#E8746A" stroke-width="3" fill="none"/></svg>
+                  {% when 2 %}<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="8" y="10" width="40" height="36" rx="4" fill="#FCEFEC" stroke="#E8746A" stroke-width="2"/><rect x="8" y="10" width="40" height="8" rx="3" fill="#E8746A"/></svg>
+                  {% else %}<svg viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="18" width="30" height="20" rx="9" fill="#F4A99C"/><rect x="20" y="22" width="30" height="20" rx="9" fill="#E8746A"/></svg>
+                {% endcase %}
+                <h3>{{ s[it] }}</h3>
+                <p>{{ s[ix] }}</p>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- CUIDADO EN 3 PASOS -->
+  {% if s.step_1_title != blank %}
+    <section class="nv-sec">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Fáciles de cuidar</span>
+          <h2>{{ s.steps_title }}</h2>
+          {% if s.steps_subtitle != blank %}<p>{{ s.steps_subtitle }}</p>{% endif %}
+        </div>
+        <div class="nv-steps">
+          {% for i in (1..3) %}
+            {% assign st = 'step_' | append: i | append: '_title' %}
+            {% assign sx = 'step_' | append: i | append: '_text' %}
+            {% if s[st] != blank %}
+              <div class="nv-step"><span class="nv-n">{{ i }}</span><h3>{{ s[st] }}</h3><p>{{ s[sx] }}</p></div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- GUÍA DE MEDIDAS -->
+  {% if s.size_guide_image != blank %}
+    <section class="nv-sec nv-alt" id="nv-medidas">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Guía de medidas</span>
+          <h2>{{ s.size_guide_title }}</h2>
+          <p>Mide el ancho y el largo de tu colchón y elige el tamaño que corresponde.</p>
+        </div>
+        <img class="nv-size-img" src="{{ s.size_guide_image | image_url: width: 1400 }}" alt="Guía de medidas" width="1400" height="930" loading="lazy">
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- COLORES -->
+  {% assign nv_has_colors = false %}
+  {% for i in (1..15) %}
+    {% assign ck = 'color_image_' | append: i %}
+    {% if s[ck] != blank %}{% assign nv_has_colors = true %}{% endif %}
+  {% endfor %}
+  {% if nv_has_colors %}
+    <section class="nv-sec">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Nuestros colores</span>
+          <h2>{{ s.carousel_title }}</h2>
+        </div>
+      </div>
+      <div class="nv-marquee-box">
+        <div class="nv-marquee">
+          {% for round in (1..2) %}
+            {% for i in (1..15) %}
+              {% assign ck = 'color_image_' | append: i %}
+              {% if s[ck] != blank %}
+                <div class="nv-marquee-item" {% if round == 2 %}aria-hidden="true"{% endif %}>
+                  <img src="{{ s[ck] | image_url: width: 500 }}" alt="Color disponible" width="230" height="230" loading="lazy">
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- RESEÑAS -->
+  {% if s.review_1_name != blank %}
+    <section class="nv-sec nv-alt" id="nv-resenas">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Opiniones reales</span>
+          <h2>{{ s.reviews_title }}</h2>
+        </div>
+        <div class="nv-rev-summary"><span class="nv-stars">★★★★★</span> {{ s.rating_text }} · Compradores verificados</div>
+        <div class="nv-reviews">
+          {% assign nv_shown = 0 %}
+          {% for i in (1..10) %}
+            {% assign rn = 'review_' | append: i | append: '_name' %}
+            {% assign rt = 'review_' | append: i | append: '_text' %}
+            {% assign ri = 'review_' | append: i | append: '_image' %}
+            {% assign rp = 'review_' | append: i | append: '_product_image' %}
+            {% if s[rn] != blank %}
+              {% assign nv_shown = nv_shown | plus: 1 %}
+              <div class="nv-review {% if nv_shown > 6 %}nv-review-hidden{% endif %}">
+                <div class="nv-rev-head">
+                  {% if s[ri] != blank %}
+                    <img class="nv-avatar" src="{{ s[ri] | image_url: width: 100 }}" alt="{{ s[rn] | escape }}" width="44" height="44" loading="lazy">
+                  {% else %}
+                    <div class="nv-avatar">{{ s[rn] | slice: 0 }}</div>
+                  {% endif %}
+                  <div>
+                    <div class="nv-rev-name">{{ s[rn] }}</div>
+                    <div class="nv-verified">✔ Comprador verificado</div>
+                  </div>
+                </div>
+                <span class="nv-stars">★★★★★</span>
+                <p>"{{ s[rt] }}"</p>
+                {% if s[rp] != blank %}
+                  <img class="nv-review-img" src="{{ s[rp] | image_url: width: 700 }}" alt="Foto de {{ s[rn] | escape }}" width="700" height="500" loading="lazy" onclick="nvOpenLightbox(this.src)">
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% if nv_shown > 6 %}
+          <button type="button" class="nv-more" onclick="document.querySelectorAll('.nv-review-hidden').forEach(function(el){el.classList.remove('nv-review-hidden');});this.remove();">Ver más reseñas</button>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- VIDEOS -->
+  {% if s.video_1_url != blank or s.video_2_url != blank %}
+    <section class="nv-sec">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">En video</span>
+          <h2>{{ s.videos_title }}</h2>
+        </div>
+        <div class="nv-videos">
+          {% if s.video_1_url != blank %}<video src="{{ s.video_1_url }}" autoplay muted loop playsinline controls preload="metadata"></video>{% endif %}
+          {% if s.video_2_url != blank %}<video src="{{ s.video_2_url }}" autoplay muted loop playsinline controls preload="metadata"></video>{% endif %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- OFERTA POR CANTIDAD -->
+  {% if s.show_bundles %}
+    <section class="nv-sec nv-alt" id="nv-oferta">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Oferta por cantidad</span>
+          <h2>{{ s.bundles_title }}</h2>
+          {% if s.bundles_subtitle != blank %}<p>{{ s.bundles_subtitle }}</p>{% endif %}
+        </div>
+        <div class="nv-tiers">
+          {% for q in (1..3) %}
+            {% assign dk = 'bundle_' | append: q | append: '_discount' %}
+            {% assign lk = 'bundle_' | append: q | append: '_label' %}
+            <button type="button" class="nv-tier {% if q == 1 %}active{% endif %}" data-qty="{{ q }}" data-discount="{{ s[dk] | default: 0 }}" onclick="nvSelectTier(this)">
+              {% if q == 2 and s[dk] > 0 %}<span class="nv-tag">Más popular</span>{% endif %}
+              {% if q == 3 and s[dk] > 0 %}<span class="nv-tag nv-soft">Mayor ahorro</span>{% endif %}
+              <span class="nv-radio"></span>
+              <span>
+                <span class="nv-tier-name">{{ q }} {% if q == 1 %}{{ s.bundle_unit_singular }}{% else %}{{ s.bundle_unit_plural }}{% endif %}</span>
+                <span class="nv-tier-sub">{{ s[lk] }}{% if s[dk] > 0 %} · {{ s[dk] }}% OFF{% endif %}</span>
+              </span>
+              <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
+            </button>
+          {% endfor %}
+          <button type="button" class="nv-btn nv-btn-cta nv-btn-block" onclick="nvOrderNow()">Ordenar ahora · Pago al recibir</button>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- COMPARATIVA -->
+  {% if s.compare_1 != blank %}
+    <section class="nv-sec">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Compara</span>
+          <h2>{{ s.compare_title }}</h2>
+          <p>Comparado con las opciones comunes del mercado.</p>
+        </div>
+        {% if s.comparison_product_image != blank and s.comparison_other_image != blank %}
+          <div class="nv-cmp-imgs">
+            <figure><img src="{{ s.comparison_product_image | image_url: width: 500 }}" alt="Dianamar Hogar" width="500" height="500" loading="lazy"><figcaption>Dianamar Hogar ✔</figcaption></figure>
+            <figure><img src="{{ s.comparison_other_image | image_url: width: 500 }}" alt="Opción común" width="500" height="500" loading="lazy"><figcaption>Opción común ✕</figcaption></figure>
+          </div>
+        {% endif %}
+        <div class="nv-table-box">
+          <table class="nv-table">
+            <thead><tr><th>Característica</th><th>Dianamar Hogar</th><th>Otras</th></tr></thead>
+            <tbody>
+              {% for i in (1..7) %}
+                {% assign ck = 'compare_' | append: i %}
+                {% if s[ck] != blank %}<tr><td>{{ s[ck] }}</td><td class="nv-yes">✔</td><td class="nv-no">✕</td></tr>{% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- GARANTÍA -->
+  {% if s.guarantee_title != blank %}
+    <section class="nv-sec nv-alt">
+      <div class="nv-wrap">
+        <div class="nv-guarantee">
+          <div class="nv-seal">GARANTÍA<br>DE<br>SATISFACCIÓN</div>
+          <div>
+            <h2>Compra sin riesgo</h2>
+            <p>{{ s.guarantee_text }} Te llamamos para confirmar tu pedido antes de despacharlo y solo pagas cuando lo tienes en tus manos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- PREGUNTAS FRECUENTES -->
+  {% if s.faq_1_q != blank %}
+    <section class="nv-sec" id="nv-preguntas">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Preguntas frecuentes</span>
+          <h2>{{ s.faq_title }}</h2>
+        </div>
+        <div class="nv-faq">
+          {% for i in (1..6) %}
+            {% assign fq = 'faq_' | append: i | append: '_q' %}
+            {% assign fa = 'faq_' | append: i | append: '_a' %}
+            {% if s[fq] != blank %}
+              <details {% if i == 1 %}open{% endif %}><summary>{{ s[fq] }}</summary><p>{{ s[fa] }}</p></details>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- TRANSPORTADORAS -->
+  {% if s.logistics_img_1 != blank %}
+    <section class="nv-sec nv-alt">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Envíos a toda Colombia</span>
+          <h2>{{ s.logistics_title }}</h2>
+        </div>
+        <div class="nv-carriers">
+          {% for i in (1..4) %}
+            {% assign lk = 'logistics_img_' | append: i %}
+            {% if s[lk] != blank %}<img src="{{ s[lk] | image_url: width: 200 }}" alt="Transportadora" width="100" height="38" loading="lazy">{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- CIERRE -->
+  <section class="nv-sec nv-final">
+    <div class="nv-wrap nv-final-inner">
+      <span class="nv-eyebrow">Última llamada</span>
+      <h2>{{ s.final_title }}</h2>
+      <p>{{ s.final_text }}</p>
+      {% if s.final_stock != blank %}<p class="nv-stock">{{ s.final_stock }}</p>{% endif %}
+      <button type="button" class="nv-btn nv-btn-cta" onclick="nvOrderNow()">Realizar mi pedido</button>
+      <div class="nv-trustline">
+        <span><b>✔</b> Sin tarjeta</span>
+        <span><b>✔</b> Sin pagar en línea</span>
+        <span><b>✔</b> Te llamamos para confirmar</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="nv-lightbox" id="nv-lightbox" onclick="nvCloseLightbox()">
+    <button type="button" aria-label="Cerrar" onclick="nvCloseLightbox()">&times;</button>
+    <img id="nv-lightbox-img" alt="Foto de reseña" onclick="event.stopPropagation()">
+  </div>
+</div>
+
+{% assign ls_color_option_index = 0 %}
+{% for option in product.options_with_values %}
+  {% assign ls_opt_name_dc = option.name | downcase %}
+  {% if ls_opt_name_dc contains 'color' or ls_opt_name_dc contains 'colour' %}
+    {% assign ls_color_option_index = option.position %}
+  {% endif %}
+{% endfor %}
+
+<script>
+  var lsProductJson = {{ product | json }};
+  var nvMoneyFormat = {{ shop.money_format | json }};
+
+  var lsVariantPrices = {
+    {% for variant in product.variants %}
+      "{{ variant.id }}": {
+        "price": {{ variant.price | money | json }},
+        "compare_at_price": {{ variant.compare_at_price | money | json }},
+        "save": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | money | json }}{% else %}""{% endif %},
+        "has_discount": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
+        "discount_pct": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  };
+
+  var lsGalleryData = {
+    colorOptionIndex: {{ ls_color_option_index }},
+    featuredMediaPairs: [
+      {% if ls_color_option_index > 0 %}
+        {% assign ls_color_zero_index = ls_color_option_index | minus: 1 %}
+        {% for variant in product.variants %}
+          {% if variant.featured_media %}
+            [{{ variant.featured_media.id }}, {{ variant.options[ls_color_zero_index] | json }}]{% unless forloop.last %},{% endunless %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    ]
+  };
+
+  /* ---------- Galería filtrada por color (misma lógica que la plantilla actual) ----------
+     Las fotos se filtran por su "Alt text" en el admin (nombre del color en minúsculas,
+     ej. "gris plata"). Si ninguna coincide, se muestran todas. */
+  var lsCombiningMarksRegex = new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g');
+  function lsNormalizeColor(str) {
+    return (str || '').toString().trim().toLowerCase().normalize('NFD').replace(lsCombiningMarksRegex, '');
+  }
+
+  var lsFeaturedMediaByColor = (function () {
+    var map = {};
+    (lsGalleryData.featuredMediaPairs || []).forEach(function (pair) {
+      var color = lsNormalizeColor(pair[1]);
+      if (!map[color]) map[color] = [];
+      if (map[color].indexOf(pair[0]) === -1) map[color].push(pair[0]);
+    });
+    return map;
+  })();
+
+  function lsVisibleMediaIdsForColor(colorValue) {
+    var targetColor = lsNormalizeColor(colorValue);
+    if (!targetColor) return null;
+    var matchingIds = [];
+    document.querySelectorAll('#ls-main-gallery .ls-media-item[data-media-id]').forEach(function (item) {
+      if (lsNormalizeColor(item.getAttribute('data-color')) === targetColor) {
+        matchingIds.push(parseInt(item.getAttribute('data-media-id'), 10));
+      }
+    });
+    (lsFeaturedMediaByColor[targetColor] || []).forEach(function (mediaId) {
+      if (matchingIds.indexOf(mediaId) === -1) matchingIds.push(mediaId);
+    });
+    return matchingIds.length ? matchingIds : null;
+  }
+
+  var lsIsInitialGalleryLoad = true;
+  function applyLsGalleryVariantFilter(colorValue) {
+    var visibleIds = lsVisibleMediaIdsForColor(colorValue);
+    var mediaItems = document.querySelectorAll('#ls-main-gallery .ls-media-item');
+    var thumbs = document.querySelectorAll('.ls-thumb-wrapper');
+
+    if (lsIsInitialGalleryLoad) {
+      var portadaIds = [];
+      mediaItems.forEach(function (item) {
+        var id = parseInt(item.getAttribute('data-media-id'), 10);
+        var visibleForColor = !visibleIds || visibleIds.indexOf(id) !== -1;
+        if (visibleForColor && (item.getAttribute('data-filename') || '').indexOf('portada') !== -1) portadaIds.push(id);
+      });
+      if (portadaIds.length > 0) visibleIds = portadaIds;
+      lsIsInitialGalleryLoad = false;
+    }
+
+    var firstVisibleId = null;
+    mediaItems.forEach(function (item) {
+      var id = parseInt(item.getAttribute('data-media-id'), 10);
+      var visible = !visibleIds || visibleIds.indexOf(id) !== -1;
+      item.classList.toggle('ls-media-variant-hidden', !visible);
+      if (visible && firstVisibleId === null) firstVisibleId = id;
+    });
+    thumbs.forEach(function (thumb) {
+      var id = parseInt(thumb.getAttribute('data-media-id'), 10);
+      thumb.classList.toggle('ls-thumb-variant-hidden', !(!visibleIds || visibleIds.indexOf(id) !== -1));
+    });
+
+    var activeVisible = false;
+    mediaItems.forEach(function (item) {
+      if (item.style.display !== 'none' && !item.classList.contains('ls-media-variant-hidden')) activeVisible = true;
+    });
+    if (!activeVisible && firstVisibleId !== null) {
+      changeLsMedia(document.querySelector('.ls-thumb-wrapper[data-media-id="' + firstVisibleId + '"]'), firstVisibleId);
+    }
+  }
+
+  function changeLsMedia(thumb, mediaId) {
+    document.querySelectorAll('.ls-media-item').forEach(function (el) {
+      el.style.display = 'none';
+      var v = el.querySelector('video'); if (v) v.pause();
+    });
+    var active = document.querySelector('.ls-media-item[data-media-id="' + mediaId + '"]');
+    if (active) {
+      active.style.display = 'block';
+      var v = active.querySelector('video'); if (v) v.play();
+    }
+    document.querySelectorAll('.ls-thumb-wrapper').forEach(function (el) { el.classList.remove('active'); });
+    if (thumb) thumb.classList.add('active');
+  }
+
+  /* ---------- Selección de variante ---------- */
+  function selectLsVariant(swatch) {
+    var optionIndex = parseInt(swatch.getAttribute('data-option-index'), 10);
+    var value = swatch.getAttribute('data-value');
+    var group = swatch.closest('.ls-variant-group');
+    group.querySelectorAll('.ls-swatch-color, .ls-swatch-size').forEach(function (el) { el.classList.remove('active'); });
+    swatch.classList.add('active');
+    group.classList.remove('nv-missing');
+    document.getElementById('ls-val-' + optionIndex).textContent = value;
+
+    updateAvailableOptions(optionIndex, value);
+    if (lsGalleryData.colorOptionIndex > 0 && optionIndex === lsGalleryData.colorOptionIndex) {
+      applyLsGalleryVariantFilter(value);
+    }
+    updateLsVariant();
+  }
+
+  function updateAvailableOptions(changedOptionIndex, changedValue) {
+    var availableVariants = lsProductJson.variants.filter(function (v) {
+      return v.options[changedOptionIndex - 1] === changedValue;
+    });
+    document.querySelectorAll('.ls-variant-group').forEach(function (group) {
+      var swatches = group.querySelectorAll('.ls-swatch-color, .ls-swatch-size');
+      if (!swatches.length) return;
+      var idx = parseInt(swatches[0].getAttribute('data-option-index'), 10);
+      if (idx === changedOptionIndex) return;
+      var possible = availableVariants.map(function (v) { return v.options[idx - 1]; });
+      swatches.forEach(function (sw) {
+        if (possible.indexOf(sw.getAttribute('data-value')) !== -1) {
+          sw.style.display = '';
+        } else {
+          sw.style.display = 'none';
+          if (sw.classList.contains('active')) {
+            sw.classList.remove('active');
+            document.getElementById('ls-val-' + idx).textContent = 'Selecciona una opción';
+          }
+        }
+      });
+    });
+  }
+
+  function lsSelectedOptions() {
+    var selected = [];
+    document.querySelectorAll('.ls-variant-group').forEach(function (group) {
+      var a = group.querySelector('.ls-swatch-color.active, .ls-swatch-size.active');
+      if (a) selected[parseInt(a.getAttribute('data-option-index'), 10) - 1] = a.getAttribute('data-value');
+    });
+    return selected;
+  }
+
+  function nvCurrentVariant() {
+    var id = parseInt(document.getElementById('ls-variant-id').value, 10);
+    return lsProductJson.variants.find(function (v) { return v.id === id; });
+  }
+
+  function updateLsVariant() {
+    var selected = lsSelectedOptions();
+    var match = lsProductJson.variants.find(function (variant) {
+      return variant.options.every(function (opt, i) { return selected[i] === undefined || opt === selected[i]; });
+    });
+    if (!match) return;
+
+    var idInput = document.getElementById('ls-variant-id');
+    idInput.value = match.id;
+    idInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // ReleasIT lee la variante desde ?variant= en la URL; sin esto usa la variante por defecto.
+    var url = new URL(window.location.href);
+    url.searchParams.set('variant', match.id);
+    window.history.replaceState({}, '', url.toString());
+
+    var d = lsVariantPrices[match.id];
+    if (d) {
+      document.getElementById('ls-price').innerHTML = d.price;
+      var cmp = document.getElementById('ls-compare');
+      var badge = document.getElementById('ls-badge');
+      var floatBadge = document.getElementById('nv-badge-float');
+      if (d.has_discount) {
+        cmp.innerHTML = d.compare_at_price; cmp.style.display = '';
+        badge.innerHTML = 'Ahorras ' + d.save; badge.style.display = '';
+        if (floatBadge) { floatBadge.textContent = '-' + d.discount_pct + '%'; floatBadge.style.display = ''; }
+      } else {
+        cmp.style.display = 'none';
+        badge.style.display = 'none';
+        if (floatBadge) floatBadge.style.display = 'none';
+      }
+    }
+
+    if (lsGalleryData.colorOptionIndex > 0) {
+      applyLsGalleryVariantFilter(match.options[lsGalleryData.colorOptionIndex - 1]);
+    }
+    nvRenderTiers();
+  }
+
+  /* ---------- Oferta por cantidad ---------- */
+  function nvFormatMoney(cents) {
+    var n = Math.round(cents);
+    var fmt = nvMoneyFormat || '${{amount_no_decimals_with_comma_separator}}';
+    var m = fmt.match(/\{\{\s*(\w+)\s*\}\}/);
+    var key = m ? m[1] : 'amount_no_decimals_with_comma_separator';
+    function delim(num, precision, thousands, decimal) {
+      var parts = (num / 100).toFixed(precision).split('.');
+      return parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands) + (parts[1] ? decimal + parts[1] : '');
+    }
+    var value;
+    switch (key) {
+      case 'amount': value = delim(n, 2, ',', '.'); break;
+      case 'amount_no_decimals': value = delim(n, 0, ',', '.'); break;
+      case 'amount_with_comma_separator': value = delim(n, 2, '.', ','); break;
+      default: value = delim(n, 0, '.', ',');
+    }
+    return fmt.replace(/\{\{\s*\w+\s*\}\}/, value);
+  }
+
+  function nvRenderTiers() {
+    var v = nvCurrentVariant();
+    if (!v) return;
+    document.querySelectorAll('.nv-tier').forEach(function (t) {
+      var qty = parseInt(t.getAttribute('data-qty'), 10);
+      var disc = parseFloat(t.getAttribute('data-discount')) || 0;
+      var full = v.price * qty;
+      var now = full * (1 - disc / 100);
+      var was = (v.compare_at_price && v.compare_at_price > v.price) ? v.compare_at_price * qty : (disc > 0 ? full : 0);
+      t.querySelector('.nv-tier-now').textContent = nvFormatMoney(now);
+      t.querySelector('.nv-tier-was').textContent = was > now ? nvFormatMoney(was) : '';
+    });
+  }
+
+  function nvSelectTier(tier) {
+    document.querySelectorAll('.nv-tier').forEach(function (t) { t.classList.toggle('active', t === tier); });
+    document.getElementById('ls-quantity').value = tier.getAttribute('data-qty');
+    document.getElementById('ls-quantity').dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  /* ---------- Botones "Pedir ahora": abren el formulario de ReleasIT ---------- */
+  function nvMissingGroups() {
+    var missing = [];
+    document.querySelectorAll('.ls-variant-group').forEach(function (group) {
+      if (!group.querySelector('.ls-swatch-color.active, .ls-swatch-size.active')) missing.push(group);
+    });
+    return missing;
+  }
+
+  function nvOrderNow() {
+    var missing = nvMissingGroups();
+    var form = document.getElementById('nv-comprar');
+    if (missing.length) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      missing.forEach(function (g) {
+        g.classList.remove('nv-missing'); void g.offsetWidth; g.classList.add('nv-missing');
+      });
+      return;
+    }
+    var btn = document.querySelector('#landing-product-form .releasit-buy-now-button, .releasit-buy-now-button');
+    if (btn) { btn.click(); } else { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+
+  /* ---------- Lightbox de reseñas ---------- */
+  function nvOpenLightbox(src) {
+    document.getElementById('nv-lightbox-img').src = src;
+    document.getElementById('nv-lightbox').classList.add('open');
+  }
+  function nvCloseLightbox() { document.getElementById('nv-lightbox').classList.remove('open'); }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') nvCloseLightbox(); });
+
+  // Si tocan el botón de ReleasIT sin haber elegido color y tamaño, se los pedimos
+  // antes de abrir el formulario, para que no llegue una variante que no eligieron.
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest || !e.target.closest('.releasit-buy-now-button')) return;
+    if (!nvMissingGroups().length) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    nvOrderNow();
+  }, true);
+
+  /* ---------- Swipe en la galería (celular) ---------- */
+  function nvNavigateGallery(dir) {
+    var items = Array.prototype.slice.call(document.querySelectorAll('.ls-media-item:not(.ls-media-variant-hidden)'));
+    if (items.length <= 1) return;
+    var cur = items.findIndex(function (el) { return el.style.display !== 'none'; });
+    if (cur === -1) cur = 0;
+    var next = (cur + dir + items.length) % items.length;
+    var id = items[next].getAttribute('data-media-id');
+    var thumb = document.querySelector('.ls-thumb-wrapper[data-media-id="' + id + '"]');
+    changeLsMedia(thumb, id);
+    if (thumb) thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    applyLsGalleryVariantFilter('');
+    nvRenderTiers();
+
+    var gallery = document.getElementById('ls-main-gallery');
+    if (gallery) {
+      var startX = 0;
+      gallery.addEventListener('touchstart', function (e) { startX = e.changedTouches[0].screenX; }, { passive: true });
+      gallery.addEventListener('touchend', function (e) {
+        var endX = e.changedTouches[0].screenX;
+        if (endX < startX - 40) nvNavigateGallery(1);
+        if (endX > startX + 40) nvNavigateGallery(-1);
+      }, { passive: true });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Nueva Página",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Barra superior"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_urgency",
+      "label": "Mostrar barra superior",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "urgency_text",
+      "label": "Texto barra superior",
+      "default": "🚚 Envío a toda Colombia · Pagas cuando lo recibes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Mostrar cuenta regresiva",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Encabezado del producto"
+    },
+    {
+      "type": "text",
+      "id": "badge_left",
+      "label": "Etiqueta sobre la foto",
+      "default": "⭐ 4.9 · Clientes felices"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "Texto de calificación",
+      "default": "4.9/5 · +2.000 juegos vendidos"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Título",
+      "default": "Renueva tu habitación con sábanas suaves y de ajuste perfecto"
+    },
+    {
+      "type": "textarea",
+      "id": "subheadline",
+      "label": "Subtítulo",
+      "default": "Descansa mejor cada noche con sábanas cómodas, elegantes y fáciles de cuidar. Textura suave, cero motas y elásticos que no se salen del colchón."
+    },
+    {
+      "type": "text",
+      "id": "pill_1",
+      "label": "Beneficio corto 1",
+      "default": "No se motosean"
+    },
+    {
+      "type": "text",
+      "id": "pill_2",
+      "label": "Beneficio corto 2",
+      "default": "Ajuste perfecto"
+    },
+    {
+      "type": "text",
+      "id": "pill_3",
+      "label": "Beneficio corto 3",
+      "default": "Frescas"
+    },
+    {
+      "type": "text",
+      "id": "pill_4",
+      "label": "Beneficio corto 4",
+      "default": "Color que no se destiñe"
+    },
+    {
+      "type": "text",
+      "id": "pill_5",
+      "label": "Beneficio corto 5",
+      "default": "Secado rápido"
+    },
+    {
+      "type": "text",
+      "id": "pill_6",
+      "label": "Beneficio corto 6"
+    },
+    {
+      "type": "text",
+      "id": "urgency_note",
+      "label": "Aviso de urgencia",
+      "default": "¡Quedan pocas unidades en inventario!"
+    },
+    {
+      "type": "text",
+      "id": "shipping_time",
+      "label": "Tiempo de envío",
+      "default": "Envío 2 a 5 días hábiles"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_title",
+      "label": "Título garantía",
+      "default": "Garantía de satisfacción"
+    },
+    {
+      "type": "textarea",
+      "id": "guarantee_text",
+      "label": "Texto garantía",
+      "default": "Si el producto llega con defecto de fabricación, lo cambiamos sin costo."
+    },
+    {
+      "type": "header",
+      "content": "Cifras destacadas"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_value",
+      "label": "Cifra 1",
+      "default": "+2.000"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "Descripción cifra 1",
+      "default": "juegos vendidos en Colombia"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_value",
+      "label": "Cifra 2",
+      "default": "11 colores"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "Descripción cifra 2",
+      "default": "para combinar con tu cuarto"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_value",
+      "label": "Cifra 3",
+      "default": "5 tamaños"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "Descripción cifra 3",
+      "default": "de sencilla a king"
+    },
+    {
+      "type": "header",
+      "content": "El problema"
+    },
+    {
+      "type": "image_picker",
+      "id": "problem_image",
+      "label": "Imagen (opcional)"
+    },
+    {
+      "type": "text",
+      "id": "problem_title",
+      "label": "Título",
+      "default": "¿Tus sábanas se salen, se motosean o te dan calor?"
+    },
+    {
+      "type": "text",
+      "id": "pain_1",
+      "label": "Problema 1",
+      "default": "Te despiertas con la esquina del colchón al aire porque el elástico se venció."
+    },
+    {
+      "type": "text",
+      "id": "pain_2",
+      "label": "Problema 2",
+      "default": "A los pocos lavados aparecen motas y la tela se siente áspera."
+    },
+    {
+      "type": "text",
+      "id": "pain_3",
+      "label": "Problema 3",
+      "default": "El color se apaga y el cuarto se ve descuidado."
+    },
+    {
+      "type": "text",
+      "id": "pain_4",
+      "label": "Problema 4",
+      "default": "Telas que guardan el calor y no te dejan dormir tranquila."
+    },
+    {
+      "type": "textarea",
+      "id": "solution_text",
+      "label": "Solución",
+      "default": "Nuestra solución: tela con textura suave, elásticos reforzados y color firme que se mantiene lavado tras lavado."
+    },
+    {
+      "type": "header",
+      "content": "Qué incluye"
+    },
+    {
+      "type": "text",
+      "id": "include_title",
+      "label": "Título",
+      "default": "Un juego completo, listo para tender"
+    },
+    {
+      "type": "text",
+      "id": "include_subtitle",
+      "label": "Subtítulo",
+      "default": "Todo lo que necesitas para cambiar la cara de tu habitación hoy mismo."
+    },
+    {
+      "type": "text",
+      "id": "include_1_title",
+      "label": "Elemento 1",
+      "default": "1 sábana ajustable"
+    },
+    {
+      "type": "textarea",
+      "id": "include_1_text",
+      "label": "Descripción elemento 1",
+      "default": "Con elástico reforzado en todo el borde para que abrace el colchón y no se salga de las esquinas."
+    },
+    {
+      "type": "text",
+      "id": "include_2_title",
+      "label": "Elemento 2",
+      "default": "1 sobresábana"
+    },
+    {
+      "type": "textarea",
+      "id": "include_2_text",
+      "label": "Descripción elemento 2",
+      "default": "Tela fresca y liviana que se ve elegante al tender la cama."
+    },
+    {
+      "type": "text",
+      "id": "include_3_title",
+      "label": "Elemento 3",
+      "default": "Fundas de almohada"
+    },
+    {
+      "type": "textarea",
+      "id": "include_3_text",
+      "label": "Descripción elemento 3",
+      "default": "A juego con el color de tu sábana. El tamaño sencilla incluye una sola funda."
+    },
+    {
+      "type": "header",
+      "content": "Cuidado en 3 pasos"
+    },
+    {
+      "type": "text",
+      "id": "steps_title",
+      "label": "Título",
+      "default": "Lavar y tender en 3 pasos"
+    },
+    {
+      "type": "text",
+      "id": "steps_subtitle",
+      "label": "Subtítulo",
+      "default": "Fácil lavado y secado rápido, perfectas para el día a día."
+    },
+    {
+      "type": "text",
+      "id": "step_1_title",
+      "label": "Paso 1",
+      "default": "Lava en lavadora"
+    },
+    {
+      "type": "textarea",
+      "id": "step_1_text",
+      "label": "Descripción paso 1",
+      "default": "Agua fría, ciclo normal y jabón suave. No necesitan cuidado especial."
+    },
+    {
+      "type": "text",
+      "id": "step_2_title",
+      "label": "Paso 2",
+      "default": "Seca rápido"
+    },
+    {
+      "type": "textarea",
+      "id": "step_2_text",
+      "label": "Descripción paso 2",
+      "default": "Se secan en poco tiempo y no quedan tiesas."
+    },
+    {
+      "type": "text",
+      "id": "step_3_title",
+      "label": "Paso 3",
+      "default": "Tiende y disfruta"
+    },
+    {
+      "type": "textarea",
+      "id": "step_3_text",
+      "label": "Descripción paso 3",
+      "default": "Estira la ajustable por las cuatro esquinas y listo: cama impecable."
+    },
+    {
+      "type": "header",
+      "content": "Guía de medidas"
+    },
+    {
+      "type": "text",
+      "id": "size_guide_title",
+      "label": "Título",
+      "default": "Encuentra tu tamaño perfecto"
+    },
+    {
+      "type": "image_picker",
+      "id": "size_guide_image",
+      "label": "Imagen guía de medidas"
+    },
+    {
+      "type": "header",
+      "content": "Carrusel de colores"
+    },
+    {
+      "type": "text",
+      "id": "carousel_title",
+      "label": "Título",
+      "default": "Colores que combinan con todo"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_1",
+      "label": "Imagen color 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_2",
+      "label": "Imagen color 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_3",
+      "label": "Imagen color 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_4",
+      "label": "Imagen color 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_5",
+      "label": "Imagen color 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_6",
+      "label": "Imagen color 6"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_7",
+      "label": "Imagen color 7"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_8",
+      "label": "Imagen color 8"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_9",
+      "label": "Imagen color 9"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_10",
+      "label": "Imagen color 10"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_11",
+      "label": "Imagen color 11"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_12",
+      "label": "Imagen color 12"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_13",
+      "label": "Imagen color 13"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_14",
+      "label": "Imagen color 14"
+    },
+    {
+      "type": "image_picker",
+      "id": "color_image_15",
+      "label": "Imagen color 15"
+    },
+    {
+      "type": "header",
+      "content": "Reseñas"
+    },
+    {
+      "type": "text",
+      "id": "reviews_title",
+      "label": "Título",
+      "default": "Lo que dicen quienes ya duermen mejor"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_1_image",
+      "label": "Foto de perfil (reseña 1)"
+    },
+    {
+      "type": "text",
+      "id": "review_1_name",
+      "label": "Nombre (reseña 1)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_1_text",
+      "label": "Testimonio (reseña 1)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_1_product_image",
+      "label": "Foto del producto (reseña 1)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_2_image",
+      "label": "Foto de perfil (reseña 2)"
+    },
+    {
+      "type": "text",
+      "id": "review_2_name",
+      "label": "Nombre (reseña 2)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_2_text",
+      "label": "Testimonio (reseña 2)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_2_product_image",
+      "label": "Foto del producto (reseña 2)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_3_image",
+      "label": "Foto de perfil (reseña 3)"
+    },
+    {
+      "type": "text",
+      "id": "review_3_name",
+      "label": "Nombre (reseña 3)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_3_text",
+      "label": "Testimonio (reseña 3)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_3_product_image",
+      "label": "Foto del producto (reseña 3)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_4_image",
+      "label": "Foto de perfil (reseña 4)"
+    },
+    {
+      "type": "text",
+      "id": "review_4_name",
+      "label": "Nombre (reseña 4)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_4_text",
+      "label": "Testimonio (reseña 4)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_4_product_image",
+      "label": "Foto del producto (reseña 4)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_5_image",
+      "label": "Foto de perfil (reseña 5)"
+    },
+    {
+      "type": "text",
+      "id": "review_5_name",
+      "label": "Nombre (reseña 5)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_5_text",
+      "label": "Testimonio (reseña 5)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_5_product_image",
+      "label": "Foto del producto (reseña 5)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_6_image",
+      "label": "Foto de perfil (reseña 6)"
+    },
+    {
+      "type": "text",
+      "id": "review_6_name",
+      "label": "Nombre (reseña 6)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_6_text",
+      "label": "Testimonio (reseña 6)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_6_product_image",
+      "label": "Foto del producto (reseña 6)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_7_image",
+      "label": "Foto de perfil (reseña 7)"
+    },
+    {
+      "type": "text",
+      "id": "review_7_name",
+      "label": "Nombre (reseña 7)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_7_text",
+      "label": "Testimonio (reseña 7)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_7_product_image",
+      "label": "Foto del producto (reseña 7)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_8_image",
+      "label": "Foto de perfil (reseña 8)"
+    },
+    {
+      "type": "text",
+      "id": "review_8_name",
+      "label": "Nombre (reseña 8)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_8_text",
+      "label": "Testimonio (reseña 8)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_8_product_image",
+      "label": "Foto del producto (reseña 8)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_9_image",
+      "label": "Foto de perfil (reseña 9)"
+    },
+    {
+      "type": "text",
+      "id": "review_9_name",
+      "label": "Nombre (reseña 9)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_9_text",
+      "label": "Testimonio (reseña 9)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_9_product_image",
+      "label": "Foto del producto (reseña 9)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_10_image",
+      "label": "Foto de perfil (reseña 10)"
+    },
+    {
+      "type": "text",
+      "id": "review_10_name",
+      "label": "Nombre (reseña 10)"
+    },
+    {
+      "type": "textarea",
+      "id": "review_10_text",
+      "label": "Testimonio (reseña 10)"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_10_product_image",
+      "label": "Foto del producto (reseña 10)"
+    },
+    {
+      "type": "header",
+      "content": "Videos"
+    },
+    {
+      "type": "text",
+      "id": "videos_title",
+      "label": "Título",
+      "default": "Mira el producto en acción"
+    },
+    {
+      "type": "text",
+      "id": "video_1_url",
+      "label": "Link video 1 (.mp4)",
+      "info": "Sube el video en Contenido > Archivos y pega el link .mp4"
+    },
+    {
+      "type": "text",
+      "id": "video_2_url",
+      "label": "Link video 2 (.mp4)"
+    },
+    {
+      "type": "header",
+      "content": "Oferta por cantidad"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bundles",
+      "label": "Mostrar oferta por cantidad",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "IMPORTANTE: el descuento que pongas aquí solo se MUESTRA en la página. Para que se cobre, configura la misma oferta por cantidad en ReleasIT."
+    },
+    {
+      "type": "text",
+      "id": "bundles_title",
+      "label": "Título",
+      "default": "Lleva más juegos y ahorra más"
+    },
+    {
+      "type": "text",
+      "id": "bundles_subtitle",
+      "label": "Subtítulo",
+      "default": "Ten un juego puesto y otro listo mientras lavas, o renueva todas las camas de la casa."
+    },
+    {
+      "type": "text",
+      "id": "bundle_unit_singular",
+      "label": "Unidad (singular)",
+      "default": "juego"
+    },
+    {
+      "type": "text",
+      "id": "bundle_unit_plural",
+      "label": "Unidad (plural)",
+      "default": "juegos"
+    },
+    {
+      "type": "text",
+      "id": "bundle_1_label",
+      "label": "Descripción opción 1",
+      "default": "Precio normal"
+    },
+    {
+      "type": "range",
+      "id": "bundle_1_discount",
+      "label": "Descuento opción 1",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "bundle_2_label",
+      "label": "Descripción opción 2",
+      "default": "Puedes elegir el color en el formulario"
+    },
+    {
+      "type": "range",
+      "id": "bundle_2_discount",
+      "label": "Descuento opción 2",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "bundle_3_label",
+      "label": "Descripción opción 3",
+      "default": "Para toda la casa"
+    },
+    {
+      "type": "range",
+      "id": "bundle_3_discount",
+      "label": "Descuento opción 3",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Comparativa"
+    },
+    {
+      "type": "text",
+      "id": "compare_title",
+      "label": "Título",
+      "default": "¿Por qué Dianamar Hogar?"
+    },
+    {
+      "type": "image_picker",
+      "id": "comparison_product_image",
+      "label": "Imagen producto Dianamar"
+    },
+    {
+      "type": "image_picker",
+      "id": "comparison_other_image",
+      "label": "Imagen producto común"
+    },
+    {
+      "type": "text",
+      "id": "compare_1",
+      "label": "Ventaja 1",
+      "default": "No se motosean con los lavados"
+    },
+    {
+      "type": "text",
+      "id": "compare_2",
+      "label": "Ventaja 2",
+      "default": "Elástico reforzado que no se sale"
+    },
+    {
+      "type": "text",
+      "id": "compare_3",
+      "label": "Ventaja 3",
+      "default": "Color firme, no se destiñe"
+    },
+    {
+      "type": "text",
+      "id": "compare_4",
+      "label": "Ventaja 4",
+      "default": "Tela fresca para cualquier clima"
+    },
+    {
+      "type": "text",
+      "id": "compare_5",
+      "label": "Ventaja 5",
+      "default": "Medidas exactas para tu colchón"
+    },
+    {
+      "type": "text",
+      "id": "compare_6",
+      "label": "Ventaja 6",
+      "default": "Pago contra entrega"
+    },
+    {
+      "type": "text",
+      "id": "compare_7",
+      "label": "Ventaja 7",
+      "default": "Cambio por defecto de fabricación"
+    },
+    {
+      "type": "header",
+      "content": "Preguntas frecuentes"
+    },
+    {
+      "type": "text",
+      "id": "faq_title",
+      "label": "Título",
+      "default": "¿Tienes dudas? Te las resolvemos"
+    },
+    {
+      "type": "text",
+      "id": "faq_1_q",
+      "label": "Pregunta 1",
+      "default": "¿Las sábanas se motosean o pierden color?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_1_a",
+      "label": "Respuesta 1",
+      "default": "No. Nuestras sábanas están fabricadas con materiales de alta calidad que ayudan a conservar su suavidad, color y apariencia lavado tras lavado."
+    },
+    {
+      "type": "text",
+      "id": "faq_2_q",
+      "label": "Pregunta 2",
+      "default": "¿Las medidas sí son exactas?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_2_a",
+      "label": "Respuesta 2",
+      "default": "Sí 😊 Trabajamos con medidas reales y ajuste perfecto para que las sábanas se adapten correctamente al colchón sin quedar flojas ni incómodas."
+    },
+    {
+      "type": "text",
+      "id": "faq_3_q",
+      "label": "Pregunta 3",
+      "default": "¿Cuánto tarda el envío?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_3_a",
+      "label": "Respuesta 3",
+      "default": "Realizamos envíos rápidos a nivel nacional. El tiempo de entrega puede variar según la ciudad, pero normalmente los pedidos llegan entre 2 y 5 días hábiles."
+    },
+    {
+      "type": "text",
+      "id": "faq_4_q",
+      "label": "Pregunta 4",
+      "default": "¿Tienen pago contra entrega?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_4_a",
+      "label": "Respuesta 4",
+      "default": "Sí, contamos con pago contra entrega en gran parte de Colombia para que compres con mayor tranquilidad y confianza."
+    },
+    {
+      "type": "text",
+      "id": "faq_5_q",
+      "label": "Pregunta 5",
+      "default": "¿Qué incluye el juego de sábanas?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_5_a",
+      "label": "Respuesta 5",
+      "default": "Una sábana ajustable, una sobresábana y fundas de almohada. El tamaño sencilla incluye una sola funda."
+    },
+    {
+      "type": "text",
+      "id": "faq_6_q",
+      "label": "Pregunta 6",
+      "default": "¿Qué pasa si llega con un defecto?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_6_a",
+      "label": "Respuesta 6",
+      "default": "Te lo cambiamos sin costo. Escríbenos por WhatsApp con una foto y coordinamos el cambio."
+    },
+    {
+      "type": "header",
+      "content": "Transportadoras"
+    },
+    {
+      "type": "text",
+      "id": "logistics_title",
+      "label": "Título",
+      "default": "Convenio logístico con"
+    },
+    {
+      "type": "image_picker",
+      "id": "logistics_img_1",
+      "label": "Logo transportadora 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "logistics_img_2",
+      "label": "Logo transportadora 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "logistics_img_3",
+      "label": "Logo transportadora 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "logistics_img_4",
+      "label": "Logo transportadora 4"
+    },
+    {
+      "type": "header",
+      "content": "Cierre"
+    },
+    {
+      "type": "text",
+      "id": "final_title",
+      "label": "Título",
+      "default": "Esta noche puedes dormir mejor"
+    },
+    {
+      "type": "textarea",
+      "id": "final_text",
+      "label": "Texto",
+      "default": "Pídelo ahora, recíbelo en 2 a 5 días hábiles y paga solo cuando llegue a tu puerta."
+    },
+    {
+      "type": "text",
+      "id": "final_stock",
+      "label": "Texto de stock",
+      "default": "Unidades limitadas por color"
+    }
+  ]
+}
+{% endschema %}
