@@ -126,9 +126,6 @@
   /* Puntos donde ReleasIT dibuja su botón (uno arriba y uno en cada sección de pedido) */
   .nv-rsi-slot { width: 100%; }
   .nv-final .nv-rsi-slot { max-width: 460px; }
-  /* El botón rojo solo aparece si ReleasIT no cargó su botón */
-  .nv-rsi-slot:has(._rsi-buy-now-button-app-block-hook > *) .nv-rsi-fallback,
-  .nv-rsi-slot.nv-rsi-ready .nv-rsi-fallback { display: none; }
 
   /* Cifras */
   .nv-stats { background: var(--nv-ink); color: #fff; padding-block: 28px; }
@@ -676,7 +673,7 @@
               <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
             </button>
           {% endfor %}
-          <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div><button type="button" class="nv-btn nv-btn-cta nv-btn-block nv-rsi-fallback" onclick="nvOrderNow()">Ordenar ahora · Pago al recibir</button></div>
+          <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
         </div>
       </div>
     </section>
@@ -767,7 +764,7 @@
       <h2>{{ s.final_title }}</h2>
       <p>{{ s.final_text }}</p>
       {% if s.final_stock != blank %}<p class="nv-stock">{{ s.final_stock }}</p>{% endif %}
-      <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div><button type="button" class="nv-btn nv-btn-cta nv-btn-block nv-rsi-fallback" onclick="nvOrderNow()">Realizar mi pedido</button></div>
+      <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
       <div class="nv-trustline">
         <span><b>✔</b> Sin tarjeta</span>
         <span><b>✔</b> Sin pagar en línea</span>
@@ -1081,21 +1078,6 @@
     return document.querySelector('#nv-comprar ' + NV_RSI_BUTTON) || document.querySelector(NV_RSI_BUTTON);
   }
 
-  // Oculta el botón rojo de respaldo en cuanto ReleasIT dibuja su botón en ese lugar
-  // (respaldo en JS para navegadores sin soporte de :has en CSS).
-  (function nvWatchRsiHooks() {
-    function mark() {
-      document.querySelectorAll('.nv-rsi-slot').forEach(function (slot) {
-        var hook = slot.querySelector('._rsi-buy-now-button-app-block-hook');
-        slot.classList.toggle('nv-rsi-ready', !!(hook && hook.querySelector(NV_RSI_BUTTON)));
-      });
-    }
-    function start() {
-      mark();
-      new MutationObserver(mark).observe(document.getElementById('product-section-{{ section.id }}'), { childList: true, subtree: true });
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
-  })();
 
   /* ---------- Lightbox de reseñas ---------- */
   function nvOpenLightbox(src) {
