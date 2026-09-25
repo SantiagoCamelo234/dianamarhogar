@@ -127,7 +127,8 @@
   .nv-rsi-slot { width: 100%; }
   .nv-final .nv-rsi-slot { max-width: 460px; }
   /* El botón rojo solo aparece si ReleasIT no cargó su botón */
-  .nv-rsi-slot:has(._rsi-buy-now-button) .nv-rsi-fallback { display: none; }
+  .nv-rsi-slot:has(._rsi-buy-now-button-app-block-hook > *) .nv-rsi-fallback,
+  .nv-rsi-slot.nv-rsi-ready .nv-rsi-fallback { display: none; }
 
   /* Cifras */
   .nv-stats { background: var(--nv-ink); color: #fff; padding-block: 28px; }
@@ -1074,9 +1075,27 @@
      ReleasIT dibuja su propio botón verde dentro de cada #rsi-button-hook
      (arriba, en "Oferta por cantidad" y en "Última llamada"). Todos son botones
      reales de ReleasIT y abren su formulario directamente. */
+  var NV_RSI_BUTTON = '#rsi_buy_now_button, .rsi_buy_now_button, ._rsi-buy-now-button';
+
   function nvOriginalRsiButton() {
-    return document.querySelector("#nv-comprar ._rsi-buy-now-button") || document.querySelector("._rsi-buy-now-button");
+    return document.querySelector('#nv-comprar ' + NV_RSI_BUTTON) || document.querySelector(NV_RSI_BUTTON);
   }
+
+  // Oculta el botón rojo de respaldo en cuanto ReleasIT dibuja su botón en ese lugar
+  // (respaldo en JS para navegadores sin soporte de :has en CSS).
+  (function nvWatchRsiHooks() {
+    function mark() {
+      document.querySelectorAll('.nv-rsi-slot').forEach(function (slot) {
+        var hook = slot.querySelector('._rsi-buy-now-button-app-block-hook');
+        slot.classList.toggle('nv-rsi-ready', !!(hook && hook.querySelector(NV_RSI_BUTTON)));
+      });
+    }
+    function start() {
+      mark();
+      new MutationObserver(mark).observe(document.getElementById('product-section-{{ section.id }}'), { childList: true, subtree: true });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  })();
 
   /* ---------- Lightbox de reseñas ---------- */
   function nvOpenLightbox(src) {
@@ -1089,7 +1108,7 @@
   // Si tocan el botón de ReleasIT sin haber elegido color y tamaño, se los pedimos
   // antes de abrir el formulario, para que no llegue una variante que no eligieron.
   document.addEventListener('click', function (e) {
-    var btn = e.target.closest && e.target.closest('._rsi-buy-now-button');
+    var btn = e.target.closest && e.target.closest(NV_RSI_BUTTON);
     if (!btn) return;
     if (!nvMissingGroups().length) return;
     e.preventDefault();
