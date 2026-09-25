@@ -144,6 +144,7 @@
       "template-product-nueva-pagina": {
         "type": "template-product-nueva-pagina",
         "settings": {
+          "rsi_offer_name": "2 25",
           "show_bg_covers": true,
           "badge_left": "⭐ 4.9 · Clientes felices",
           "rating_text": "4.9/5 · +2.000 juegos vendidos",

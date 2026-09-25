@@ -658,11 +658,16 @@
           <h2>{{ s.bundles_title }}</h2>
           {% if s.bundles_subtitle != blank %}<p>{{ s.bundles_subtitle }}</p>{% endif %}
         </div>
-        <div class="nv-tiers">
+        {% comment %}
+          Las opciones se arman con la oferta por cantidad de ReleasIT (ajuste "Nombre de la oferta en ReleasIT").
+          Si cambias la oferta en ReleasIT, esta sección cambia sola. Las opciones de abajo solo se
+          muestran si ReleasIT no tiene una oferta activa para este producto.
+        {% endcomment %}
+        <div class="nv-tiers" id="nv-tiers" data-rsi-offer="{{ s.rsi_offer_name | escape }}">
           {% for q in (1..3) %}
             {% assign dk = 'bundle_' | append: q | append: '_discount' %}
             {% assign lk = 'bundle_' | append: q | append: '_label' %}
-            <button type="button" class="nv-tier {% if q == 1 %}active{% endif %}" data-qty="{{ q }}" data-discount="{{ s[dk] | default: 0 }}" onclick="nvSelectTier(this)">
+            <button type="button" class="nv-tier {% if q == 1 %}active{% endif %}" data-qty="{{ q }}" data-pct="{{ s[dk] | default: 0 }}" data-fixed="0" data-compare="1" onclick="nvSelectTier(this)">
               {% if q == 2 and s[dk] > 0 %}<span class="nv-tag">Más popular</span>{% endif %}
               {% if q == 3 and s[dk] > 0 %}<span class="nv-tag nv-soft">Mayor ahorro</span>{% endif %}
               <span class="nv-radio"></span>
@@ -1025,15 +1030,70 @@
     return fmt.replace(/\{\{\s*\w+\s*\}\}/, value);
   }
 
+  /* ---------- Oferta por cantidad conectada a ReleasIT ----------
+     ReleasIT publica sus ofertas en window._RSI_COD_FORM_QUANTIY_OFFERS. Se usa la
+     oferta activa de este producto (o la que tenga el nombre configurado, ej. "2 25").
+     Descuento en porcentaje: ds.v / 10000 (1000 = 10 %). Descuento fijo: ds.v en centavos.
+     Así los precios de la página son los mismos que cobra el formulario de ReleasIT. */
+  function nvRsiOffer() {
+    var list = window._RSI_COD_FORM_QUANTIY_OFFERS;
+    if (!Array.isArray(list)) return null;
+    var pid = String(lsProductJson.id);
+    var wanted = (document.getElementById('nv-tiers') || {}).getAttribute ? document.getElementById('nv-tiers').getAttribute('data-rsi-offer') : '';
+    var active = list.filter(function (o) { return o && o.isActive && o.type === 'quantity-offer' && Array.isArray(o.offers) && o.offers.length; });
+    var forProduct = active.filter(function (o) { return !o.pIds || o.pIds === 'all' || (Array.isArray(o.pIds) && (o.pIds.indexOf(pid) !== -1 || o.pIds.indexOf('all') !== -1)); });
+    var byName = wanted ? forProduct.filter(function (o) { return (o.name || '').trim() === wanted.trim(); }) : [];
+    return byName[0] || forProduct[0] || null;
+  }
+
+  function nvEscape(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  }
+
+  function nvBuildTiersFromRsi() {
+    var offer = nvRsiOffer();
+    var box = document.getElementById('nv-tiers');
+    if (!offer || !box) return;
+    box.querySelectorAll('.nv-tier').forEach(function (t) { t.remove(); });
+    var slot = box.querySelector('.nv-rsi-slot');
+    var items = offer.offers.slice().sort(function (x, y) { return (x.pos || 0) - (y.pos || 0); });
+    var preselected = items.findIndex(function (o) { return o.pres; });
+    if (preselected < 0) preselected = 0;
+    items.forEach(function (o, i) {
+      var ds = o.ds || {};
+      var pct = ds.t === 'percentage' ? Math.max(0, Math.min(100, (ds.v || 0) / 100)) : 0;
+      var fixed = ds.t === 'percentage' || ds.t === 'none' || !ds.t ? 0 : (ds.v || 0);
+      var tag = o.bestDealBadge && o.bestDealBadge.show ? o.bestDealBadge.badgeContent : (o.plaque || '');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'nv-tier' + (i === preselected ? ' active' : '');
+      btn.setAttribute('data-qty', o.qty || 1);
+      btn.setAttribute('data-pct', pct);
+      btn.setAttribute('data-fixed', fixed);
+      btn.setAttribute('data-compare', offer.useComparePrice ? '1' : '0');
+      btn.onclick = function () { nvSelectTier(btn); };
+      btn.innerHTML =
+        (tag ? '<span class="nv-tag' + (o.bestDealBadge && o.bestDealBadge.show ? '' : ' nv-soft') + '">' + nvEscape(tag) + '</span>' : '') +
+        '<span class="nv-radio"></span><span><span class="nv-tier-name">' + nvEscape(o.title || (o.qty + ' unidades')) + '</span>' +
+        (pct > 0 ? '<span class="nv-tier-sub">' + (Math.round(pct * 100) / 100) + '% de descuento</span>' : '') +
+        '</span><span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>';
+      box.insertBefore(btn, slot);
+    });
+    var sel = box.querySelector('.nv-tier.active');
+    if (sel) document.getElementById('ls-quantity').value = sel.getAttribute('data-qty');
+  }
+
   function nvRenderTiers() {
     var v = nvCurrentVariant();
     if (!v) return;
     document.querySelectorAll('.nv-tier').forEach(function (t) {
-      var qty = parseInt(t.getAttribute('data-qty'), 10);
-      var disc = parseFloat(t.getAttribute('data-discount')) || 0;
+      var qty = parseInt(t.getAttribute('data-qty'), 10) || 1;
+      var pct = parseFloat(t.getAttribute('data-pct')) || 0;
+      var fixed = parseFloat(t.getAttribute('data-fixed')) || 0;
       var full = v.price * qty;
-      var now = full * (1 - disc / 100);
-      var was = (v.compare_at_price && v.compare_at_price > v.price) ? v.compare_at_price * qty : (disc > 0 ? full : 0);
+      var now = Math.max(0, full * (1 - pct / 100) - fixed);
+      var useCompare = t.getAttribute('data-compare') === '1' && v.compare_at_price && v.compare_at_price > v.price;
+      var was = useCompare ? v.compare_at_price * qty : full;
       t.querySelector('.nv-tier-now').textContent = nvFormatMoney(now);
       t.querySelector('.nv-tier-was').textContent = was > now ? nvFormatMoney(was) : '';
     });
@@ -1113,6 +1173,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     applyLsGalleryVariantFilter('');
+    nvBuildTiersFromRsi();
     nvRenderTiers();
 
     var gallery = document.getElementById('ls-main-gallery');
@@ -1858,7 +1919,14 @@
     },
     {
       "type": "paragraph",
-      "content": "IMPORTANTE: el descuento que pongas aquí solo se MUESTRA en la página. Para que se cobre, configura la misma oferta por cantidad en ReleasIT."
+      "content": "Las opciones, títulos, etiquetas y descuentos se toman automáticamente de la oferta por cantidad de ReleasIT. Si la cambias en ReleasIT, cambia aquí. Los campos de abajo solo se usan si ReleasIT no tiene una oferta activa para el producto."
+    },
+    {
+      "type": "text",
+      "id": "rsi_offer_name",
+      "label": "Nombre de la oferta en ReleasIT",
+      "default": "2 25",
+      "info": "Si se deja vacío, se usa la oferta activa de este producto."
     },
     {
       "type": "text",
