@@ -144,6 +144,12 @@
       "template-product-nueva-pagina": {
         "type": "template-product-nueva-pagina",
         "settings": {
+          "show_promo": true,
+          "promo_alt_1": "Sábanas premium de 180 hilos: suavidad que se siente desde la primera noche",
+          "promo_alt_2": "Detalles de las sábanas: textura suave de 180 hilos, costuras firmes y fuelle de 35 cm",
+          "promo_alt_3": "Sábana ajustable con elástico reforzado que no se sale de las esquinas del colchón",
+          "promo_alt_4": "Sábanas fáciles de lavar, de secado rápido y con color que permanece lavado tras lavado",
+          "promo_autoplay": 4,
           "rsi_offer_name": "2 25",
           "show_bg_covers": true,
           "badge_left": "⭐ 4.9 · Clientes felices",
