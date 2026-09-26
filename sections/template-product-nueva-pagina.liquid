@@ -36,12 +36,13 @@
     width: 100%;
     overflow-x: hidden;
     overflow-x: clip; /* clip (no hidden) para que el fondo y la galería "sticky" funcionen */
+    overflow-y: clip; /* el fondo animado no se sale de la página (no tapa el footer) */
     position: relative;
     isolation: isolate;
   }
 
   /* Sin franja en blanco entre la página y el footer */
-  body:has(.nv-page) footer { margin-top: 0; }
+  body:has(.nv-page) footer { margin-top: 0; position: relative; z-index: 1; background-color: #3d4f45; }
 
   /* Fondo animado con las portadas de las sábanas */
   .nv-bg { position: sticky; top: 0; height: 100vh; margin-bottom: -100vh; overflow: hidden; z-index: -1; pointer-events: none; }
@@ -111,6 +112,11 @@
   .ls-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
   .ls-swatch-color { width: 48px; height: 48px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--nv-line); cursor: pointer; background-color: #eee; transition: transform .15s, box-shadow .15s; }
   .ls-swatch-color:hover { transform: scale(1.06); }
+  /* Colores en cuadrícula con su nombre debajo, para distinguir tonos parecidos (ej. gris plata / gris oscuro) */
+  .ls-swatches:has(.ls-swatch-color) { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 12px 4px; }
+  .ls-swatch-color { position: relative; justify-self: center; margin-bottom: 28px; }
+  .nv-sw-name { position: absolute; top: calc(100% + 5px); left: 50%; transform: translateX(-50%); width: 62px; text-align: center; font-size: 11px; line-height: 1.15; color: var(--nv-muted); pointer-events: none; }
+  .ls-swatch-color.active .nv-sw-name { color: var(--nv-ink); font-weight: 700; }
   .ls-swatch-color.active { box-shadow: 0 0 0 2.5px var(--nv-coral); }
   .ls-swatch-size { font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid var(--nv-line); background: #fff; color: var(--nv-ink); cursor: pointer; transition: all .15s; }
   .ls-swatch-size.active { border-color: var(--nv-coral); background: var(--nv-blush); }
@@ -189,6 +195,7 @@
   .nv-review-img { width: 100%; height: auto; max-height: 280px; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
   .nv-more { display: block; margin: 24px auto 0; background: #fff; border: 1.5px solid var(--nv-line); color: var(--nv-ink); font: inherit; font-weight: 700; padding: 12px 24px; border-radius: 999px; cursor: pointer; }
   .nv-more:hover { border-color: var(--nv-coral); }
+  .nv-swipe-hint { display: none; text-align: center; font-size: 13px; font-weight: 600; color: var(--nv-muted); margin-top: 6px; }
 
   /* Oferta por cantidad */
   .nv-tiers { display: grid; gap: 14px; max-width: 620px; margin-inline: auto; }
@@ -275,7 +282,32 @@
     .nv-size-table th:first-child, .nv-size-table td:first-child { width: 30%; }
     .nv-size-table th:nth-child(2), .nv-size-table td:nth-child(2) { width: 40%; }
     .nv-size-table th:nth-child(3), .nv-size-table td:nth-child(3) { width: 30%; }
-    .nv-reviews, .nv-stats-grid { grid-template-columns: 1fr; }
+    /* Cifras en una fila */
+    .nv-stats { padding-block: 20px; }
+    .nv-stats-grid { gap: 8px; }
+    .nv-stat b { font-size: 21px; }
+    .nv-stat span { display: block; font-size: 12px; line-height: 1.3; margin-top: 2px; }
+    /* Qué incluye: icono al lado del texto */
+    .nv-kit { gap: 10px; }
+    .nv-kit-item { grid-template-columns: 44px 1fr; column-gap: 14px; row-gap: 4px; padding: 16px; }
+    .nv-kit-item svg { width: 44px; height: 44px; grid-row: span 2; }
+    .nv-kit-item h3 { font-size: 18px; }
+    /* Pasos: número al lado */
+    .nv-steps { gap: 16px; }
+    .nv-step { grid-template-columns: 36px 1fr; column-gap: 12px; row-gap: 2px; padding-top: 12px; }
+    .nv-step .nv-n { grid-row: span 2; font-size: 28px; }
+    /* Reseñas: carrusel deslizable en vez de una columna larguísima */
+    .nv-reviews { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin-inline: -16px; padding: 4px 16px 14px; scrollbar-width: none; }
+    .nv-reviews::-webkit-scrollbar { display: none; }
+    .nv-review, .nv-review.nv-review-hidden { display: grid; flex: 0 0 84%; scroll-snap-align: center; align-content: start; }
+    .nv-review-img { max-height: 220px; }
+    .nv-more { display: none; }
+    .nv-swipe-hint { display: block; }
+    /* Videos lado a lado */
+    .nv-videos { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .nv-videos video { max-height: 380px; object-fit: cover; }
+    /* Fondo un poco más suave detrás del texto */
+    .nv-bg-tile { opacity: .10; }
     .nv-guarantee { grid-template-columns: 1fr; text-align: center; justify-items: center; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -365,10 +397,10 @@
         </div>
 
         <div class="nv-price-row">
-          <span class="nv-price" id="ls-price">{{ current_variant.price | money }}</span>
-          <span class="nv-compare" id="ls-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
+          <span class="nv-price" id="ls-price">{{ current_variant.price | money_without_trailing_zeros }}</span>
+          <span class="nv-compare" id="ls-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money_without_trailing_zeros }}</span>
           <span class="nv-save" id="ls-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>
-            {% if current_variant.compare_at_price > current_variant.price %}Ahorras {{ current_variant.compare_at_price | minus: current_variant.price | money }}{% endif %}
+            {% if current_variant.compare_at_price > current_variant.price %}Ahorras {{ current_variant.compare_at_price | minus: current_variant.price | money_without_trailing_zeros }}{% endif %}
           </span>
         </div>
 
@@ -400,7 +432,7 @@
                              {% if variant_img != '' %}
                              style="background-image: url('{{ variant_img }}'); background-size: cover; background-position: center;"
                              {% endif %}
-                             title="{{ value }}" aria-label="{{ value }}"></div>
+                             title="{{ value }}" aria-label="{{ value }}"><span class="nv-sw-name">{{ value }}</span></div>
                       {% else %}
                         <div class="ls-swatch-size" role="button" tabindex="0"
                              data-option-index="{{ option.position }}"
@@ -626,6 +658,7 @@
             {% endif %}
           {% endfor %}
         </div>
+        <p class="nv-swipe-hint">Desliza para ver más opiniones →</p>
         {% if nv_shown > 6 %}
           <button type="button" class="nv-more" onclick="document.querySelectorAll('.nv-review-hidden').forEach(function(el){el.classList.remove('nv-review-hidden');});this.remove();">Ver más reseñas</button>
         {% endif %}
@@ -799,9 +832,9 @@
   var lsVariantPrices = {
     {% for variant in product.variants %}
       "{{ variant.id }}": {
-        "price": {{ variant.price | money | json }},
-        "compare_at_price": {{ variant.compare_at_price | money | json }},
-        "save": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | money | json }}{% else %}""{% endif %},
+        "price": {{ variant.price | money_without_trailing_zeros | json }},
+        "compare_at_price": {{ variant.compare_at_price | money_without_trailing_zeros | json }},
+        "save": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | money_without_trailing_zeros | json }}{% else %}""{% endif %},
         "has_discount": {% if variant.compare_at_price > variant.price %}true{% else %}false{% endif %},
         "discount_pct": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round }}{% else %}0{% endif %}
       }{% unless forloop.last %},{% endunless %}
@@ -1027,7 +1060,7 @@
       case 'amount_with_comma_separator': value = delim(n, 2, '.', ','); break;
       default: value = delim(n, 0, '.', ',');
     }
-    return fmt.replace(/\{\{\s*\w+\s*\}\}/, value);
+    return fmt.replace(/\{\{\s*\w+\s*\}\}/, value.replace(/[.,]00$/, ''));
   }
 
   /* ---------- Oferta por cantidad conectada a ReleasIT ----------
@@ -1071,11 +1104,13 @@
       btn.setAttribute('data-pct', pct);
       btn.setAttribute('data-fixed', fixed);
       btn.setAttribute('data-compare', offer.useComparePrice ? '1' : '0');
+      btn.setAttribute('data-title', o.title || '');
+      btn.setAttribute('data-first', i === 0 ? '1' : '0');
       btn.onclick = function () { nvSelectTier(btn); };
       btn.innerHTML =
         (tag ? '<span class="nv-tag' + (o.bestDealBadge && o.bestDealBadge.show ? '' : ' nv-soft') + '">' + nvEscape(tag) + '</span>' : '') +
         '<span class="nv-radio"></span><span><span class="nv-tier-name">' + nvEscape(o.title || (o.qty + ' unidades')) + '</span>' +
-        (pct > 0 ? '<span class="nv-tier-sub">' + (Math.round(pct * 100) / 100) + '% de descuento</span>' : '') +
+        (pct > 0 && (o.title || '').indexOf('%') === -1 ? '<span class="nv-tier-sub">' + (Math.round(pct * 100) / 100) + '% de descuento</span>' : '') +
         '</span><span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>';
       box.insertBefore(btn, slot);
     });
@@ -1097,6 +1132,23 @@
       t.querySelector('.nv-tier-now').textContent = nvFormatMoney(now);
       t.querySelector('.nv-tier-was').textContent = was > now ? nvFormatMoney(was) : '';
     });
+  }
+
+  // Cuando se abre el formulario de ReleasIT, marca en él la misma opción de cantidad
+  // que el cliente eligió en la página (ReleasIT siempre abre en "1 unidad").
+  function nvSyncOfferToForm() {
+    var sel = document.querySelector('.nv-tier.active[data-title]');
+    if (!sel || sel.getAttribute('data-first') === '1') return;
+    var title = sel.getAttribute('data-title').trim();
+    var tries = 0;
+    (function poll() {
+      var form = document.querySelector('._rsi_main_form_element');
+      var target = form && Array.prototype.filter.call(form.querySelectorAll('.rsi-quantity-title'), function (el) {
+        return el.textContent.trim() === title;
+      })[0];
+      if (target) { target.click(); return; }
+      if (++tries < 40) setTimeout(poll, 150);
+    })();
   }
 
   function nvSelectTier(tier) {
@@ -1152,7 +1204,7 @@
   document.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest(NV_RSI_BUTTON);
     if (!btn) return;
-    if (!nvMissingGroups().length) return;
+    if (!nvMissingGroups().length) { nvSyncOfferToForm(); return; }
     e.preventDefault();
     e.stopImmediatePropagation();
     nvOrderNow();
