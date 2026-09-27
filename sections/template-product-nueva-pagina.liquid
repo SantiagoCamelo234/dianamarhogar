@@ -121,7 +121,6 @@
   .ls-swatch-size { font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid var(--nv-line); background: #fff; color: var(--nv-ink); cursor: pointer; transition: all .15s; }
   .ls-swatch-size.active { border-color: var(--nv-coral); background: var(--nv-blush); }
 
-  .nv-urgency { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-weight: 600; }
   .nv-guarantee-mini { display: flex; gap: 12px; align-items: flex-start; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; }
   .nv-guarantee-mini strong { display: block; font-size: 14px; color: #166534; }
   .nv-guarantee-mini p { font-size: 13px; color: var(--nv-ok); line-height: 1.4; }
@@ -302,9 +301,10 @@
     .nv-table th:first-child, .nv-table td:first-child { width: 56%; }
     .nv-table th:nth-child(2), .nv-table td:nth-child(2) { width: 24%; }
     .nv-table th:nth-child(3), .nv-table td:nth-child(3) { width: 20%; }
-    .nv-size-table th:first-child, .nv-size-table td:first-child { width: 30%; }
-    .nv-size-table th:nth-child(2), .nv-size-table td:nth-child(2) { width: 40%; }
-    .nv-size-table th:nth-child(3), .nv-size-table td:nth-child(3) { width: 30%; }
+    .nv-size-table th:first-child, .nv-size-table td:first-child { width: 26%; }
+    .nv-size-table th:nth-child(2), .nv-size-table td:nth-child(2) { width: 32%; }
+    .nv-size-table th:nth-child(3), .nv-size-table td:nth-child(3) { width: 18%; }
+    .nv-size-table th:nth-child(4), .nv-size-table td:nth-child(4) { width: 24%; }
     /* Cifras en una fila */
     .nv-stats { padding-block: 20px; }
     .nv-stats-grid { gap: 8px; }
@@ -469,7 +469,6 @@
               {% endfor %}
             {% endunless %}
 
-            {% if s.urgency_note != blank %}<div class="nv-urgency">⚠️ {{ s.urgency_note }}</div>{% endif %}
 
             {% comment %} ReleasIT dibuja su botón en cada elemento #rsi-button-hook de la página. {% endcomment %}
             <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
@@ -640,18 +639,18 @@
         <div class="nv-head">
           <span class="nv-eyebrow">Guía de medidas</span>
           <h2>{{ s.size_guide_title }}</h2>
-          <p>Mide el ancho y el largo de tu colchón y elige el tamaño que corresponde.</p>
+          <p>Mide el ancho, el largo y el alto de tu colchón y elige el tamaño que corresponde.</p>
         </div>
         <div class="nv-table-box">
           <table class="nv-size-table">
-            <thead><tr><th>Tamaño</th><th>Colchón (ancho × largo)</th><th>Fundas incluidas</th></tr></thead>
+            <thead><tr><th>Tamaño</th><th>Colchón (ancho × largo)</th>{% if s.size_height != blank %}<th>Alto</th>{% endif %}<th>Fundas incluidas</th></tr></thead>
             <tbody>
               {% for i in (1..6) %}
                 {% assign zn = 'size_' | append: i | append: '_name' %}
                 {% assign zm = 'size_' | append: i | append: '_measure' %}
                 {% assign zf = 'size_' | append: i | append: '_cases' %}
                 {% if s[zn] != blank %}
-                  <tr data-size="{{ s[zn] | escape }}"><td>{{ s[zn] }}</td><td>{{ s[zm] }}</td><td>{{ s[zf] }}</td></tr>
+                  <tr data-size="{{ s[zn] | escape }}"><td>{{ s[zn] }}</td><td>{{ s[zm] }}</td>{% if s.size_height != blank %}<td>{{ s.size_height }}</td>{% endif %}<td>{{ s[zf] }}</td></tr>
                 {% endif %}
               {% endfor %}
             </tbody>
@@ -1485,12 +1484,6 @@
     },
     {
       "type": "text",
-      "id": "urgency_note",
-      "label": "Aviso de urgencia",
-      "default": "¡Quedan pocas unidades en inventario!"
-    },
-    {
-      "type": "text",
       "id": "shipping_time",
       "label": "Tiempo de envío",
       "default": "Envío 2 a 5 días hábiles"
@@ -1773,6 +1766,13 @@
       "id": "size_guide_title",
       "label": "Título",
       "default": "Encuentra tu tamaño perfecto"
+    },
+    {
+      "type": "text",
+      "id": "size_height",
+      "label": "Alto (igual para todos los tamaños)",
+      "default": "35 cm",
+      "info": "Déjalo vacío para ocultar la columna."
     },
     {
       "type": "text",

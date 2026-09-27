@@ -144,6 +144,7 @@
       "template-product-nueva-pagina": {
         "type": "template-product-nueva-pagina",
         "settings": {
+          "size_height": "35 cm",
           "show_promo": true,
           "promo_alt_1": "Sábanas premium de 180 hilos: suavidad que se siente desde la primera noche",
           "promo_alt_2": "Detalles de las sábanas: textura suave de 180 hilos, costuras firmes y fuelle de 35 cm",
@@ -161,7 +162,6 @@
           "pill_3": "Frescas",
           "pill_4": "Color que no se destiñe",
           "pill_5": "Secado rápido",
-          "urgency_note": "¡Quedan pocas unidades en inventario!",
           "shipping_time": "Envío 2 a 5 días hábiles",
           "guarantee_title": "Garantía de satisfacción",
           "guarantee_text": "Si el producto llega con defecto de fabricación, lo cambiamos sin costo.",
