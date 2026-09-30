@@ -106,6 +106,8 @@
   .ls-variant-group { display: grid; gap: 8px; }
   .ls-variant-group.nv-missing { animation: nv-shake .4s; }
   .ls-variant-group.nv-missing .ls-variant-label span { color: var(--nv-cta); font-weight: 700; }
+  .nv-choose-msg { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: #fff1f2; border: 1px solid #fecdd3; color: #b4232f; font-weight: 700; font-size: 14px; text-align: center; }
+  .nv-choose-msg-top { margin: 0 0 4px; }
   @keyframes nv-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
   .ls-variant-label { font-weight: 700; color: var(--nv-ink); font-size: 14px; }
   .ls-variant-label span { font-weight: 500; color: var(--nv-coral); }
@@ -1027,6 +1029,7 @@
       applyLsGalleryVariantFilter(value);
     }
     if (swatch.classList.contains('ls-swatch-size')) nvHighlightSizeRow(value);
+    if (typeof nvMissingGroups === 'function' && !nvMissingGroups().length) nvHideChooseMsg();
     updateLsVariant();
   }
 
@@ -1238,18 +1241,96 @@
     return missing;
   }
 
-  function nvOrderNow() {
+  /* ---------- Pedido sin variante elegida ----------
+     Si tocan "REALIZAR PEDIDO" (cualquier botón de ReleasIT, incluida la barra fija)
+     sin haber elegido talla y/o color, se elige automáticamente lo que falte:
+     talla "Sencilla" y el primer color disponible en esa talla. Después se espera
+     a que ReleasIT actualice su botón y se abre el formulario con esa variante.
+     Si no se puede elegir una variante, se muestra un mensaje junto al botón y se
+     hace scroll suave a los selectores. */
+  var NV_CHOOSE_MSG = 'Elige tu talla y color para continuar';
+
+  function nvSizeOptionIndex() {
+    var groups = Array.prototype.slice.call(document.querySelectorAll('.ls-variant-group'));
+    var sizeGroups = groups.filter(function (g) { return g.querySelector('.ls-swatch-size'); });
+    var byName = sizeGroups.filter(function (g) { return /tama|talla|size|medida/i.test(g.querySelector('.ls-variant-label').textContent); })[0] || sizeGroups[0];
+    if (!byName) return -1;
+    return parseInt(byName.querySelector('.ls-swatch-size').getAttribute('data-option-index'), 10) - 1;
+  }
+
+  function nvAutoSelectDefault() {
+    var selected = lsSelectedOptions();
+    var sizeIdx = nvSizeOptionIndex();
+    var matches = lsProductJson.variants.filter(function (v) {
+      return v.available && v.options.every(function (opt, i) { return selected[i] === undefined || opt === selected[i]; });
+    });
+    var wantSencilla = sizeIdx >= 0 && selected[sizeIdx] === undefined;
+    var pick = (wantSencilla && matches.filter(function (v) { return lsNormalizeColor(v.options[sizeIdx]) === 'sencilla'; })[0]) || matches[0];
+    if (!pick) return false;
+    var order = pick.options.map(function (_, i) { return i; });
+    if (sizeIdx > 0) { order.splice(sizeIdx, 1); order.unshift(sizeIdx); } // primero la talla, luego el color
+    for (var k = 0; k < order.length; k++) {
+      var i = order[k];
+      if (lsSelectedOptions()[i] !== undefined) continue;
+      var sw = Array.prototype.filter.call(document.querySelectorAll('[data-option-index="' + (i + 1) + '"]'), function (el) {
+        return el.getAttribute('data-value') === pick.options[i];
+      })[0];
+      if (!sw) return false;
+      selectLsVariant(sw);
+    }
+    return nvMissingGroups().length === 0;
+  }
+
+  function nvHideChooseMsg() {
+    document.querySelectorAll('.nv-choose-msg').forEach(function (el) { el.remove(); });
+  }
+
+  function nvShowChooseMsg(btn) {
+    nvHideChooseMsg();
     var missing = nvMissingGroups();
-    var form = document.getElementById('nv-comprar');
-    if (missing.length) {
-      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      missing.forEach(function (g) {
-        g.classList.remove('nv-missing'); void g.offsetWidth; g.classList.add('nv-missing');
-      });
+    var groups = document.querySelectorAll('.ls-variant-group');
+    // Junto a los selectores (siempre visible después del scroll)
+    if (groups.length) {
+      var top = document.createElement('p');
+      top.className = 'nv-choose-msg nv-choose-msg-top';
+      top.setAttribute('role', 'alert');
+      top.textContent = NV_CHOOSE_MSG;
+      groups[0].parentNode.insertBefore(top, groups[0]);
+    }
+    // Junto al botón que tocaron (si no es la barra fija)
+    var slot = btn && btn.closest && btn.closest('.nv-rsi-slot');
+    if (slot) {
+      var near = document.createElement('p');
+      near.className = 'nv-choose-msg';
+      near.textContent = NV_CHOOSE_MSG;
+      slot.insertAdjacentElement('afterend', near);
+    }
+    missing.forEach(function (g) { g.classList.remove('nv-missing'); void g.offsetWidth; g.classList.add('nv-missing'); });
+    (missing[0] || groups[0] || document.getElementById('nv-comprar')).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Después de cambiar la variante, ReleasIT desactiva su botón un momento mientras se
+  // actualiza. Se espera a que vuelva a estar activo y entonces se abre el formulario.
+  function nvOpenFormWhenReady(sourceBtn) {
+    var t0 = Date.now(), sawDisabled = false;
+    (function poll() {
+      var b = nvOriginalRsiButton();
+      if (b && b.disabled) sawDisabled = true;
+      var elapsed = Date.now() - t0;
+      if (b && !b.disabled && (sawDisabled || elapsed > 1200)) { b.click(); return; }
+      if (elapsed < 8000) { setTimeout(poll, 120); return; }
+      nvShowChooseMsg(sourceBtn); // ReleasIT nunca quedó listo
+    })();
+  }
+
+  function nvOrderNow(sourceBtn) {
+    if (!nvMissingGroups().length) {
+      var btn = nvOriginalRsiButton();
+      if (btn) { btn.click(); } else { nvShowChooseMsg(sourceBtn); }
       return;
     }
-    var btn = nvOriginalRsiButton();
-    if (btn) { btn.click(); } else { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (nvAutoSelectDefault()) { nvHideChooseMsg(); nvOpenFormWhenReady(sourceBtn); }
+    else { nvShowChooseMsg(sourceBtn); }
   }
 
   /* ---------- Botones de ReleasIT ----------
@@ -1271,15 +1352,15 @@
   function nvCloseLightbox() { document.getElementById('nv-lightbox').classList.remove('open'); }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') nvCloseLightbox(); });
 
-  // Si tocan el botón de ReleasIT sin haber elegido color y tamaño, se los pedimos
-  // antes de abrir el formulario, para que no llegue una variante que no eligieron.
-  document.addEventListener('click', function (e) {
+  // Todos los botones de ReleasIT (incluida la barra fija de abajo) pasan por aquí.
+  // Se escucha en window y en fase de captura para actuar antes que ReleasIT.
+  window.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest(NV_RSI_BUTTON);
     if (!btn) return;
-    if (!nvMissingGroups().length) { nvSyncOfferToForm(); return; }
+    if (!nvMissingGroups().length) { nvHideChooseMsg(); nvSyncOfferToForm(); return; }
     e.preventDefault();
     e.stopImmediatePropagation();
-    nvOrderNow();
+    nvOrderNow(btn);
   }, true);
 
   /* ---------- Swipe en la galería (celular) ---------- */
