@@ -749,9 +749,28 @@
           <h2>{{ s.videos_title }}</h2>
         </div>
         <div class="nv-videos">
-          {% if s.video_1_url != blank %}<video src="{{ s.video_1_url }}" autoplay muted loop playsinline controls preload="metadata"></video>{% endif %}
-          {% if s.video_2_url != blank %}<video src="{{ s.video_2_url }}" autoplay muted loop playsinline controls preload="metadata"></video>{% endif %}
+          {%- comment -%} Los videos pesan 4-7 MB cada uno: solo se descargan cuando la clienta llega a esta sección (script de abajo). {%- endcomment -%}
+          {% if s.video_1_url != blank %}<video data-src="{{ s.video_1_url }}" muted loop playsinline controls preload="none"></video>{% endif %}
+          {% if s.video_2_url != blank %}<video data-src="{{ s.video_2_url }}" muted loop playsinline controls preload="none"></video>{% endif %}
         </div>
+        <script>
+          (function () {
+            var vids = document.querySelectorAll('.nv-videos video[data-src]');
+            function load(v) {
+              if (!v.getAttribute('src')) v.src = v.getAttribute('data-src');
+              var p = v.play();
+              if (p && p.catch) p.catch(function () {});
+            }
+            if (!('IntersectionObserver' in window)) { vids.forEach(load); return; }
+            var io = new IntersectionObserver(function (entries) {
+              entries.forEach(function (e) {
+                if (e.isIntersecting) load(e.target);
+                else if (e.target.getAttribute('src')) e.target.pause();
+              });
+            }, {rootMargin: '200px 0px'});
+            vids.forEach(function (v) { io.observe(v); });
+          })();
+        </script>
       </div>
     </section>
   {% endif %}
