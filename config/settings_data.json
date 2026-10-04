@@ -16,249 +16,145 @@
       "header": {
         "type": "header",
         "settings": {
-          "announce_1": "Pago contra entrega en toda Colombia",
-          "announce_2": "Paga anticipado con Mercado Pago",
-          "announce_3": "Envío de 2 a 5 días hábiles",
           "logo": "shopify://shop_images/LOGO.png",
-          "logo_height": 44,
-          "menu": "main-menu",
-          "show_search": true,
-          "whatsapp": "+57 322 343 8327",
-          "upsell_product": "fundas-de-almohada-premium-55x75-cm-con-embone",
-          "upsell_heading": "Completa tu cama"
-        },
-        "blocks": {
-          "link-1": {
-            "type": "link",
-            "settings": {
-              "title": "Sábanas",
-              "link": "/collections/sabanas-unicolor",
-              "image": "shopify://shop_images/portadabeige.jpg",
-              "highlight": false
-            }
-          },
-          "link-2": {
-            "type": "link",
-            "settings": {
-              "title": "Protectores",
-              "link": "/search?q=protector&type=product",
-              "image": "",
-              "highlight": false
-            }
-          },
-          "link-3": {
-            "type": "link",
-            "settings": {
-              "title": "Colchas",
-              "link": "/search?q=colcha&type=product",
-              "image": "shopify://shop_images/Screenshot_2026-04-08_093210_35efc210-3b12-4b61-b669-6e46c1639c62.png",
-              "highlight": false
-            }
-          },
-          "link-4": {
-            "type": "link",
-            "settings": {
-              "title": "Cobijas",
-              "link": "/search?q=cobija&type=product",
-              "image": "shopify://shop_images/IMG_1541_e865dc61-8ad0-4206-b8f2-2747173f9210.jpg",
-              "highlight": false
-            }
-          },
-          "link-5": {
-            "type": "link",
-            "settings": {
-              "title": "Fundas",
-              "link": "/search?q=funda&type=product",
-              "image": "",
-              "highlight": false
-            }
-          }
-        },
-        "block_order": [
-          "link-1",
-          "link-2",
-          "link-3",
-          "link-4",
-          "link-5"
-        ]
+          "logo_height": 35,
+          "menu_type": "automatic",
+          "menu": "main-menu"
+        }
       },
       "template-home": {
         "type": "template-home",
-        "settings": {
-          "hero_autoplay": 5,
-          "hero_proof": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago",
-          "cats_title": "Compra por categoría",
-          "best_eyebrow": "Los favoritos",
-          "best_title": "Más vendidos",
-          "featured_products": [
-            "juego-de-sabanas-premium-ajuste-perfecto",
-            "protector-de-colchon-premium-impermeable-y-antifluido",
-            "protector-de-colchon-premium-termosellado-gris-plata-antialergico-silencioso-y-ajuste-perfecto-copia",
-            "fundas-de-almohada-premium-55x75-cm-con-embone"
-          ],
-          "show_pack": true,
-          "pack_eyebrow": "Pack cama completa",
-          "pack_title": "Sábanas + protector + fundas, en el mismo color",
-          "pack_text": "Todo lo que tu cama necesita en un solo pedido. Elige tamaño y color y recíbelo listo para tender.",
-          "pack_button": "Armar mi pack",
-          "pack_link": "/products/juego-de-sabanas-premium-ajuste-perfecto",
-          "pack_product_1": "juego-de-sabanas-premium-ajuste-perfecto",
-          "pack_product_2": "protector-de-colchon-premium-impermeable-y-antifluido",
-          "pack_product_3": "fundas-de-almohada-premium-55x75-cm-con-embone",
-          "benefits_eyebrow": "Por qué elegirnos",
-          "benefits_title": "Calidad que se nota desde la primera noche",
-          "benefit_image_1": "shopify://shop_images/ChatGPT_Image_26_sept_2026_18_24_36.png",
-          "benefit_image_2": "shopify://shop_images/ChatGPT_Image_26_sept_2026_18_25_24.png",
-          "benefit_image_3": "shopify://shop_images/ChatGPT_Image_26_sept_2026_18_25_30.png",
-          "benefit_image_4": "shopify://shop_images/ChatGPT_Image_26_sept_2026_18_25_35.png",
-          "pay_title": "Dos formas de pagar, las dos seguras",
-          "reviews_title": "Lo que dicen nuestras clientas",
-          "rating_text": "4.9 de 5",
-          "help_title": "¿No sabes qué tamaño elegir?",
-          "help_text": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón.",
-          "whatsapp": "+57 322 343 8327"
-        },
         "blocks": {
-          "slide-1": {
+          "slide_hCBRFN": {
+            "type": "slide",
+            "settings": {
+              "tab": "Colchas",
+              "product": "",
+              "image": "shopify://shop_images/AZUL_BEIGE_9f2037a3-b601-48e9-999e-cc6ffb6b7edd.jpg",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
+            }
+          },
+          "slide_knEYjM": {
+            "type": "slide",
+            "settings": {
+              "tab": "Cobijas",
+              "product": "",
+              "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
+            }
+          },
+          "slide_eCwXpe": {
+            "type": "slide",
+            "settings": {
+              "tab": "Fundas",
+              "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
+            }
+          },
+          "slide_aNDfcH": {
+            "type": "slide",
+            "settings": {
+              "tab": "Protectores",
+              "product": "protector-de-colchon-premium-impermeable-y-antifluido",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
+            }
+          },
+          "slide_jkVCjr": {
             "type": "slide",
             "settings": {
               "tab": "Sábanas",
               "product": "juego-de-sabanas-premium-ajuste-perfecto",
               "eyebrow": "Sábanas premium 180 hilos",
               "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "11 colores y 5 tamaños, con elástico reforzado y fuelle de 35 cm.",
-              "button_label": "Ver sábanas"
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
             }
           },
-          "slide-2": {
+          "slide_TtPYLm": {
             "type": "slide",
             "settings": {
-              "tab": "Protectores",
-              "product": "protector-de-colchon-premium-impermeable-y-antifluido",
-              "eyebrow": "Protectores de colchón",
-              "title": "Tu colchón a salvo de derrames y accidentes",
-              "text": "Impermeable y antifluido, o termosellado antialérgico. Se lavan en lavadora.",
-              "button_label": "Ver protectores",
-              "link": "/search?q=protector&type=product"
-            }
-          },
-          "slide-3": {
-            "type": "slide",
-            "settings": {
-              "tab": "Colchas",
-              "image": "shopify://shop_images/Screenshot_2026-04-08_093210_35efc210-3b12-4b61-b669-6e46c1639c62.png",
-              "eyebrow": "Colchas",
-              "title": "El toque elegante que tu habitación necesita",
-              "text": "Colores iguales a las fotos y un material que conserva su forma lavado tras lavado.",
-              "button_label": "Ver colchas",
-              "link": "/search?q=colcha&type=product"
-            }
-          },
-          "slide-4": {
-            "type": "slide",
-            "settings": {
-              "tab": "Cobijas",
-              "image": "shopify://shop_images/IMG_1541_e865dc61-8ad0-4206-b8f2-2747173f9210.jpg",
-              "eyebrow": "Cobijas",
-              "title": "Calor al instante, sin sofocarte",
-              "text": "Suaves y abrigadas para las noches frías, en colores idénticos a las fotos.",
-              "button_label": "Ver cobijas",
-              "link": "/search?q=cobija&type=product"
-            }
-          },
-          "slide-5": {
-            "type": "slide",
-            "settings": {
-              "tab": "Fundas",
-              "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
-              "eyebrow": "Fundas de almohada",
-              "title": "Fundas a juego con tus sábanas",
-              "text": "55 × 75 cm con embone, en 9 colores para combinar con tu juego.",
-              "button_label": "Ver fundas"
-            }
-          },
-          "category-6": {
-            "type": "category",
-            "settings": {
-              "title": "Sábanas",
-              "image": "shopify://shop_images/portadabeige.jpg",
-              "link": "/collections/sabanas-unicolor"
-            }
-          },
-          "category-7": {
-            "type": "category",
-            "settings": {
-              "title": "Protectores",
-              "product": "protector-de-colchon-premium-impermeable-y-antifluido",
-              "link": "/search?q=protector&type=product"
-            }
-          },
-          "category-8": {
-            "type": "category",
-            "settings": {
-              "title": "Colchas",
-              "image": "shopify://shop_images/Screenshot_2026-04-08_093210_35efc210-3b12-4b61-b669-6e46c1639c62.png",
-              "link": "/search?q=colcha&type=product"
-            }
-          },
-          "category-9": {
-            "type": "category",
-            "settings": {
-              "title": "Cobijas",
-              "image": "shopify://shop_images/IMG_1541_e865dc61-8ad0-4206-b8f2-2747173f9210.jpg",
-              "link": "/search?q=cobija&type=product"
-            }
-          },
-          "category-10": {
-            "type": "category",
-            "settings": {
-              "title": "Fundas",
-              "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
-              "link": "/search?q=funda&type=product"
-            }
-          },
-          "review-11": {
-            "type": "review",
-            "settings": {
-              "name": "María Mirian Murillo",
-              "text": "No son lisas como otras sábanas, tienen una textura suave que se siente muy cómoda al dormir."
-            }
-          },
-          "review-12": {
-            "type": "review",
-            "settings": {
-              "name": "Diana Osorio",
-              "text": "Las medidas son exactas, se ajustan perfecto al colchón y no quedan ni sueltas ni apretadas."
-            }
-          },
-          "review-13": {
-            "type": "review",
-            "settings": {
-              "name": "Stella Segura",
-              "text": "Ya las he lavado varias veces y el color sigue igual de intenso, no se decoloran ni pierden su apariencia."
+              "tab": "Toallas",
+              "product": "juego-de-toallas-cuerpo-y-manos-algodon-400gr-doble-secado-beige",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
             }
           }
         },
         "block_order": [
-          "slide-1",
-          "slide-2",
-          "slide-3",
-          "slide-4",
-          "slide-5",
-          "category-6",
-          "category-7",
-          "category-8",
-          "category-9",
-          "category-10",
-          "review-11",
-          "review-12",
-          "review-13"
-        ]
+          "slide_hCBRFN",
+          "slide_knEYjM",
+          "slide_eCwXpe",
+          "slide_aNDfcH",
+          "slide_jkVCjr",
+          "slide_TtPYLm"
+        ],
+        "settings": {
+          "hero_autoplay": 5,
+          "hero_proof": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago",
+          "trust_1_title": "Pago contra entrega",
+          "trust_1_text": "Pagas en efectivo al recibir",
+          "trust_2_title": "Mercado Pago",
+          "trust_2_text": "Tarjeta o PSE, pago seguro",
+          "trust_3_title": "Envío 2 a 5 días",
+          "trust_3_text": "A toda Colombia",
+          "trust_4_title": "Cambio garantizado",
+          "trust_4_text": "Por defectos de fabricación",
+          "cats_title": "Compra por categoría",
+          "cats_motion": "right",
+          "best_eyebrow": "Los favoritos",
+          "best_title": "Más vendidos",
+          "featured_products": [],
+          "featured_collection": "",
+          "show_pack": true,
+          "pack_eyebrow": "Pack cama completa",
+          "pack_title": "Sábanas + protector + fundas, en el mismo color",
+          "pack_text": "Todo lo que tu cama necesita en un solo pedido. Elige tamaño y color y recíbelo listo para tender.",
+          "pack_price": "",
+          "pack_before": "",
+          "pack_save": "",
+          "pack_button": "Armar mi pack",
+          "pack_link": "",
+          "pack_product_1": "",
+          "pack_product_2": "",
+          "pack_product_3": "",
+          "benefits_eyebrow": "Por qué elegirnos",
+          "benefits_title": "Calidad que se nota desde la primera noche",
+          "pay_title": "Dos formas de pagar, las dos seguras",
+          "cod_text": "Haces tu pedido sin tarjeta ni registro. Te llamamos para confirmar antes de despachar y pagas en efectivo cuando el producto llega a tu puerta.",
+          "mp_text": "Paga en línea con tarjeta débito o crédito, PSE y los demás medios de Mercado Pago. Tu pedido sale apenas se confirma el pago.",
+          "mp_benefit": "",
+          "reviews_title": "Lo que dicen nuestras clientas",
+          "rating_text": "4.9 de 5",
+          "help_title": "¿No sabes qué tamaño elegir?",
+          "help_text": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón.",
+          "whatsapp": "+57 322 343 8327"
+        }
       },
       "footer": {
         "type": "footer",
         "settings": {
-          "about": "Lencería para el hogar que combina estética, confort y calidad: sábanas, protectores, colchas, cobijas y fundas con estilos modernos y tonos armoniosos.",
+          "about": "Lencería para el hogar que combina estética, confort y calidad: sábanas, protectores, colchas, cobijas y toallas con estilos modernos y tonos armoniosos.",
+          "menu_shop": "",
           "city": "Bogotá, Colombia",
           "whatsapp": "+57 322 343 8327",
           "email": "dianamarhogar@gmail.com",
@@ -267,59 +163,14 @@
           "facebook": "",
           "mercadolibre": "https://www.mercadolibre.com.co/pagina/dianamarhogarlenceria",
           "policy_short": "Garantía de hasta 90 días por defectos de fabricación. Si recibes un producto diferente al pedido, lo cambiamos sin costo.",
-          "policy_long": "En Dianamar Hogar trabajamos para garantizar la satisfacción de nuestros clientes; por ello, aceptamos cambios y devoluciones bajo las siguientes condiciones: los productos cuentan con una garantía de hasta 90 días calendario por defectos de fabricación, específicamente en costuras, la cual aplica únicamente si se evidencia un uso y cuidado adecuado de la prenda conforme a las recomendaciones de lavado y manipulación. Si el cliente recibe un producto diferente al solicitado, la empresa realizará el cambio sin costo adicional y asumirá los gastos de envío correspondientes. En caso de que el cambio sea solicitado por error del cliente (como talla, color o referencia equivocada), este deberá asumir los costos de envío. Para gestionar cualquier cambio o devolución, el producto debe encontrarse en óptimas condiciones, sin uso, con etiquetas y empaque original, y la solicitud deberá realizarse dentro de los plazos establecidos de acuerdo con la ley 1480 de 2011 (estatuto del consumidor). Dianamar Hogar se reserva el derecho de evaluar cada caso para asegurar el cumplimiento de estas condiciones y brindar una solución justa y oportuna."
+          "policy_long": ""
         }
       },
       "template-collection": {
         "type": "template-collection",
         "settings": {
-          "per_page": 24,
           "fallback_image": "shopify://shop_images/paloderosa_sin_marca_24ba587b-ffe0-48a9-9c11-c73070161d33.png"
-        },
-        "blocks": {
-          "chip-1": {
-            "type": "chip",
-            "settings": {
-              "title": "Sábanas",
-              "link": "/collections/sabanas-unicolor"
-            }
-          },
-          "chip-2": {
-            "type": "chip",
-            "settings": {
-              "title": "Protectores",
-              "link": "/search?q=protector&type=product"
-            }
-          },
-          "chip-3": {
-            "type": "chip",
-            "settings": {
-              "title": "Colchas",
-              "link": "/search?q=colcha&type=product"
-            }
-          },
-          "chip-4": {
-            "type": "chip",
-            "settings": {
-              "title": "Cobijas",
-              "link": "/search?q=cobija&type=product"
-            }
-          },
-          "chip-5": {
-            "type": "chip",
-            "settings": {
-              "title": "Fundas",
-              "link": "/search?q=funda&type=product"
-            }
-          }
-        },
-        "block_order": [
-          "chip-1",
-          "chip-2",
-          "chip-3",
-          "chip-4",
-          "chip-5"
-        ]
+        }
       },
       "template-product": {
         "type": "template-product",
@@ -420,7 +271,6 @@
       "template-product-nueva-pagina": {
         "type": "template-product-nueva-pagina",
         "settings": {
-          "size_height": "35 cm",
           "badge_left": "⭐ 4.9 · Clientes felices",
           "rating_text": "4.9/5 · +2.000 juegos vendidos",
           "headline": "Renueva tu habitación con sábanas suaves y de ajuste perfecto",
@@ -473,6 +323,7 @@
           "step_3_title": "Tiende y disfruta",
           "step_3_text": "Estira la ajustable por las cuatro esquinas y listo: cama impecable.",
           "size_guide_title": "Encuentra tu tamaño perfecto",
+          "size_height": "35 cm",
           "size_1_name": "Sencilla",
           "size_1_measure": "100 × 190 cm",
           "size_1_cases": "1 funda",
