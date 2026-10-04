@@ -80,14 +80,18 @@
   .nv-hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: start; }
   .nv-hero-grid > * { min-width: 0; }
   .nv-gallery-col { display: grid; gap: 12px; position: sticky; top: 16px; }
-  .ls-gallery { position: relative; width: 100%; border-radius: 18px; overflow: hidden; background: var(--nv-blush); }
-  .ls-media-item img, .ls-media-item video { width: 100%; height: auto; display: block; object-fit: cover; max-height: 70vh; }
+  /* Galería como en el boceto: marco 4:5 sobre blanco, la foto completa sin recortes */
+  .ls-gallery { position: relative; width: 100%; aspect-ratio: 4 / 5; border-radius: 18px; overflow: hidden; background: #fff; }
+  .ls-media-item { position: absolute; inset: 0; }
+  .ls-media-item img, .ls-media-item video, .ls-media-item iframe { width: 100%; height: 100%; display: block; object-fit: contain; max-height: none; border: 0; }
   .ls-media-variant-hidden, .ls-thumb-variant-hidden { display: none !important; }
   .nv-badge-float { position: absolute; top: 14px; left: 14px; z-index: 2; background: #fff; color: var(--nv-ink); font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,.08); pointer-events: none; }
-  .nv-badge-float.nv-r { left: auto; right: 14px; background: var(--nv-cta); color: #fff; }
+  .nv-badge-float.nv-r { left: auto; right: 14px; background: #B8473D; color: #fff; font-weight: 800; font-size: 14px; box-shadow: none; }
   .ls-thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
-  .ls-thumb-wrapper { width: 74px; height: 74px; flex-shrink: 0; border-radius: 10px; border: 2px solid transparent; opacity: .65; cursor: pointer; scroll-snap-align: start; transition: all .2s; overflow: hidden; }
-  .ls-thumb-wrapper.active, .ls-thumb-wrapper:hover { border-color: var(--nv-coral); opacity: 1; }
+  .ls-thumb-wrapper { width: 76px; height: 76px; flex-shrink: 0; border-radius: 10px; border: 2px solid transparent; background: #fff; cursor: pointer; scroll-snap-align: start; transition: border-color .2s; overflow: hidden; }
+  .ls-thumb-wrapper.active { border-color: #B8473D; }
+  .ls-thumb-wrapper:hover { border-color: var(--nv-coral-soft); }
+  .ls-thumb-wrapper.active:hover { border-color: #B8473D; }
 
   .nv-buy { display: grid; gap: 18px; }
   .nv-stars { color: var(--nv-star); letter-spacing: 2px; font-size: 16px; }
@@ -392,7 +396,6 @@
     <div class="nv-wrap nv-hero-grid">
       <div class="nv-gallery-col">
         <div class="ls-gallery" id="ls-main-gallery">
-          {% if s.badge_left != blank %}<span class="nv-badge-float">{{ s.badge_left }}</span>{% endif %}
           {% if current_variant.compare_at_price > current_variant.price %}
             {% assign nv_pct = current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price %}
             <span class="nv-badge-float nv-r" id="nv-badge-float">-{{ nv_pct }}%</span>
