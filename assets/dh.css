@@ -277,9 +277,9 @@ footer.dh-footer { display: block; margin: 0; padding: 0; background: var(--dh-g
   .dh-help .dh-btn { width: 100%; }
   /* Catálogo */
   .dh-coll-chips { flex-wrap: nowrap; overflow-x: auto; margin: 14px -14px; padding-inline: 14px; }
-  .dh-filter-toggle { display: inline-flex; flex: 1; }
-  .dh-coll-tools { display: flex; gap: 8px; width: 100%; }
-  .dh-coll-tools .dh-select { flex: 1; }
+  .dh-filter-toggle { display: inline-flex; flex: 0 0 auto; white-space: nowrap; padding: 0 16px; gap: 6px; }
+  .dh-coll-tools { display: flex; gap: 8px; width: 100%; align-items: stretch; }
+  .dh-coll-tools .dh-select { flex: 1 1 auto; min-width: 0; text-overflow: ellipsis; }
   .dh-filters { display: none; max-width: none; }
   .dh-filters.is-open { display: flex; }
   .dh-coll-grid .dh-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
