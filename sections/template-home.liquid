@@ -188,19 +188,39 @@
         {%- endif -%}
         <a href="{{ s.pack_link | default: routes.all_products_collection_url }}" class="dh-btn" style="align-self: flex-start; background: #fff; color: var(--dh-ink);">{{ s.pack_button }}</a>
       </div>
-      <div class="dh-pack-imgs">
-        {%- for i in (1..3) -%}
-          {%- liquid
-            assign ik = 'pack_image_' | append: i
-            assign pk = 'pack_product_' | append: i
-            assign img = s[ik]
-            if img == blank and s[pk] != blank
-              assign img = s[pk].featured_image
-            endif
-          -%}
-          {%- if img != blank -%}<img src="{{ img | image_url: width: 500 }}" alt="" width="400" height="500" loading="lazy">{%- else -%}<span style="background: rgba(255,255,255,.08);"></span>{%- endif -%}
-        {%- endfor -%}
-      </div>
+      {%- comment -%} Solo se muestran las imágenes que existen; se reparten el espacio (1, 2 o 3). {%- endcomment -%}
+      {%- liquid
+        assign pack_count = 0
+        for i in (1..3)
+          assign ik = 'pack_image_' | append: i
+          assign pk = 'pack_product_' | append: i
+          if s[ik] != blank or s[pk].featured_image != blank
+            assign pack_count = pack_count | plus: 1
+          endif
+        endfor
+      -%}
+      {%- if pack_count > 0 -%}
+        <div class="dh-pack-imgs" data-count="{{ pack_count }}">
+          {%- for i in (1..3) -%}
+            {%- liquid
+              assign ik = 'pack_image_' | append: i
+              assign pk = 'pack_product_' | append: i
+              assign img = s[ik]
+              assign img_alt = ''
+              if img == blank and s[pk] != blank
+                assign img = s[pk].featured_image
+                assign img_alt = s[pk].title
+              endif
+            -%}
+            {%- if img != blank -%}
+              <img src="{{ img | image_url: width: 800 }}"
+                srcset="{{ img | image_url: width: 400 }} 400w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1100 }} 1100w"
+                sizes="(max-width: 760px) {% if pack_count == 1 %}100vw{% elsif pack_count == 2 %}50vw{% else %}34vw{% endif %}, {% if pack_count == 1 %}620px{% elsif pack_count == 2 %}310px{% else %}210px{% endif %}"
+                alt="{{ img_alt | escape }}" width="{{ img.width | default: 800 }}" height="{{ img.height | default: 1000 }}" loading="lazy">
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
     </div>
   </div>
 </section>
