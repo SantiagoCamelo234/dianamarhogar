@@ -1,0 +1,87 @@
+{% comment %}
+  Tarjeta de producto de la tienda nueva.
+  Uso: {% render 'dh-product-card', product: product, collection: collection, eager: false %}
+{% endcomment %}
+{%- liquid
+  assign url = product.url
+  if collection
+    assign url = product.url | within: collection
+  endif
+  assign img1 = product.featured_media.preview_image | default: product.featured_image
+  assign img2 = nil
+  if product.media.size > 1
+    assign img2 = product.media[1].preview_image
+  endif
+  for option in product.options_with_values
+    assign oname = option.name | downcase
+    if oname contains 'color' or oname contains 'colour'
+      assign color_values = option.values
+    endif
+  endfor
+-%}
+<a href="{{ url }}" class="dh-card">
+  <span class="dh-card-media">
+    {%- if img1 -%}
+      <img src="{{ img1 | image_url: width: 600 }}"
+        srcset="{{ img1 | image_url: width: 360 }} 360w, {{ img1 | image_url: width: 600 }} 600w, {{ img1 | image_url: width: 800 }} 800w"
+        sizes="(max-width: 760px) 70vw, 300px"
+        alt="{{ product.title | escape }}" width="600" height="750"
+        {% if eager %}loading="eager"{% else %}loading="lazy"{% endif %}>
+      {%- if img2 -%}
+        <img class="dh-card-alt" src="{{ img2 | image_url: width: 600 }}" alt="" width="600" height="750" loading="lazy">
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'dh-placeholder' }}
+    {%- endif -%}
+    {%- if product.available == false -%}
+      <span class="dh-badge dh-badge-out">Agotado</span>
+    {%- elsif product.compare_at_price > product.price -%}
+      <span class="dh-badge">Ahorra {{ product.compare_at_price | minus: product.price | money_without_trailing_zeros }}</span>
+    {%- endif -%}
+  </span>
+  <span class="dh-card-body">
+    <span class="dh-card-title">{{ product.title }}</span>
+    {%- if color_values and color_values.size > 1 -%}
+      <span class="dh-card-swatches" aria-label="{{ color_values.size }} colores">
+        {%- for v in color_values limit: 5 -%}
+          {%- assign vh = v | downcase -%}
+          {%- liquid
+            case vh
+              when 'gris plata' or 'gris'
+                assign hex = '#C9CCD1'
+              when 'gris oscuro'
+                assign hex = '#5A5D63'
+              when 'azul bebé' or 'azul bebe'
+                assign hex = '#B9D6EE'
+              when 'negro'
+                assign hex = '#1E1E1E'
+              when 'azul oscuro'
+                assign hex = '#1F2B4A'
+              when 'blanco'
+                assign hex = '#FFFFFF'
+              when 'verde manzana'
+                assign hex = '#A8D672'
+              when 'lila'
+                assign hex = '#C8B6DD'
+              when 'palo de rosa'
+                assign hex = '#E7B7B0'
+              when 'azul índigo' or 'azul indigo'
+                assign hex = '#3E4C8A'
+              when 'beige'
+                assign hex = '#E6D5BC'
+              else
+                assign hex = '#E2C9C3'
+            endcase
+          -%}
+          <i style="background: {{ hex }}" title="{{ v | escape }}"></i>
+        {%- endfor -%}
+        {%- if color_values.size > 5 -%}+{{ color_values.size | minus: 5 }} colores{%- else -%}{{ color_values.size }} colores{%- endif -%}
+      </span>
+    {%- endif -%}
+    <span class="dh-price">
+      <strong>{% if product.price_varies %}Desde {% endif %}{{ product.price | money_without_trailing_zeros }}</strong>
+      {%- if product.compare_at_price > product.price -%}<s>{{ product.compare_at_price | money_without_trailing_zeros }}</s>{%- endif -%}
+    </span>
+    <span class="dh-card-cta">{% if product.has_only_default_variant %}Ver producto{% else %}Elige opciones{% endif %}</span>
+  </span>
+</a>

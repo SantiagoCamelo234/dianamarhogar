@@ -1,0 +1,59 @@
+{
+  "sections": {
+    "main": {
+      "type": "template-product-nueva-pagina",
+      "settings": {
+        "headline": "¡El secreto para un colchón como nuevo por siempre! ✨",
+        "subheadline": "Dale a tu cama la protección que merece. Nuestro protector impermeable, antialérgico y ultra silencioso te garantiza la máxima higiene sin sacrificar tu comodidad. 🛡️💤\n\nOlvídate de las manchas y el calor. ¡Dale vida extra a tu colchón hoy mismo!",
+        "reviews_title": "Lo que dicen quienes ya duermen mejor",
+        "carousel_title": "Nuestros Colores",
+        "videos_title": "Mira el producto en acción",
+        "logistics_title": "Convenio Logístico Con:",
+        "size_guide_title": "Encuentra tu Tamaño Perfecto",
+        "size_guide_image": "shopify://shop_images/DianamarHogar-Guia-Tamanos.png",
+        "faq_title": "Preguntas Frecuentes",
+        "color_image_1": "shopify://shop_images/Screenshot_2026-04-08_093210_35efc210-3b12-4b61-b669-6e46c1639c62.png",
+        "color_image_2": "shopify://shop_images/Screenshot_2026-04-08_093229.png",
+        "color_image_3": "shopify://shop_images/Screenshot_2026-04-08_093258_45a0d2c1-6f55-4720-a05e-6b60edc19e16.png",
+        "color_image_4": "shopify://shop_images/Screenshot_2026-04-08_093250_89133980-d837-4432-986c-5e6bc3590f15.png",
+        "review_1_name": "María C.",
+        "review_1_text": "Excelentes sábanas, súper frescas.",
+        "review_2_name": "Diana R.",
+        "review_2_text": "Llegaron muy rápido. La calidad es increíble.",
+        "faq_1_q": "¿Tienen pago contra entrega?",
+        "faq_1_a": "Sí, pagas únicamente cuando recibes.",
+        "faq_2_q": "¿Cuánto demora el envío?",
+        "faq_2_a": "Entre 2 a 5 días hábiles a nivel nacional.",
+        "pill_1": "Ajuste Perfecto",
+        "pill_2": "Máxima Suavidad",
+        "pill_3": "Cero Calor",
+        "include_eyebrow": "Beneficios",
+        "include_title": "¿Por qué miles de colombianas las prefieren?",
+        "include_subtitle": "",
+        "include_1_title": "Ajuste Perfecto",
+        "include_1_text": "Elásticos reforzados para que no se salgan de las esquinas del colchón.",
+        "include_2_title": "Máxima Suavidad",
+        "include_2_text": "Tela de 180 hilos que no produce motas.",
+        "include_3_title": "Cero Calor",
+        "include_3_text": "Material transpirable ideal para cualquier clima.",
+        "stat_1_value": "",
+        "stat_2_value": "",
+        "stat_3_value": "",
+        "problem_title": "",
+        "step_1_title": "",
+        "compare_1": "",
+        "show_bundles": false,
+        "show_promo": false,
+        "size_1_name": "",
+        "pill_5": "",
+        "pill_6": "",
+        "final_stock": "",
+        "final_title": "Pídelo hoy y págalo al recibir",
+        "final_text": "Recíbelo en 2 a 5 días hábiles. Pagas en efectivo cuando llegue, o con Mercado Pago."
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

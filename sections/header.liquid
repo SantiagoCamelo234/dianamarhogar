@@ -1,183 +1,147 @@
-<!-- SIDEBAR MENU -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-<div class="sidebar" id="sidebarMenu">
-  <div class="sidebar-header">
-    <div class="logo-simulado" style="margin: 0; text-align: left; cursor: default;">
-      {% if section.settings.logo != blank %}
-        <img src="{{ section.settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" class="logo-img" width="200" height="80" style="max-height: 40px; width: auto;">
-      {% else %}
-        <div class="logo-text-container" style="margin-left: 0;">
-          <div class="logo-dianamar" style="font-size: 22px;">{{ shop.name }}</div>
-        </div>
-      {% endif %}
-    </div>
-    <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
-  </div>
-  <ul class="sidebar-links">
-    {% if section.settings.menu_type == 'automatic' %}
-      {% for collection in collections %}
-        {% unless collection.handle == 'frontpage' %}
-          <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
-        {% endunless %}
-      {% endfor %}
-    {% else %}
-      {% for link in linklists[section.settings.menu].links %}
-        {% if link.links != blank %}
-          <li class="has-submenu">
-            <div class="submenu-toggle" onclick="toggleSubmenu(this)">
-              {{ link.title }} <span class="submenu-icon">+</span>
-            </div>
-            <ul class="submenu">
-              {% for childlink in link.links %}
-                <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-        {% else %}
-          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-        {% endif %}
-      {% else %}
-        <!-- Fallback provisional en Shopify si el menú configurado no existe -->
-        <li><a href="/collections/all">Ver Catálogo completo</a></li>
-      {% endfor %}
-    {% endif %}
-  </ul>
-</div>
+{%- comment -%}
+  Encabezado de la tienda nueva: barra de anuncios, logo, menú de categorías,
+  buscador, cuenta y cesta. En celular el menú se abre en un panel lateral.
+  Las categorías del menú son bloques "Enlace" editables desde Personalizar.
+{%- endcomment -%}
+{%- liquid
+  assign anuncios = ''
+  if section.settings.announce_1 != blank
+    assign anuncios = anuncios | append: section.settings.announce_1 | append: '|'
+  endif
+  if section.settings.announce_2 != blank
+    assign anuncios = anuncios | append: section.settings.announce_2 | append: '|'
+  endif
+  if section.settings.announce_3 != blank
+    assign anuncios = anuncios | append: section.settings.announce_3 | append: '|'
+  endif
+  assign anuncios = anuncios | split: '|'
+-%}
 
-<!-- BARRA DE PROMOCIÓN -->
-<div class="top-bar" style="overflow: hidden; white-space: nowrap; text-align: left;">
-  <div style="display: inline-flex; align-items: center; gap: 15vw; animation: marquee-seamless 30s linear infinite;">
-    <span>🚨 Ultimas unidades disponibles🚨</span>
-    <span>🌿 Envíos a toda Colombia 🌿</span>
-    <span>🚚 Pago contra entrega a todo el país 🚚</span>
-    <!-- Contenido duplicado para el bucle infinito -->
-    <span>🚨 Ultimas unidades disponibles🚨</span>
-    <span>🇨🇴 Envíos gratis a toda Colombia  🇨🇴</span>
-    <span>🚚 Pago contra entrega a todo el país 🚚</span>
+{%- if anuncios.size > 0 -%}
+  <div class="dh-announce" role="region" aria-label="Anuncios">
+    <ul>
+      {%- for a in anuncios -%}<li>{{ a }}</li>{%- endfor -%}
+    </ul>
   </div>
-  <style>
-    @keyframes marquee-seamless {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-  </style>
-</div>
+{%- endif -%}
 
-<!-- HEADER -->
-<header>
-  <!-- Navegación Izquierda -->
-  <div class="left-nav">
-    <div class="menu-icon" onclick="toggleSidebar()">
-      <span class="menu-text" style="font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Nuestros Productos</span>
-      <svg class="menu-hamburger" viewBox="0 0 24 24" style="display: none; width: 28px; height: 28px;"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+<header class="dh-header">
+  <div class="dh-header-inner">
+    <button type="button" class="dh-icon-btn dh-menu-btn" data-dh-open-menu aria-label="Abrir menú" aria-controls="dh-menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+
+    <a href="{{ routes.root_url }}" class="dh-logo" aria-label="{{ shop.name }}, ir al inicio">
+      {%- if section.settings.logo != blank -%}
+        <img src="{{ section.settings.logo | image_url: width: 160 }}" alt="" width="80" height="80" style="height: {{ section.settings.logo_height | default: 44 }}px;">
+      {%- endif -%}
+      <span class="dh-logo-text"><b>Dianamar</b><small>HOGAR</small></span>
+    </a>
+
+    <nav class="dh-nav" aria-label="Categorías">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.title != blank -%}
+          <a href="{{ block.settings.link | default: '#' }}" {% if block.settings.highlight %}style="color: var(--dh-coral-ink);"{% endif %} {% if request.path == block.settings.link %}aria-current="page"{% endif %} {{ block.shopify_attributes }}>{{ block.settings.title }}</a>
+        {%- endif -%}
+      {%- else -%}
+        {%- for link in linklists[section.settings.menu].links -%}
+          <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+        {%- endfor -%}
+      {%- endfor -%}
+    </nav>
+
+    <div class="dh-header-actions">
+      {%- if section.settings.show_search -%}
+        <button type="button" class="dh-icon-btn" data-dh-toggle-search aria-label="Buscar" aria-controls="dh-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="dh-icon-btn dh-account" aria-label="Mi cuenta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+        </a>
+      {%- endif -%}
+      <a href="{{ routes.cart_url }}" class="dh-icon-btn" data-dh-open-cart data-dh-cart-label aria-label="Cesta, {{ cart.item_count }} productos" aria-controls="dh-cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 016 0"/></svg>
+        <span class="dh-cart-count" data-dh-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+      </a>
     </div>
   </div>
 
-  <!-- Logo Céntrico -->
-  <a href="/" class="logo-simulado" style="display:flex; align-items:center; text-decoration:none;">
-
-  {% if section.settings.logo != blank %}
-    <img 
-      src="{{ section.settings.logo | image_url: width: 400 }}" 
-      alt="{{ shop.name }}" 
-      width="400" height="100"
-      style="max-height: {{ section.settings.logo_height }}px; width:auto; margin-right:12px;">
-  {% endif %}
-
-  <div style="display:flex; flex-direction:column; line-height:1;">
-
-    <span style="
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      font-weight: 500;
-      color:#6f6f6f;
-      letter-spacing: 0.5px;">
-      Dianamar
-    </span>
-
-    <span style="
-      font-family: 'Inter', sans-serif;
-      font-size:11px;
-      font-weight: 400;
-      letter-spacing:4px;
-      color:#8fa38f;
-      margin-top:2px;">
-      HOGAR
-    </span>
-
-  </div>
-</a>
-
+  {%- if section.settings.show_search -%}
+    <div class="dh-search" id="dh-search" data-dh-search hidden>
+      <form action="{{ routes.search_url }}" method="get" role="search">
+        <label class="dh-sr" for="dh-search-input">Buscar productos</label>
+        <input id="dh-search-input" type="search" name="q" placeholder="¿Qué buscas? Ej. sábanas doble" value="{{ search.terms | escape }}">
+        <input type="hidden" name="type" value="product">
+        <button type="submit" class="dh-btn dh-btn-primary" style="min-height: 46px;">Buscar</button>
+      </form>
+    </div>
+  {%- endif -%}
 </header>
 
-<!-- WhatsApp Button Removed -->
-<style>
-  /* RESPONSIVE: TABLETS (max-width: 900px) */
-  @media (max-width: 900px) {
-    header { padding: 12px 20px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-    .left-nav { gap: 10px; }
-    .menu-text { display: none !important; }
-    .menu-hamburger { display: block !important; }
-    .logo-simulado { margin-left: 0; }
-    .logo-img { height: 35px; }
-  }
+<!-- Menú lateral (celular) -->
+<div class="dh-menu" id="dh-menu" data-dh-menu aria-hidden="true" role="dialog" aria-label="Menú">
+  <div class="dh-menu-head">
+    <span>Menú</span>
+    <button type="button" class="dh-icon-btn" data-dh-close aria-label="Cerrar menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav aria-label="Categorías">
+    <a href="{{ routes.root_url }}">Inicio</a>
+    {%- for block in section.blocks -%}
+      {%- if block.settings.title != blank -%}
+        <a href="{{ block.settings.link | default: '#' }}" {% if block.settings.highlight %}style="color: var(--dh-coral-ink);"{% endif %}>
+          {%- if block.settings.image != blank -%}<img src="{{ block.settings.image | image_url: width: 80 }}" alt="" width="36" height="36" loading="lazy" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">{%- endif -%}
+          {{ block.settings.title }}
+        </a>
+      {%- endif -%}
+    {%- else -%}
+      {%- for link in linklists[section.settings.menu].links -%}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {%- endfor -%}
+    {%- endfor -%}
+    <a href="{{ routes.all_products_collection_url }}">Ver toda la tienda</a>
+  </nav>
+  {%- if section.settings.whatsapp != blank -%}
+    <div class="dh-menu-help">¿Dudas con el tamaño? Escríbenos por WhatsApp<br><a class="dh-link" href="https://wa.me/{{ section.settings.whatsapp | remove: '+' | remove: ' ' }}">{{ section.settings.whatsapp }}</a></div>
+  {%- endif -%}
+</div>
 
-  /* RESPONSIVE: PHONES (max-width: 768px) */
-  @media (max-width: 768px) {
-    .top-bar { font-size: 10px; padding: 7px 10px; }
-    header { padding: 10px 15px; }
-    .logo-img { height: 30px; }
-    .logo-dianamar { font-size: 20px; }
-    .sidebar { width: 280px; }
-  }
-
-  /* RESPONSIVE: SMALL PHONES (max-width: 480px) */
-  @media (max-width: 480px) {
-    header { padding: 8px 12px; }
-    .top-bar { font-size: 9px; padding: 6px 10px; }
-    .logo-img { height: 26px; }
-    .logo-dianamar { font-size: 18px; }
-    .sidebar { width: 260px; }
-    .sidebar-header { padding: 18px 15px; }
-    .sidebar-links > li > a, .submenu-toggle { padding: 15px 18px; font-size: 13px; }
-    .submenu li a { padding: 12px 18px 12px 35px; font-size: 13px; }
-  }
-</style>
+{% render 'dh-cart-drawer', upsell_product: section.settings.upsell_product, upsell_heading: section.settings.upsell_heading %}
 
 {% schema %}
 {
-  "name": "Header",
+  "name": "Encabezado",
+  "max_blocks": 10,
   "settings": [
+    { "type": "header", "content": "Barra de anuncios" },
+    { "type": "text", "id": "announce_1", "label": "Anuncio 1", "default": "Pago contra entrega en toda Colombia" },
+    { "type": "text", "id": "announce_2", "label": "Anuncio 2", "default": "Paga anticipado con Mercado Pago" },
+    { "type": "text", "id": "announce_3", "label": "Anuncio 3", "default": "Envío de 2 a 5 días hábiles" },
+    { "type": "header", "content": "Logo" },
+    { "type": "image_picker", "id": "logo", "label": "Logo de la tienda" },
+    { "type": "range", "id": "logo_height", "label": "Altura del logo", "min": 24, "max": 72, "step": 2, "unit": "px", "default": 44 },
+    { "type": "header", "content": "Menú" },
+    { "type": "paragraph", "content": "Agrega las categorías del menú como bloques \"Enlace\". Si no hay bloques, se usa el menú de Navegación elegido abajo." },
+    { "type": "link_list", "id": "menu", "label": "Menú de respaldo", "default": "main-menu" },
+    { "type": "checkbox", "id": "show_search", "label": "Mostrar buscador", "default": true },
+    { "type": "text", "id": "whatsapp", "label": "WhatsApp de ayuda (con indicativo)", "default": "+57 322 343 8327" },
+    { "type": "header", "content": "Cesta" },
+    { "type": "product", "id": "upsell_product", "label": "Producto sugerido en la cesta", "info": "Se ofrece dentro de la cesta para que agreguen algo más (ej. fundas)." },
+    { "type": "text", "id": "upsell_heading", "label": "Texto del producto sugerido", "default": "Completa tu cama" }
+  ],
+  "blocks": [
     {
-      "type": "image_picker",
-      "id": "logo",
-      "label": "Logo de la Tienda"
-    },
-    {
-      "type": "range",
-      "id": "logo_height",
-      "label": "Altura del Logo",
-      "min": 20,
-      "max": 100,
-      "step": 5,
-      "default": 35,
-      "unit": "px"
-    },
-    {
-      "type": "radio",
-      "id": "menu_type",
-      "label": "Origen del Menú",
-      "options": [
-        { "value": "automatic", "label": "Listar todas las Colecciones automáticamente" },
-        { "value": "manual", "label": "Menú manual (Configurado en Navegación)" }
-      ],
-      "default": "automatic"
-    },
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "Menú manual a mostrar (si eliges manual arriba)",
-      "default": "main-menu"
+      "type": "link",
+      "name": "Enlace",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Texto", "default": "Sábanas" },
+        { "type": "url", "id": "link", "label": "Enlace" },
+        { "type": "image_picker", "id": "image", "label": "Imagen (menú del celular)" },
+        { "type": "checkbox", "id": "highlight", "label": "Resaltar (ej. Ofertas)", "default": false }
+      ]
     }
   ]
 }

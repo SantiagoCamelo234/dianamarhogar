@@ -132,6 +132,25 @@
   /* Botón de ReleasIT dentro del formulario */
   /* Puntos donde ReleasIT dibuja su botón (uno arriba y uno en cada sección de pedido) */
   .nv-rsi-slot { width: 100%; }
+  .nv-buy-pair { display: flex; gap: 10px; flex-wrap: wrap; }
+  .nv-buy-pair .nv-btn { flex: 1 1 200px; min-height: 58px; }
+  .nv-btn-add { background: #fff; color: var(--nv-ink); border: 2px solid var(--nv-ink); font-size: 16px; }
+  .nv-btn-add:hover { background: var(--nv-blush-2); }
+  .nv-btn-buy { flex-direction: column; gap: 0; padding: 10px 18px; background: #2E7D32 !important; box-shadow: 0 8px 20px rgba(46,125,50,.28) !important; }
+  .nv-btn-buy:hover { background: #276B2B !important; }
+  .nv-btn-buy small { font-size: 12px; font-weight: 600; opacity: .92; }
+  .nv-btn[aria-busy="true"] { opacity: .65; pointer-events: none; }
+  .nv-final .nv-btn-add { background: transparent; color: #fff; border-color: #fff; }
+  .nv-buy-error { margin-top: 8px; color: #b4232f; font-weight: 700; font-size: 14px; text-align: center; }
+  .nv-sticky { display: none; }
+  @media (max-width: 768px) {
+    .nv-sticky { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 800; gap: 8px; align-items: center; padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: #fff; border-top: 1px solid var(--nv-line); box-shadow: 0 -6px 18px rgba(0,0,0,.08); transform: translateY(110%); transition: transform .25s ease; }
+    .nv-sticky.is-visible { transform: none; }
+    .nv-sticky .nv-btn { min-height: 48px; padding: 0 10px; font-size: 15px; }
+    .nv-sticky-price { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; font-size: 11px; color: var(--nv-muted); }
+    .nv-sticky-price strong { font-size: 17px; color: var(--nv-ink); }
+  }
+  @media (prefers-reduced-motion: reduce) { .nv-sticky { transition: none; } }
   .nv-final .nv-rsi-slot { max-width: 460px; }
 
   /* Cifras */
@@ -291,7 +310,7 @@
   }
   @media (max-width: 768px) {
     /* Espacio para el botón fijo de ReleasIT: al final del footer, no entre la página y el footer */
-    body:has(.nv-page) footer { padding-bottom: 100px; }
+    body:has(.nv-page) footer { padding-bottom: 90px; }
     .nv-marquee-item { width: 160px; height: 160px; }
   }
   @media (max-width: 600px) {
@@ -472,8 +491,17 @@
             {% endunless %}
 
 
-            {% comment %} ReleasIT dibuja su botón en cada elemento #rsi-button-hook de la página. {% endcomment %}
-            <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
+            {% comment %} Botones de compra: usan el carrito de Shopify (assets/dh.js). {% endcomment %}
+            <div class="nv-rsi-slot nv-buy-pair" data-nv-where="arriba">
+              <button type="button" class="nv-btn nv-btn-add" data-nv-add>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 016 0"/><path d="M12 11v5M9.5 13.5h5"/></svg>
+                Añadir a la cesta
+              </button>
+              <button type="button" class="nv-btn nv-btn-cta nv-btn-buy" data-nv-buy>
+                <span>Comprar ahora</span>
+                <small>Paga al recibir o con Mercado Pago</small>
+              </button>
+            </div>
           {% endform %}
         </div>
 
@@ -587,7 +615,7 @@
     <section class="nv-sec nv-alt" id="nv-incluye">
       <div class="nv-wrap">
         <div class="nv-head">
-          <span class="nv-eyebrow">Qué incluye</span>
+          <span class="nv-eyebrow">{{ s.include_eyebrow | default: 'Qué incluye' }}</span>
           <h2>{{ s.include_title }}</h2>
           {% if s.include_subtitle != blank %}<p>{{ s.include_subtitle }}</p>{% endif %}
         </div>
@@ -658,6 +686,16 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </section>
+  {% elsif s.size_guide_image != blank %}
+    <section class="nv-sec nv-alt" id="nv-medidas">
+      <div class="nv-wrap">
+        <div class="nv-head">
+          <span class="nv-eyebrow">Guía de medidas</span>
+          <h2>{{ s.size_guide_title }}</h2>
+        </div>
+        <img src="{{ s.size_guide_image | image_url: width: 1200 }}" alt="Guía de medidas" width="{{ s.size_guide_image.width }}" height="{{ s.size_guide_image.height }}" loading="lazy" style="display: block; width: 100%; max-width: 900px; height: auto; margin: 0 auto; border-radius: 14px;">
       </div>
     </section>
   {% endif %}
@@ -804,7 +842,16 @@
               <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
             </button>
           {% endfor %}
-          <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
+          <div class="nv-rsi-slot nv-buy-pair" data-nv-where="oferta">
+              <button type="button" class="nv-btn nv-btn-add" data-nv-add>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 016 0"/><path d="M12 11v5M9.5 13.5h5"/></svg>
+                Añadir a la cesta
+              </button>
+              <button type="button" class="nv-btn nv-btn-cta nv-btn-buy" data-nv-buy>
+                <span>Comprar ahora</span>
+                <small>Paga al recibir o con Mercado Pago</small>
+              </button>
+            </div>
         </div>
       </div>
     </section>
@@ -895,7 +942,16 @@
       <h2>{{ s.final_title }}</h2>
       <p>{{ s.final_text }}</p>
       {% if s.final_stock != blank %}<p class="nv-stock">{{ s.final_stock }}</p>{% endif %}
-      <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
+      <div class="nv-rsi-slot nv-buy-pair" data-nv-where="final">
+              <button type="button" class="nv-btn nv-btn-add" data-nv-add>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 016 0"/><path d="M12 11v5M9.5 13.5h5"/></svg>
+                Añadir a la cesta
+              </button>
+              <button type="button" class="nv-btn nv-btn-cta nv-btn-buy" data-nv-buy>
+                <span>Comprar ahora</span>
+                <small>Paga al recibir o con Mercado Pago</small>
+              </button>
+            </div>
       <div class="nv-trustline">
         <span><b>✔</b> Sin tarjeta</span>
         <span><b>✔</b> Sin pagar en línea</span>
@@ -904,9 +960,15 @@
     </div>
   </section>
 
+  <div class="nv-sticky" data-nv-sticky aria-label="Comprar">
+    <span class="nv-sticky-price"><span data-nv-sticky-variant>Elige talla y color</span><strong data-nv-sticky-price>{{ current_variant.price | money_without_trailing_zeros }}</strong></span>
+    <button type="button" class="nv-btn nv-btn-add" data-nv-add style="flex: 1;">Añadir</button>
+    <button type="button" class="nv-btn nv-btn-cta nv-btn-buy" data-nv-buy style="flex: 1.3;">Comprar ahora</button>
+  </div>
+
   <div class="nv-lightbox" id="nv-lightbox" onclick="nvCloseLightbox()">
     <button type="button" aria-label="Cerrar" onclick="nvCloseLightbox()">&times;</button>
-    <img id="nv-lightbox-img" alt="Foto de reseña" onclick="event.stopPropagation()">
+    <img id="nv-lightbox-img" alt="Foto de reseña" width="900" height="900" onclick="event.stopPropagation()">
   </div>
 </div>
 
@@ -1140,7 +1202,7 @@
   /* ---------- Oferta por cantidad ---------- */
   function nvFormatMoney(cents) {
     var n = Math.round(cents);
-    var fmt = nvMoneyFormat || '${{amount_no_decimals_with_comma_separator}}';
+    var fmt = nvMoneyFormat || '{% raw %}${{amount_no_decimals_with_comma_separator}}{% endraw %}';
     var m = fmt.match(/\{\{\s*(\w+)\s*\}\}/);
     var key = m ? m[1] : 'amount_no_decimals_with_comma_separator';
     function delim(num, precision, thousands, decimal) {
@@ -1230,6 +1292,7 @@
 
   // Cuando se abre el formulario de ReleasIT, marca en él la misma opción de cantidad
   // que el cliente eligió en la página (ReleasIT siempre abre en "1 unidad").
+  // (Ya no se usa: era para marcar la oferta dentro del formulario de ReleasIT.)
   function nvSyncOfferToForm() {
     var sel = document.querySelector('.nv-tier.active[data-title]');
     if (!sel || sel.getAttribute('data-first') === '1') return;
@@ -1317,7 +1380,7 @@
       groups[0].parentNode.insertBefore(top, groups[0]);
     }
     // Junto al botón que tocaron (si no es la barra fija)
-    var slot = btn && btn.closest && btn.closest('.nv-rsi-slot');
+    var slot = btn && btn.closest && (btn.closest('.nv-rsi-slot') || btn.closest('[data-nv-sticky]'));
     if (slot) {
       var near = document.createElement('p');
       near.className = 'nv-choose-msg';
@@ -1328,40 +1391,61 @@
     (missing[0] || groups[0] || document.getElementById('nv-comprar')).scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // Después de cambiar la variante, ReleasIT desactiva su botón un momento mientras se
-  // actualiza. Se espera a que vuelva a estar activo y entonces se abre el formulario.
-  function nvOpenFormWhenReady(sourceBtn) {
-    var t0 = Date.now(), sawDisabled = false;
-    (function poll() {
-      var b = nvOriginalRsiButton();
-      if (b && b.disabled) sawDisabled = true;
-      var elapsed = Date.now() - t0;
-      if (b && !b.disabled && (sawDisabled || elapsed > 1200)) { b.click(); return; }
-      if (elapsed < 8000) { setTimeout(poll, 120); return; }
-      nvShowChooseMsg(sourceBtn); // ReleasIT nunca quedó listo
-    })();
+  /* ---------- Comprar: "Añadir a la cesta" y "Comprar ahora" ----------
+     Si falta talla o color, se elige automáticamente (Sencilla + primer color
+     disponible). Luego se agrega al carrito de Shopify con la cantidad de la
+     oferta elegida: "Añadir" abre la cesta lateral y "Comprar ahora" va al pago. */
+  function nvPurchase(btn, goCheckout) {
+    nvHideChooseMsg();
+    var err = btn.parentNode.querySelector('.nv-buy-error');
+    if (err) err.remove();
+    if (nvMissingGroups().length && !nvAutoSelectDefault()) { nvShowChooseMsg(btn); return; }
+    var id = document.getElementById('ls-variant-id').value;
+    var qty = parseInt(document.getElementById('ls-quantity').value, 10) || 1;
+    if (!window.DH || !window.DH.addToCart) { document.getElementById('landing-product-form').submit(); return; }
+    btn.setAttribute('aria-busy', 'true');
+    window.DH.addToCart(id, qty, { checkout: goCheckout })
+      .catch(function (e) {
+        var m = document.createElement('p');
+        m.className = 'nv-buy-error'; m.setAttribute('role', 'alert');
+        m.textContent = (e && e.message) || 'No pudimos añadir el producto. Intenta de nuevo.';
+        btn.parentNode.appendChild(m);
+      })
+      .finally(function () { btn.removeAttribute('aria-busy'); });
   }
 
-  function nvOrderNow(sourceBtn) {
-    if (!nvMissingGroups().length) {
-      var btn = nvOriginalRsiButton();
-      if (btn) { btn.click(); } else { nvShowChooseMsg(sourceBtn); }
-      return;
-    }
-    if (nvAutoSelectDefault()) { nvHideChooseMsg(); nvOpenFormWhenReady(sourceBtn); }
-    else { nvShowChooseMsg(sourceBtn); }
+  document.addEventListener('click', function (e) {
+    var add = e.target.closest && e.target.closest('[data-nv-add]');
+    var buy = e.target.closest && e.target.closest('[data-nv-buy]');
+    if (add) { e.preventDefault(); nvPurchase(add, false); }
+    if (buy) { e.preventDefault(); nvPurchase(buy, true); }
+  });
+
+  // Barra fija en celular: aparece cuando los botones principales ya no se ven.
+  (function nvStickyBar() {
+    var bar = document.querySelector('[data-nv-sticky]');
+    var main = document.querySelector('.nv-buy-pair[data-nv-where="arriba"]');
+    if (!bar || !main || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function (entries) {
+      var mainVisible = entries[0].isIntersecting || entries[0].boundingClientRect.top > 0;
+      bar.classList.toggle('is-visible', !mainVisible);
+    }).observe(main);
+  })();
+
+  function nvUpdateSticky() {
+    var v = nvCurrentVariant();
+    var price = document.querySelector('[data-nv-sticky-price]');
+    var label = document.querySelector('[data-nv-sticky-variant]');
+    if (!v || !price) return;
+    var qty = parseInt(document.getElementById('ls-quantity').value, 10) || 1;
+    var tier = document.querySelector('.nv-tier.active');
+    var pct = tier ? (parseFloat(tier.getAttribute('data-pct')) || 0) : 0;
+    price.textContent = nvFormatMoney(v.price * qty * (1 - pct / 100));
+    if (label) label.textContent = nvMissingGroups().length ? 'Elige talla y color' : v.title.replace(/ \/ /g, ' · ') + (qty > 1 ? ' · x' + qty : '');
   }
-
-  /* ---------- Botones de ReleasIT ----------
-     ReleasIT dibuja su propio botón verde dentro de cada #rsi-button-hook
-     (arriba, en "Oferta por cantidad" y en "Última llamada"). Todos son botones
-     reales de ReleasIT y abren su formulario directamente. */
-  var NV_RSI_BUTTON = '#rsi_buy_now_button, .rsi_buy_now_button, ._rsi-buy-now-button';
-
-  function nvOriginalRsiButton() {
-    return document.querySelector('#nv-comprar ' + NV_RSI_BUTTON) || document.querySelector(NV_RSI_BUTTON);
-  }
-
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('.ls-swatch-color, .ls-swatch-size, .nv-tier')) setTimeout(nvUpdateSticky, 0);
+  });
 
   /* ---------- Lightbox de reseñas ---------- */
   function nvOpenLightbox(src) {
@@ -1370,17 +1454,6 @@
   }
   function nvCloseLightbox() { document.getElementById('nv-lightbox').classList.remove('open'); }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') nvCloseLightbox(); });
-
-  // Todos los botones de ReleasIT (incluida la barra fija de abajo) pasan por aquí.
-  // Se escucha en window y en fase de captura para actuar antes que ReleasIT.
-  window.addEventListener('click', function (e) {
-    var btn = e.target.closest && e.target.closest(NV_RSI_BUTTON);
-    if (!btn) return;
-    if (!nvMissingGroups().length) { nvHideChooseMsg(); nvSyncOfferToForm(); return; }
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    nvOrderNow(btn);
-  }, true);
 
   /* ---------- Swipe en la galería (celular) ---------- */
   function nvNavigateGallery(dir) {
@@ -1759,6 +1832,12 @@
     },
     {
       "type": "text",
+      "id": "include_eyebrow",
+      "label": "Etiqueta",
+      "default": "Qué incluye"
+    },
+    {
+      "type": "text",
       "id": "include_title",
       "label": "Título",
       "default": "Un juego completo, listo para tender"
@@ -1866,6 +1945,11 @@
       "id": "size_guide_title",
       "label": "Título",
       "default": "Encuentra tu tamaño perfecto"
+    },
+    {
+      "type": "image_picker",
+      "id": "size_guide_image",
+      "label": "Imagen guía de medidas (si no usas la tabla)"
     },
     {
       "type": "text",

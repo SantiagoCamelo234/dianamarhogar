@@ -1,0 +1,43 @@
+{%- comment -%}
+  Cesta lateral. El contenido se pinta con assets/dh.js usando /cart.js,
+  así siempre muestra el carrito real de Shopify.
+{%- endcomment -%}
+<div class="dh-drawer-backdrop" data-dh-backdrop></div>
+
+<aside class="dh-cart" id="dh-cart" data-dh-cart aria-hidden="true" role="dialog" aria-label="Tu cesta">
+  <div class="dh-cart-head">
+    <strong data-dh-cart-title>Tu cesta ({{ cart.item_count }})</strong>
+    <button type="button" class="dh-icon-btn" data-dh-close aria-label="Cerrar cesta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="dh-cart-added" data-dh-cart-added role="status" hidden>✓ Producto añadido a tu cesta</div>
+  <div class="dh-cart-body" data-dh-cart-body aria-live="polite"></div>
+  <div class="dh-cart-foot" data-dh-cart-foot {% if cart.item_count == 0 %}hidden{% endif %}>
+    <div class="dh-cart-total"><span>Subtotal</span><span data-dh-cart-total>{{ cart.total_price | money_without_trailing_zeros }}</span></div>
+    <p class="dh-cart-note">El envío y la forma de pago (contra entrega o Mercado Pago) se eligen en el siguiente paso.</p>
+    <a href="{{ routes.root_url }}checkout" class="dh-btn dh-btn-primary dh-btn-block">Ir a pagar</a>
+    <button type="button" class="dh-btn dh-btn-outline dh-btn-block" data-dh-close>Seguir comprando</button>
+    <a href="{{ routes.all_products_collection_url }}" class="dh-link" style="text-align: center; font-size: 14px;">Ver más productos de la tienda</a>
+  </div>
+</aside>
+
+{%- liquid
+  assign up = upsell_product
+  if up != blank and up.available
+    assign up_variant = up.selected_or_first_available_variant
+  endif
+-%}
+<script>
+  window.DH_CONFIG = {
+    moneyFormat: {{ shop.money_format | json }},
+    upsell: {%- if up_variant -%}{
+      productId: {{ up.id | json }},
+      variantId: {{ up_variant.id | json }},
+      title: {{ up.title | json }},
+      price: {{ up_variant.price | json }},
+      image: {{ up.featured_image | image_url: width: 120 | json }},
+      heading: {{ upsell_heading | default: 'Completa tu cama' | json }}
+    }{%- else -%}null{%- endif -%}
+  };
+</script>

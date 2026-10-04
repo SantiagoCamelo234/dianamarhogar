@@ -1,67 +1,51 @@
-{% paginate search.results by 16 %}
-<div id="view-search" class="view-section" style="display: block; animation: fadeIn 0.4s ease forwards;">
-  
-  <div class="hero-banner" style="height: 35vh; min-height: 250px; margin-bottom: 40px; background-image: url('{{ "paloderosasinmarca.png" | file_url }}');">
-    <div class="hero-content">
-      <h2>Búsqueda</h2>
-      <p>Resultados para: "{{ search.terms | escape }}"</p>
+{%- paginate search.results by 24 -%}
+<div class="dh-section" style="padding-top: 28px;">
+  <div class="dh-wrap">
+    <nav class="dh-crumbs" aria-label="Ruta"><a href="{{ routes.root_url }}">Inicio</a> / <span>Búsqueda</span></nav>
+    <div class="dh-coll-head" style="margin-bottom: 24px;">
+      <div>
+        <h1>{% if search.performed %}Resultados para “{{ search.terms | escape }}”{% else %}Buscar productos{% endif %}</h1>
+        {%- if search.performed -%}<p>{{ search.results_count }} {% if search.results_count == 1 %}resultado{% else %}resultados{% endif %}</p>{%- endif -%}
+      </div>
+      <form action="{{ routes.search_url }}" method="get" role="search" style="display: flex; gap: 8px; flex: 1 1 320px; max-width: 480px;">
+        <label class="dh-sr" for="dh-search-page">Buscar</label>
+        <input id="dh-search-page" class="dh-select" style="flex: 1; min-width: 0; font-size: 16px;" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Ej. sábanas doble">
+        <input type="hidden" name="type" value="product">
+        <button type="submit" class="dh-btn dh-btn-primary" style="min-height: 44px;">Buscar</button>
+      </form>
+    </div>
+
+    <div class="dh-coll-grid">
+      <div class="dh-grid">
+        {%- for item in search.results -%}
+          {%- if item.object_type == 'product' -%}
+            {% render 'dh-product-card', product: item, eager: forloop.first %}
+          {%- endif -%}
+        {%- else -%}
+          {%- if search.performed -%}
+            <p class="dh-empty">No encontramos productos para “{{ search.terms | escape }}”. Prueba con otra palabra o <a class="dh-link" href="{{ routes.all_products_collection_url }}">mira toda la tienda</a>.</p>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- if paginate.pages > 1 -%}
+        <nav class="dh-pagination" aria-label="Páginas">
+          {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" aria-label="Página anterior">‹</a>{%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>
+            {%- elsif part.title == paginate.current_page -%}<span class="is-current" aria-current="page">{{ part.title }}</span>
+            {%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}<a href="{{ paginate.next.url }}" aria-label="Página siguiente">›</a>{%- endif -%}
+        </nav>
+      {%- endif -%}
     </div>
   </div>
-
-  <section class="home-products" style="background-color: var(--bg-main);">
-    {% if search.performed %}
-      {% if search.results_count == 0 %}
-        <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; margin-top: 40px;">
-          No se encontraron resultados para "<strong>{{ search.terms | escape }}</strong>". Intenta usar otras palabras o revisa la ortografía.
-        </p>
-      {% else %}
-        <h3 class="home-section-title">Resultados Encontrados</h3>
-        <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; font-size: 14px; margin-top: -30px;">
-          Mostrando {{ search.results_count }} resultados
-        </p>
-
-        <div class="product-grid" id="search-grid" style="max-width: 1300px; margin: 0 auto;">
-          {% for item in search.results %}
-            {% if item.object_type == 'product' %}
-              {% assign product = item %}
-              <a href="{{ product.url }}" class="product-card" style="text-decoration: none; color: inherit;">
-                <div class="product-card-img">
-                  {% if product.featured_image %}
-                    <img src="{{ product.featured_image | img_url: 'master' }}" alt="{{ product.title | escape }}">
-                  {% endif %}
-                </div>
-                <h4 class="product-card-title">{{ product.title }}</h4>
-                <div class="product-card-price">
-                  {% if product.compare_at_price > product.price %}
-                    <span style="text-decoration: line-through; color: var(--text-light); margin-right: 6px; font-weight: normal; font-size: 0.9em;">{{ product.compare_at_price | money }}</span>
-                  {% endif %}
-                  {{ product.price | money }}
-                </div>
-              </a>
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% else %}
-      <p style="text-align: center; color: var(--text-light); margin-bottom: 50px; margin-top: 40px;">
-        Ingresa un término en la lupa para comenzar a buscar.
-      </p>
-    {% endif %}
-    
-    <!-- Paginación -->
-    {% if paginate.pages > 1 %}
-      <div style="text-align: center; margin-top: 50px; padding-bottom: 50px;">
-        {{ paginate | default_pagination }}
-      </div>
-    {% endif %}
-  </section>
-
 </div>
-{% endpaginate %}
+{%- endpaginate -%}
 
 {% schema %}
 {
-  "name": "Resultados de Búsqueda",
+  "name": "Resultados de búsqueda",
   "settings": []
 }
 {% endschema %}

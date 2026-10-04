@@ -10,11 +10,13 @@
   <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page_title | default: shop.name }}</title>
+  <title>{{ page_title | default: shop.name }}{% unless page_title contains shop.name %} | {{ shop.name }}{% endunless %}</title>
+  {%- if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  <link rel="canonical" href="{{ canonical_url }}">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- FAVICON -->
   <link rel="shortcut icon" href="{{ 'LOGO.png' | file_url }}" type="image/png">
@@ -22,6 +24,8 @@
   
   <!-- Carga nuestro archivo CSS extraído -->
   {{ 'theme.css' | asset_url | stylesheet_tag }}
+  <!-- Diseño de la tienda nueva (va después para tener prioridad) -->
+  {{ 'dh.css' | asset_url | stylesheet_tag }}
   
   <!-- Hook esencial para plugins de Shopify -->
   {{ content_for_header }}
@@ -44,6 +48,8 @@
   {% section 'footer' %}
 
   <!-- Carga nuestro archivo JS extraído -->
-  {{ 'theme.js' | asset_url | script_tag }}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  <!-- Menú, cesta lateral y carrusel de la tienda nueva -->
+  <script src="{{ 'dh.js' | asset_url }}" defer></script>
 </body>
 </html>

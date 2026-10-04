@@ -1,0 +1,28 @@
+{
+  "sections": {
+    "main": {
+      "type": "template-product-nueva-pagina",
+      "settings": {
+        "stat_1_value": "",
+        "stat_2_value": "",
+        "stat_3_value": "",
+        "problem_title": "",
+        "step_1_title": "",
+        "compare_1": "",
+        "show_bundles": false,
+        "show_promo": false,
+        "size_1_name": "",
+        "pill_5": "",
+        "pill_6": "",
+        "final_stock": "",
+        "final_title": "Pídelo hoy y págalo al recibir",
+        "final_text": "Recíbelo en 2 a 5 días hábiles. Pagas en efectivo cuando llegue, o con Mercado Pago.",
+        "headline": "",
+        "subheadline": ""
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
