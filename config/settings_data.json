@@ -16,11 +16,91 @@
       "header": {
         "type": "header",
         "settings": {
+          "announce_1": "Pago contra entrega en toda Colombia",
+          "announce_2": "Paga anticipado con Mercado Pago",
+          "announce_3": "Envío de 2 a 5 días hábiles",
           "logo": "shopify://shop_images/LOGO.png",
-          "logo_height": 35,
-          "menu_type": "automatic",
-          "menu": "main-menu"
-        }
+          "logo_height": 34,
+          "menu": "main-menu",
+          "show_search": true,
+          "whatsapp": "+57 322 343 8327",
+          "upsell_product": "fundas-de-almohada-premium-55x75-cm-con-embone",
+          "upsell_heading": "Completa tu cama"
+        },
+        "blocks": {
+          "link-1": {
+            "type": "link",
+            "settings": {
+              "title": "Sábanas",
+              "link": "/collections/sabanas-unicolor",
+              "image": "shopify://shop_images/portadabeige.jpg",
+              "highlight": false
+            }
+          },
+          "link-2": {
+            "type": "link",
+            "settings": {
+              "title": "Protectores",
+              "link": "/search?q=protector&type=product",
+              "image": "",
+              "highlight": false
+            }
+          },
+          "link-3": {
+            "type": "link",
+            "settings": {
+              "title": "Colchas",
+              "link": "/search?q=colcha&type=product",
+              "image": "shopify://shop_images/Screenshot_2026-04-08_093210_35efc210-3b12-4b61-b669-6e46c1639c62.png",
+              "highlight": false
+            }
+          },
+          "link-4": {
+            "type": "link",
+            "settings": {
+              "title": "Cobijas",
+              "link": "/search?q=cobija&type=product",
+              "image": "shopify://shop_images/IMG_1541_e865dc61-8ad0-4206-b8f2-2747173f9210.jpg",
+              "highlight": false
+            }
+          },
+          "link-5": {
+            "type": "link",
+            "settings": {
+              "title": "Toallas",
+              "link": "/search?q=toalla&type=product",
+              "image": "",
+              "highlight": false
+            }
+          },
+          "link-6": {
+            "type": "link",
+            "settings": {
+              "title": "Fundas",
+              "link": "/search?q=funda&type=product",
+              "image": "",
+              "highlight": false
+            }
+          },
+          "link-7": {
+            "type": "link",
+            "settings": {
+              "title": "Ofertas",
+              "link": "/collections/all",
+              "image": "",
+              "highlight": true
+            }
+          }
+        },
+        "block_order": [
+          "link-1",
+          "link-2",
+          "link-3",
+          "link-4",
+          "link-5",
+          "link-6",
+          "link-7"
+        ]
       },
       "template-home": {
         "type": "template-home",
@@ -244,8 +324,61 @@
       "template-collection": {
         "type": "template-collection",
         "settings": {
+          "per_page": 24,
           "fallback_image": "shopify://shop_images/paloderosa_sin_marca_24ba587b-ffe0-48a9-9c11-c73070161d33.png"
-        }
+        },
+        "blocks": {
+          "chip-1": {
+            "type": "chip",
+            "settings": {
+              "title": "Sábanas",
+              "link": "/collections/sabanas-unicolor"
+            }
+          },
+          "chip-2": {
+            "type": "chip",
+            "settings": {
+              "title": "Protectores",
+              "link": "/search?q=protector&type=product"
+            }
+          },
+          "chip-3": {
+            "type": "chip",
+            "settings": {
+              "title": "Colchas",
+              "link": "/search?q=colcha&type=product"
+            }
+          },
+          "chip-4": {
+            "type": "chip",
+            "settings": {
+              "title": "Cobijas",
+              "link": "/search?q=cobija&type=product"
+            }
+          },
+          "chip-5": {
+            "type": "chip",
+            "settings": {
+              "title": "Toallas",
+              "link": "/search?q=toalla&type=product"
+            }
+          },
+          "chip-6": {
+            "type": "chip",
+            "settings": {
+              "title": "Fundas",
+              "link": "/search?q=funda&type=product"
+            }
+          }
+        },
+        "block_order": [
+          "chip-1",
+          "chip-2",
+          "chip-3",
+          "chip-4",
+          "chip-5",
+          "chip-6"
+        ]
       },
       "template-product": {
         "type": "template-product",
