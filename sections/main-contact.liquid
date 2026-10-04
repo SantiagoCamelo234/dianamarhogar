@@ -1,0 +1,123 @@
+{%- comment -%}
+  Página de Contacto. El formulario es el formulario de contacto de Shopify:
+  los mensajes llegan al correo de la tienda (Configuración → Notificaciones).
+  Plantilla: templates/page.contact.json · En el admin, la página debe usar la plantilla "contact".
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+{%- assign wa = s.whatsapp | remove: '+' | remove: ' ' | remove: '-' -%}
+<div class="dh-section" style="padding-top: 28px;">
+  <div class="dh-wrap">
+    <nav class="dh-crumbs" aria-label="Ruta"><a href="{{ routes.root_url }}">Inicio</a> / <span>{{ page.title | default: 'Contacto' }}</span></nav>
+
+    <div class="dh-contact">
+      <div class="dh-contact-intro">
+        <span class="dh-eyebrow">{{ s.eyebrow }}</span>
+        <h1>{{ s.title | default: page.title }}</h1>
+        {%- if s.intro != blank -%}<p class="dh-contact-lead">{{ s.intro }}</p>{%- endif -%}
+        {%- if page.content != blank -%}<div class="dh-rte">{{ page.content }}</div>{%- endif -%}
+
+        <div class="dh-contact-cards">
+          {%- if s.whatsapp != blank -%}
+            <a class="dh-contact-card is-wa" href="https://wa.me/{{ wa }}{% if s.wa_message != blank %}?text={{ s.wa_message | url_encode }}{% endif %}" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.6.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.2-.4.6-1.3.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.8 11.9 11.9 0 004.6 4 5.2 5.2 0 003.2.7 2.7 2.7 0 001.8-1.3 2.2 2.2 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
+              <span><strong>WhatsApp</strong><span>{{ s.whatsapp }}</span><small>La forma más rápida de hablar con nosotros</small></span>
+            </a>
+          {%- endif -%}
+          {%- if s.email != blank -%}
+            <a class="dh-contact-card" href="mailto:{{ s.email }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+              <span><strong>Correo</strong><span>{{ s.email }}</span></span>
+            </a>
+          {%- endif -%}
+          {%- if s.city != blank or s.hours != blank -%}
+            <div class="dh-contact-card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span><strong>{{ s.city }}</strong>{%- if s.hours != blank -%}<span>{{ s.hours }}</span>{%- endif -%}<small>Envíos a toda Colombia · Pago contra entrega o Mercado Pago</small></span>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if s.instagram != blank or s.tiktok != blank or s.facebook != blank -%}
+          <div class="dh-contact-social">
+            <span>Síguenos:</span>
+            {%- if s.instagram != blank -%}<a href="{{ s.instagram }}" target="_blank" rel="noopener">Instagram</a>{%- endif -%}
+            {%- if s.tiktok != blank -%}<a href="{{ s.tiktok }}" target="_blank" rel="noopener">TikTok</a>{%- endif -%}
+            {%- if s.facebook != blank -%}<a href="{{ s.facebook }}" target="_blank" rel="noopener">Facebook</a>{%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="dh-contact-form">
+        <h2>{{ s.form_title }}</h2>
+        {%- form 'contact', id: 'dh-contact-form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="dh-form-ok" role="status">✓ {{ s.success }}</p>
+          {%- endif -%}
+          {%- if form.errors -%}
+            <div class="dh-form-error" role="alert">
+              <strong>Revisa estos datos:</strong>
+              <ul>
+                {%- for field in form.errors -%}
+                  <li>{% if field == 'form' %}{{ form.errors.messages[field] }}{% else %}{{ form.errors.translated_fields[field] | capitalize }}: {{ form.errors.messages[field] }}{% endif %}</li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+
+          <div class="dh-field">
+            <label for="dh-c-name">Nombre</label>
+            <input id="dh-c-name" type="text" name="contact[name]" autocomplete="name" value="{{ form.name }}" required>
+          </div>
+          <div class="dh-field-row">
+            <div class="dh-field">
+              <label for="dh-c-email">Correo</label>
+              <input id="dh-c-email" type="email" name="contact[email]" autocomplete="email" spellcheck="false" value="{{ form.email }}" required>
+            </div>
+            <div class="dh-field">
+              <label for="dh-c-phone">Celular / WhatsApp <span>(opcional)</span></label>
+              <input id="dh-c-phone" type="tel" name="contact[phone]" autocomplete="tel" inputmode="tel" value="{{ form.phone }}">
+            </div>
+          </div>
+          <div class="dh-field">
+            <label for="dh-c-topic">¿Sobre qué nos escribes?</label>
+            <select id="dh-c-topic" name="contact[tema]">
+              <option>Quiero hacer un pedido</option>
+              <option>Estado de mi pedido</option>
+              <option>Cambio o garantía</option>
+              <option>Tamaños y medidas</option>
+              <option>Ventas al por mayor</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="dh-field">
+            <label for="dh-c-body">Mensaje</label>
+            <textarea id="dh-c-body" name="contact[body]" rows="5" required placeholder="Cuéntanos en qué te ayudamos. Si es sobre un pedido, incluye el número.">{{ form.body }}</textarea>
+          </div>
+          <button type="submit" class="dh-btn dh-btn-primary dh-btn-block">Enviar mensaje</button>
+          <p class="dh-form-note">Te respondemos en horario de atención. Si es urgente, escríbenos por WhatsApp.</p>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contacto",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Etiqueta", "default": "Estamos para ayudarte" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Contáctanos" },
+    { "type": "textarea", "id": "intro", "label": "Texto", "default": "¿Dudas con tu pedido, el tamaño o los colores? Escríbenos y te ayudamos a elegir." },
+    { "type": "text", "id": "whatsapp", "label": "WhatsApp (con indicativo)", "default": "+57 322 343 8327" },
+    { "type": "text", "id": "wa_message", "label": "Mensaje inicial de WhatsApp", "default": "Hola, quiero información sobre sus productos." },
+    { "type": "text", "id": "email", "label": "Correo", "default": "dianamarhogar@gmail.com" },
+    { "type": "text", "id": "city", "label": "Ciudad", "default": "Bogotá, Colombia" },
+    { "type": "text", "id": "hours", "label": "Horario de atención (opcional)" },
+    { "type": "text", "id": "instagram", "label": "Instagram", "default": "https://www.instagram.com/dianamarhogar/" },
+    { "type": "text", "id": "tiktok", "label": "TikTok", "default": "https://www.tiktok.com/@dianamarhogar" },
+    { "type": "text", "id": "facebook", "label": "Facebook" },
+    { "type": "text", "id": "form_title", "label": "Título del formulario", "default": "Escríbenos" },
+    { "type": "text", "id": "success", "label": "Mensaje al enviar", "default": "¡Gracias! Recibimos tu mensaje y te responderemos pronto." }
+  ]
+}
+{% endschema %}

@@ -53,6 +53,7 @@
         {%- if section.settings.city != blank -%}<li>{{ section.settings.city }}</li>{%- endif -%}
         {%- if section.settings.whatsapp != blank -%}<li><a href="https://wa.me/{{ section.settings.whatsapp | remove: '+' | remove: ' ' }}">{{ section.settings.whatsapp }}</a></li>{%- endif -%}
         {%- if section.settings.email != blank -%}<li><a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a></li>{%- endif -%}
+        <li><a href="/pages/contact">Formulario de contacto</a></li>
         <li style="margin-top: 6px; font-size: 13px;">Pagos: contra entrega · Mercado Pago</li>
       </ul>
     </details>

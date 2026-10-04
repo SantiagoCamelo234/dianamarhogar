@@ -1,0 +1,30 @@
+{%- comment -%}
+  Páginas de contenido (Nosotros, políticas, preguntas frecuentes...).
+  El texto se escribe en el admin: Tienda online → Páginas.
+{%- endcomment -%}
+<div class="dh-section" style="padding-top: 28px;">
+  <div class="dh-wrap dh-page">
+    <nav class="dh-crumbs" aria-label="Ruta"><a href="{{ routes.root_url }}">Inicio</a> / <span>{{ page.title }}</span></nav>
+    <h1>{{ page.title }}</h1>
+    <div class="dh-rte">{{ page.content }}</div>
+    {%- if section.settings.show_help -%}
+      <div class="dh-help" style="margin-top: 40px;">
+        <div style="flex: 1 1 320px;">
+          <h2 class="dh-h2">¿Tienes otra pregunta?</h2>
+          <p>Escríbenos y te respondemos lo antes posible.</p>
+        </div>
+        <a class="dh-btn dh-btn-primary" href="{{ section.settings.help_link | default: '/pages/contact' }}">Contáctanos</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Página",
+  "settings": [
+    { "type": "checkbox", "id": "show_help", "label": "Mostrar recuadro de contacto al final", "default": true },
+    { "type": "url", "id": "help_link", "label": "Enlace del botón de contacto" }
+  ]
+}
+{% endschema %}

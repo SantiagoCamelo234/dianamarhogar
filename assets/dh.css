@@ -302,3 +302,49 @@ footer.dh-footer { display: block; margin: 0; padding: 0; background: var(--dh-g
 @media (prefers-reduced-motion: reduce) {
   .dh-hero-frame img, .dh-menu, .dh-cart, .dh-drawer-backdrop, .dh-btn, .dh-card-media img { transition: none; }
 }
+
+/* ---------- Páginas: Contacto, contenido y 404 ---------- */
+.dh-contact { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; }
+.dh-contact-intro { flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.dh-contact-intro h1, .dh-page h1, .dh-404 h1 { margin: 0; font-family: var(--dh-serif); font-weight: 400; font-size: clamp(32px, 4vw, 46px); line-height: 1.1; text-wrap: balance; }
+.dh-contact-lead { margin: 0; font-size: 18px; line-height: 1.55; color: var(--dh-text); max-width: 520px; }
+.dh-contact-cards { display: grid; gap: 12px; margin-top: 6px; }
+.dh-contact-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: #fff; border: 1px solid var(--dh-line); color: var(--dh-ink); text-decoration: none; }
+a.dh-contact-card:hover { border-color: var(--dh-coral); }
+.dh-contact-card svg { width: 26px; height: 26px; flex: none; color: var(--dh-coral-ink); margin-top: 2px; }
+.dh-contact-card > span { display: flex; flex-direction: column; gap: 2px; }
+.dh-contact-card small { color: var(--dh-muted); font-size: 13px; }
+.dh-contact-card.is-wa { background: #E8F3E9; border-color: #CFE3D0; }
+.dh-contact-card.is-wa svg { color: var(--dh-cta); }
+.dh-contact-social { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 15px; }
+.dh-contact-social a { color: var(--dh-coral-ink); font-weight: 700; }
+.dh-contact-form { flex: 1 1 420px; min-width: 0; background: #fff; border: 1px solid var(--dh-line); border-radius: 18px; padding: 28px; }
+.dh-contact-form h2 { margin: 0 0 16px; font-family: var(--dh-serif); font-weight: 400; font-size: 28px; }
+.dh-contact-form form { display: flex; flex-direction: column; gap: 14px; }
+.dh-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dh-field-row .dh-field { flex: 1 1 200px; }
+.dh-field label { font-weight: 700; font-size: 14px; }
+.dh-field label span { font-weight: 500; color: var(--dh-muted); }
+.dh-field input, .dh-field select, .dh-field textarea { box-sizing: border-box; width: 100%; font: inherit; font-size: 16px; min-height: 48px; padding: 10px 12px; border: 1.5px solid var(--dh-line-2); border-radius: 10px; background: #fff; color: var(--dh-ink); }
+.dh-field textarea { min-height: 120px; resize: vertical; }
+.dh-field input:focus, .dh-field select:focus, .dh-field textarea:focus { outline: 2px solid var(--dh-coral); outline-offset: 1px; border-color: transparent; }
+.dh-field-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.dh-form-ok { margin: 0; background: #E8F3E9; color: #1F5E23; font-weight: 700; padding: 12px 14px; border-radius: 10px; }
+.dh-form-error { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1d28; padding: 12px 14px; border-radius: 10px; font-size: 14px; }
+.dh-form-error ul { margin: 6px 0 0; padding-left: 18px; }
+.dh-form-note { margin: 0; font-size: 13px; color: var(--dh-muted); text-align: center; }
+.dh-page { max-width: 820px; }
+.dh-page h1 { margin-bottom: 20px; }
+.dh-rte { font-size: 17px; line-height: 1.7; color: var(--dh-text); }
+.dh-rte h2, .dh-rte h3 { font-family: var(--dh-serif); font-weight: 400; color: var(--dh-ink); margin: 1.4em 0 .5em; }
+.dh-rte p, .dh-rte ul, .dh-rte ol { margin: 0 0 1em; }
+.dh-rte a { color: var(--dh-coral-ink); }
+.dh-rte img { max-width: 100%; height: auto; border-radius: 12px; }
+.dh-404 { max-width: 640px; text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center; padding-block: 24px; }
+.dh-404 p { margin: 0; color: var(--dh-text); font-size: 17px; line-height: 1.55; }
+.dh-404-search { display: flex; gap: 8px; width: 100%; max-width: 460px; }
+.dh-404-search input { flex: 1; min-width: 0; font-size: 16px; }
+@media (max-width: 760px) {
+  .dh-contact { gap: 24px; }
+  .dh-contact-form { padding: 20px; }
+}

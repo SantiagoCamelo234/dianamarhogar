@@ -1,0 +1,26 @@
+{%- comment -%} Página "no encontrada" con el diseño de la tienda. {%- endcomment -%}
+<div class="dh-section">
+  <div class="dh-wrap dh-404">
+    <span class="dh-eyebrow">Error 404</span>
+    <h1>No encontramos esta página</h1>
+    <p>Puede que el enlace haya cambiado o que el producto ya no esté disponible. Busca lo que necesitas o mira toda la tienda.</p>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="dh-404-search">
+      <label class="dh-sr" for="dh-404-q">Buscar productos</label>
+      <input id="dh-404-q" class="dh-select" type="search" name="q" placeholder="Ej. sábanas doble">
+      <input type="hidden" name="type" value="product">
+      <button type="submit" class="dh-btn dh-btn-primary">Buscar</button>
+    </form>
+    <div class="dh-hero-actions" style="justify-content: center;">
+      <a class="dh-btn dh-btn-outline" href="{{ routes.root_url }}">Ir al inicio</a>
+      <a class="dh-btn dh-btn-soft" href="{{ routes.all_products_collection_url }}">Ver toda la tienda</a>
+      <a class="dh-btn dh-btn-soft" href="/pages/contact">Contacto</a>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Página no encontrada",
+  "settings": []
+}
+{% endschema %}
