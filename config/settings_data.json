@@ -25,25 +25,30 @@
       "template-home": {
         "type": "template-home",
         "blocks": {
+          "category_DVtyzt": {
+            "type": "category",
+            "settings": {
+              "title": "Fundas",
+              "image": "shopify://shop_images/negro_1b3d8b39-b28c-4c31-98c6-a04c8f3dee3f.png",
+              "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
+              "link": ""
+            }
+          },
+          "category_6Xh7zG": {
+            "type": "category",
+            "settings": {
+              "title": "Cobijas",
+              "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
+              "product": "",
+              "link": ""
+            }
+          },
           "category_JfJGFJ": {
             "type": "category",
             "settings": {
               "title": "Protectores",
               "image": "shopify://shop_images/azulportada.jpg",
               "product": "",
-              "link": ""
-            }
-          },
-          "slide_PmY6kd": {
-            "type": "slide",
-            "settings": {
-              "tab": "Cobijas",
-              "product": "",
-              "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
-              "eyebrow": "Sábanas premium 180 hilos",
-              "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
               "link": ""
             }
           },
@@ -148,8 +153,9 @@
           }
         },
         "block_order": [
+          "category_DVtyzt",
+          "category_6Xh7zG",
           "category_JfJGFJ",
-          "slide_PmY6kd",
           "category_EAEtFw",
           "category_dBeGr6",
           "category_9BK4Er",
