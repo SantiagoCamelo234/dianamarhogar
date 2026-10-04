@@ -157,8 +157,12 @@ header.dh-header { display: block; padding: 0; grid-template-columns: none; bord
 .dh-trust-item strong { display: block; }
 .dh-trust-item span { font-size: 14px; color: var(--dh-muted); }
 
-.dh-cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
-.dh-cat { text-decoration: none; color: var(--dh-ink); display: flex; flex-direction: column; align-items: center; gap: 12px; font-weight: 800; font-size: 17px; }
+.dh-cats { display: flex; gap: 22px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding: 4px 2px 8px; cursor: grab; -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+.dh-cats::-webkit-scrollbar { display: none; }
+.dh-cats.is-dragging { cursor: grabbing; user-select: none; }
+.dh-cats.is-dragging .dh-cat { pointer-events: none; }
+.dh-cats img { -webkit-user-drag: none; user-select: none; }
+.dh-cat { flex: 0 0 160px; text-decoration: none; color: var(--dh-ink); display: flex; flex-direction: column; align-items: center; gap: 12px; font-weight: 800; font-size: 17px; }
 .dh-cat-img { width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--dh-blush); transition: box-shadow .2s; display: grid; place-items: center; }
 .dh-cat-img img { width: 100%; height: 100%; object-fit: cover; }
 .dh-cat:hover .dh-cat-img { box-shadow: 0 0 0 3px var(--dh-coral); }
@@ -258,9 +262,8 @@ footer.dh-footer { display: block; margin: 0; padding: 0; background: var(--dh-g
   .dh-trust-item svg { width: 26px; height: 26px; }
   .dh-trust-item { font-size: 13px; gap: 8px; }
   .dh-trust-item span { font-size: 12px; }
-  .dh-cats { display: flex; overflow-x: auto; gap: 14px; scrollbar-width: none; scroll-snap-type: x mandatory; }
-  .dh-cats::-webkit-scrollbar { display: none; }
-  .dh-cat { flex: 0 0 92px; scroll-snap-align: start; font-size: 14px; }
+  .dh-cats { gap: 14px; margin-inline: -14px; padding-inline: 14px; -webkit-mask-image: none; mask-image: none; }
+  .dh-cat { flex: 0 0 96px; font-size: 14px; gap: 8px; }
   .dh-home-products .dh-grid { display: flex; overflow-x: auto; gap: 12px; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: -14px; padding-inline: 14px; }
   .dh-home-products .dh-grid::-webkit-scrollbar { display: none; }
   .dh-home-products .dh-card { flex: 0 0 72%; scroll-snap-align: start; }

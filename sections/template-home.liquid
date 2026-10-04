@@ -114,7 +114,7 @@
       <h2 class="dh-h2" id="dh-cats-title">{{ s.cats_title }}</h2>
       <a class="dh-link" href="{{ routes.all_products_collection_url }}">Ver todo</a>
     </div>
-    <div class="dh-cats">
+    <div class="dh-cats" data-dh-cats data-motion="{{ s.cats_motion | default: 'right' }}" role="list" aria-label="Categorías, desliza para ver más">
       {%- for block in cats -%}
         {%- liquid
           assign p = block.settings.product
@@ -127,7 +127,7 @@
             assign href = p.url
           endif
         -%}
-        <a class="dh-cat" href="{{ href | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }}>
+        <a role="listitem" class="dh-cat" href="{{ href | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }}>
           <span class="dh-cat-img">
             {%- if img != blank -%}
               <img src="{{ img | image_url: width: 400 }}" alt="" width="200" height="200" loading="lazy">
@@ -298,61 +298,327 @@
   "name": "Inicio",
   "max_blocks": 30,
   "settings": [
-    { "type": "header", "content": "Carrusel de productos" },
-    { "type": "paragraph", "content": "Agrega un bloque \"Diapositiva\" por cada producto o categoría. El precio sale solo del producto elegido." },
-    { "type": "range", "id": "hero_autoplay", "label": "Cambiar cada", "min": 3, "max": 10, "step": 1, "unit": "s", "default": 5 },
-    { "type": "text", "id": "hero_proof", "label": "Texto de confianza bajo los botones", "default": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago" },
-    { "type": "header", "content": "Franja de confianza" },
-    { "type": "text", "id": "trust_1_title", "label": "1 · Título", "default": "Pago contra entrega" },
-    { "type": "text", "id": "trust_1_text", "label": "1 · Texto", "default": "Pagas en efectivo al recibir" },
-    { "type": "text", "id": "trust_2_title", "label": "2 · Título", "default": "Mercado Pago" },
-    { "type": "text", "id": "trust_2_text", "label": "2 · Texto", "default": "Tarjeta o PSE, pago seguro" },
-    { "type": "text", "id": "trust_3_title", "label": "3 · Título", "default": "Envío 2 a 5 días" },
-    { "type": "text", "id": "trust_3_text", "label": "3 · Texto", "default": "A toda Colombia" },
-    { "type": "text", "id": "trust_4_title", "label": "4 · Título", "default": "Cambio garantizado" },
-    { "type": "text", "id": "trust_4_text", "label": "4 · Texto", "default": "Por defectos de fabricación" },
-    { "type": "header", "content": "Categorías" },
-    { "type": "text", "id": "cats_title", "label": "Título", "default": "Compra por categoría" },
-    { "type": "header", "content": "Más vendidos" },
-    { "type": "text", "id": "best_eyebrow", "label": "Etiqueta", "default": "Los favoritos" },
-    { "type": "text", "id": "best_title", "label": "Título", "default": "Más vendidos" },
-    { "type": "product_list", "id": "featured_products", "label": "Productos", "limit": 8 },
-    { "type": "collection", "id": "featured_collection", "label": "O una colección", "info": "Se usa si no eliges productos arriba." },
-    { "type": "header", "content": "Pack" },
-    { "type": "checkbox", "id": "show_pack", "label": "Mostrar el pack", "default": true },
-    { "type": "text", "id": "pack_eyebrow", "label": "Etiqueta", "default": "Pack cama completa" },
-    { "type": "text", "id": "pack_title", "label": "Título", "default": "Sábanas + protector + fundas, en el mismo color" },
-    { "type": "textarea", "id": "pack_text", "label": "Texto", "default": "Todo lo que tu cama necesita en un solo pedido. Elige tamaño y color y recíbelo listo para tender." },
-    { "type": "text", "id": "pack_price", "label": "Precio del pack (opcional)" },
-    { "type": "text", "id": "pack_before", "label": "Precio antes (opcional)" },
-    { "type": "text", "id": "pack_save", "label": "Etiqueta de ahorro (opcional)", "info": "Ej. Ahorra $30.000" },
-    { "type": "text", "id": "pack_button", "label": "Texto del botón", "default": "Armar mi pack" },
-    { "type": "url", "id": "pack_link", "label": "Enlace del botón" },
-    { "type": "image_picker", "id": "pack_image_1", "label": "Imagen 1" },
-    { "type": "product", "id": "pack_product_1", "label": "O producto 1 (usa su foto)" },
-    { "type": "image_picker", "id": "pack_image_2", "label": "Imagen 2" },
-    { "type": "product", "id": "pack_product_2", "label": "O producto 2 (usa su foto)" },
-    { "type": "image_picker", "id": "pack_image_3", "label": "Imagen 3" },
-    { "type": "product", "id": "pack_product_3", "label": "O producto 3 (usa su foto)" },
-    { "type": "header", "content": "Imágenes de beneficios" },
-    { "type": "text", "id": "benefits_eyebrow", "label": "Etiqueta", "default": "Por qué elegirnos" },
-    { "type": "text", "id": "benefits_title", "label": "Título", "default": "Calidad que se nota desde la primera noche" },
-    { "type": "image_picker", "id": "benefit_image_1", "label": "Imagen 1" },
-    { "type": "image_picker", "id": "benefit_image_2", "label": "Imagen 2" },
-    { "type": "image_picker", "id": "benefit_image_3", "label": "Imagen 3" },
-    { "type": "image_picker", "id": "benefit_image_4", "label": "Imagen 4" },
-    { "type": "header", "content": "Formas de pago" },
-    { "type": "text", "id": "pay_title", "label": "Título", "default": "Dos formas de pagar, las dos seguras" },
-    { "type": "textarea", "id": "cod_text", "label": "Contra entrega", "default": "Haces tu pedido sin tarjeta ni registro. Te llamamos para confirmar antes de despachar y pagas en efectivo cuando el producto llega a tu puerta." },
-    { "type": "textarea", "id": "mp_text", "label": "Mercado Pago", "default": "Paga en línea con tarjeta débito o crédito, PSE y los demás medios de Mercado Pago. Tu pedido sale apenas se confirma el pago." },
-    { "type": "text", "id": "mp_benefit", "label": "Beneficio por pagar anticipado (opcional)", "info": "Ej. Envío prioritario. Déjalo vacío para no mostrarlo." },
-    { "type": "header", "content": "Opiniones" },
-    { "type": "text", "id": "reviews_title", "label": "Título", "default": "Lo que dicen nuestras clientas" },
-    { "type": "text", "id": "rating_text", "label": "Calificación", "default": "4.9 de 5" },
-    { "type": "header", "content": "Ayuda" },
-    { "type": "text", "id": "help_title", "label": "Título", "default": "¿No sabes qué tamaño elegir?" },
-    { "type": "text", "id": "help_text", "label": "Texto", "default": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón." },
-    { "type": "text", "id": "whatsapp", "label": "WhatsApp", "default": "+57 322 343 8327" }
+    {
+      "type": "header",
+      "content": "Carrusel de productos"
+    },
+    {
+      "type": "paragraph",
+      "content": "Agrega un bloque \"Diapositiva\" por cada producto o categoría. El precio sale solo del producto elegido."
+    },
+    {
+      "type": "range",
+      "id": "hero_autoplay",
+      "label": "Cambiar cada",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "hero_proof",
+      "label": "Texto de confianza bajo los botones",
+      "default": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago"
+    },
+    {
+      "type": "header",
+      "content": "Franja de confianza"
+    },
+    {
+      "type": "text",
+      "id": "trust_1_title",
+      "label": "1 · Título",
+      "default": "Pago contra entrega"
+    },
+    {
+      "type": "text",
+      "id": "trust_1_text",
+      "label": "1 · Texto",
+      "default": "Pagas en efectivo al recibir"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_title",
+      "label": "2 · Título",
+      "default": "Mercado Pago"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_text",
+      "label": "2 · Texto",
+      "default": "Tarjeta o PSE, pago seguro"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_title",
+      "label": "3 · Título",
+      "default": "Envío 2 a 5 días"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_text",
+      "label": "3 · Texto",
+      "default": "A toda Colombia"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_title",
+      "label": "4 · Título",
+      "default": "Cambio garantizado"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_text",
+      "label": "4 · Texto",
+      "default": "Por defectos de fabricación"
+    },
+    {
+      "type": "header",
+      "content": "Categorías"
+    },
+    {
+      "type": "text",
+      "id": "cats_title",
+      "label": "Título",
+      "default": "Compra por categoría"
+    },
+    {
+      "type": "select",
+      "id": "cats_motion",
+      "label": "Movimiento de las categorías",
+      "options": [
+        {
+          "value": "right",
+          "label": "Hacia la derecha"
+        },
+        {
+          "value": "left",
+          "label": "Hacia la izquierda"
+        },
+        {
+          "value": "none",
+          "label": "Sin movimiento"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "header",
+      "content": "Más vendidos"
+    },
+    {
+      "type": "text",
+      "id": "best_eyebrow",
+      "label": "Etiqueta",
+      "default": "Los favoritos"
+    },
+    {
+      "type": "text",
+      "id": "best_title",
+      "label": "Título",
+      "default": "Más vendidos"
+    },
+    {
+      "type": "product_list",
+      "id": "featured_products",
+      "label": "Productos",
+      "limit": 8
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "O una colección",
+      "info": "Se usa si no eliges productos arriba."
+    },
+    {
+      "type": "header",
+      "content": "Pack"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pack",
+      "label": "Mostrar el pack",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "pack_eyebrow",
+      "label": "Etiqueta",
+      "default": "Pack cama completa"
+    },
+    {
+      "type": "text",
+      "id": "pack_title",
+      "label": "Título",
+      "default": "Sábanas + protector + fundas, en el mismo color"
+    },
+    {
+      "type": "textarea",
+      "id": "pack_text",
+      "label": "Texto",
+      "default": "Todo lo que tu cama necesita en un solo pedido. Elige tamaño y color y recíbelo listo para tender."
+    },
+    {
+      "type": "text",
+      "id": "pack_price",
+      "label": "Precio del pack (opcional)"
+    },
+    {
+      "type": "text",
+      "id": "pack_before",
+      "label": "Precio antes (opcional)"
+    },
+    {
+      "type": "text",
+      "id": "pack_save",
+      "label": "Etiqueta de ahorro (opcional)",
+      "info": "Ej. Ahorra $30.000"
+    },
+    {
+      "type": "text",
+      "id": "pack_button",
+      "label": "Texto del botón",
+      "default": "Armar mi pack"
+    },
+    {
+      "type": "url",
+      "id": "pack_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "image_picker",
+      "id": "pack_image_1",
+      "label": "Imagen 1"
+    },
+    {
+      "type": "product",
+      "id": "pack_product_1",
+      "label": "O producto 1 (usa su foto)"
+    },
+    {
+      "type": "image_picker",
+      "id": "pack_image_2",
+      "label": "Imagen 2"
+    },
+    {
+      "type": "product",
+      "id": "pack_product_2",
+      "label": "O producto 2 (usa su foto)"
+    },
+    {
+      "type": "image_picker",
+      "id": "pack_image_3",
+      "label": "Imagen 3"
+    },
+    {
+      "type": "product",
+      "id": "pack_product_3",
+      "label": "O producto 3 (usa su foto)"
+    },
+    {
+      "type": "header",
+      "content": "Imágenes de beneficios"
+    },
+    {
+      "type": "text",
+      "id": "benefits_eyebrow",
+      "label": "Etiqueta",
+      "default": "Por qué elegirnos"
+    },
+    {
+      "type": "text",
+      "id": "benefits_title",
+      "label": "Título",
+      "default": "Calidad que se nota desde la primera noche"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_1",
+      "label": "Imagen 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_2",
+      "label": "Imagen 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_3",
+      "label": "Imagen 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_4",
+      "label": "Imagen 4"
+    },
+    {
+      "type": "header",
+      "content": "Formas de pago"
+    },
+    {
+      "type": "text",
+      "id": "pay_title",
+      "label": "Título",
+      "default": "Dos formas de pagar, las dos seguras"
+    },
+    {
+      "type": "textarea",
+      "id": "cod_text",
+      "label": "Contra entrega",
+      "default": "Haces tu pedido sin tarjeta ni registro. Te llamamos para confirmar antes de despachar y pagas en efectivo cuando el producto llega a tu puerta."
+    },
+    {
+      "type": "textarea",
+      "id": "mp_text",
+      "label": "Mercado Pago",
+      "default": "Paga en línea con tarjeta débito o crédito, PSE y los demás medios de Mercado Pago. Tu pedido sale apenas se confirma el pago."
+    },
+    {
+      "type": "text",
+      "id": "mp_benefit",
+      "label": "Beneficio por pagar anticipado (opcional)",
+      "info": "Ej. Envío prioritario. Déjalo vacío para no mostrarlo."
+    },
+    {
+      "type": "header",
+      "content": "Opiniones"
+    },
+    {
+      "type": "text",
+      "id": "reviews_title",
+      "label": "Título",
+      "default": "Lo que dicen nuestras clientas"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "Calificación",
+      "default": "4.9 de 5"
+    },
+    {
+      "type": "header",
+      "content": "Ayuda"
+    },
+    {
+      "type": "text",
+      "id": "help_title",
+      "label": "Título",
+      "default": "¿No sabes qué tamaño elegir?"
+    },
+    {
+      "type": "text",
+      "id": "help_text",
+      "label": "Texto",
+      "default": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón."
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "WhatsApp",
+      "default": "+57 322 343 8327"
+    }
   ],
   "blocks": [
     {
@@ -360,14 +626,51 @@
       "name": "Diapositiva",
       "limit": 8,
       "settings": [
-        { "type": "text", "id": "tab", "label": "Nombre corto (botón)", "default": "Sábanas" },
-        { "type": "product", "id": "product", "label": "Producto (foto y precio automáticos)" },
-        { "type": "image_picker", "id": "image", "label": "Imagen (opcional, reemplaza la del producto)" },
-        { "type": "text", "id": "eyebrow", "label": "Etiqueta", "default": "Sábanas premium 180 hilos" },
-        { "type": "text", "id": "title", "label": "Titular", "default": "Sábanas suaves que no se salen de las esquinas" },
-        { "type": "textarea", "id": "text", "label": "Texto" },
-        { "type": "text", "id": "button_label", "label": "Texto del botón", "default": "Ver producto" },
-        { "type": "url", "id": "link", "label": "Enlace del botón (opcional)", "info": "Si está vacío, lleva al producto elegido." }
+        {
+          "type": "text",
+          "id": "tab",
+          "label": "Nombre corto (botón)",
+          "default": "Sábanas"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Producto (foto y precio automáticos)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen (opcional, reemplaza la del producto)"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Etiqueta",
+          "default": "Sábanas premium 180 hilos"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titular",
+          "default": "Sábanas suaves que no se salen de las esquinas"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Texto"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón",
+          "default": "Ver producto"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace del botón (opcional)",
+          "info": "Si está vacío, lleva al producto elegido."
+        }
       ]
     },
     {
@@ -375,10 +678,27 @@
       "name": "Categoría",
       "limit": 10,
       "settings": [
-        { "type": "text", "id": "title", "label": "Nombre", "default": "Sábanas" },
-        { "type": "image_picker", "id": "image", "label": "Imagen" },
-        { "type": "product", "id": "product", "label": "O producto (usa su foto)" },
-        { "type": "url", "id": "link", "label": "Enlace" }
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Nombre",
+          "default": "Sábanas"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "O producto (usa su foto)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        }
       ]
     },
     {
@@ -386,8 +706,18 @@
       "name": "Opinión",
       "limit": 9,
       "settings": [
-        { "type": "text", "id": "name", "label": "Nombre", "default": "Clienta Dianamar" },
-        { "type": "textarea", "id": "text", "label": "Opinión", "default": "Excelente calidad, llegaron rápido y tal cual las fotos." }
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre",
+          "default": "Clienta Dianamar"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Opinión",
+          "default": "Excelente calidad, llegaron rápido y tal cual las fotos."
+        }
       ]
     }
   ]

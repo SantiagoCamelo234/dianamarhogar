@@ -199,6 +199,100 @@
     show(0); start();
   }
 
+  /* ---------------- Carril de categorías ----------------
+     Se mueve solo, despacio y en bucle (hacia la derecha por defecto).
+     Se puede deslizar con el dedo o arrastrar con el mouse; al tocarlo se pausa
+     y retoma 3 s después. Un arrastre no cuenta como clic en la categoría. */
+  function initCatsRail(rail) {
+    var originals = $all('.dh-cat', rail);
+    if (originals.length < 2) return;
+    var motion = rail.getAttribute('data-motion') || 'right';
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var animate = motion !== 'none' && !reduce;
+
+    // Copias para que el bucle no tenga saltos (ocultas para lectores de pantalla).
+    if (animate) {
+      originals.forEach(function (el) {
+        var c = el.cloneNode(true);
+        c.setAttribute('aria-hidden', 'true');
+        c.setAttribute('tabindex', '-1');
+        c.removeAttribute('role');
+        rail.appendChild(c);
+      });
+    }
+
+    var half = 0, pos = 0, last = 0, paused = false, visible = true, resumeTimer = null;
+    var speed = 32; // px por segundo
+    var dir = motion === 'left' ? 1 : -1; // -1: el contenido avanza hacia la derecha
+
+    function measure() { half = rail.scrollWidth / 2; }
+    function wrap() {
+      if (!animate || !half) return;
+      if (rail.scrollLeft >= half) rail.scrollLeft -= half;
+      else if (rail.scrollLeft <= 0) rail.scrollLeft += half;
+      pos = rail.scrollLeft;
+    }
+    function pause() { paused = true; clearTimeout(resumeTimer); }
+    function resumeLater() { clearTimeout(resumeTimer); resumeTimer = setTimeout(function () { pos = rail.scrollLeft; paused = false; }, 3000); }
+
+    function tick(t) {
+      if (!last) last = t;
+      var dt = Math.min(64, t - last); last = t;
+      if (animate && !paused && visible && !document.hidden && half) {
+        pos += dir * speed * dt / 1000;
+        if (pos >= half) pos -= half;
+        if (pos <= 0) pos += half;
+        rail.scrollLeft = pos;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // Toque / rueda: pausa y deja que el navegador haga el desplazamiento nativo.
+    rail.addEventListener('touchstart', pause, { passive: true });
+    rail.addEventListener('touchend', resumeLater, { passive: true });
+    rail.addEventListener('wheel', function () { pause(); resumeLater(); }, { passive: true });
+    rail.addEventListener('scroll', function () { if (paused) wrap(); }, { passive: true });
+    rail.addEventListener('focusin', pause);
+    rail.addEventListener('focusout', resumeLater);
+
+    // Arrastre con el mouse en computador.
+    var dragging = false, startX = 0, startLeft = 0, moved = 0;
+    rail.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      dragging = true; moved = 0; startX = e.clientX; startLeft = rail.scrollLeft; pause();
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - startX;
+      moved = Math.max(moved, Math.abs(dx));
+      if (moved > 6) rail.classList.add('is-dragging');
+      rail.scrollLeft = startLeft - dx;
+      wrap(); startLeft = rail.scrollLeft + dx;
+    });
+    window.addEventListener('pointerup', function () {
+      if (!dragging) return;
+      dragging = false;
+      setTimeout(function () { rail.classList.remove('is-dragging'); }, 0);
+      resumeLater();
+    });
+    rail.addEventListener('click', function (e) { if (moved > 6) { e.preventDefault(); moved = 0; } }, true);
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }).observe(rail);
+    }
+    window.addEventListener('resize', function () { measure(); wrap(); });
+
+    measure();
+    if (animate) {
+      // Empieza en la mitad para poder avanzar en cualquier dirección sin saltos.
+      rail.scrollLeft = dir < 0 ? half : 0;
+      pos = rail.scrollLeft;
+      requestAnimationFrame(tick);
+      // Las imágenes pueden cambiar el ancho al cargar.
+      window.addEventListener('load', function () { measure(); wrap(); });
+    }
+  }
+
   /* ---------------- Inicio ---------------- */
   document.addEventListener('DOMContentLoaded', function () {
     backdrop = $('[data-dh-backdrop]');
@@ -251,6 +345,7 @@
     }
 
     $all('[data-dh-hero]').forEach(initHero);
+    $all('[data-dh-cats]').forEach(initCatsRail);
     if (cartEl) fetchCart().then(function (c) { setCount(c.item_count || 0); }).catch(function () {});
   });
 
