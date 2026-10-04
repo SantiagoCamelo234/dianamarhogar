@@ -83,11 +83,11 @@
               "tab": "Colchas",
               "product": "",
               "image": "shopify://shop_images/AZUL_BEIGE_9f2037a3-b601-48e9-999e-cc6ffb6b7edd.jpg",
-              "eyebrow": "Sábanas premium 180 hilos",
-              "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
-              "link": ""
+              "eyebrow": "Colchas",
+              "title": "El toque elegante que tu habitación necesita",
+              "text": "Colores iguales a las fotos y un material que conserva su forma lavado tras lavado.",
+              "button_label": "Ver colchas",
+              "link": "/search?q=colcha&type=product"
             }
           },
           "slide_knEYjM": {
@@ -96,11 +96,11 @@
               "tab": "Cobijas",
               "product": "",
               "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
-              "eyebrow": "Sábanas premium 180 hilos",
-              "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
-              "link": ""
+              "eyebrow": "Cobijas",
+              "title": "Calor al instante, sin sofocarte",
+              "text": "Suaves y abrigadas para las noches frías, en colores idénticos a las fotos.",
+              "button_label": "Ver cobijas",
+              "link": "/search?q=cobija&type=product"
             }
           },
           "slide_eCwXpe": {
@@ -108,10 +108,10 @@
             "settings": {
               "tab": "Fundas",
               "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
-              "eyebrow": "Sábanas premium 180 hilos",
-              "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
+              "eyebrow": "Fundas de almohada",
+              "title": "Fundas a juego con tus sábanas",
+              "text": "55 × 75 cm con embone, en 9 colores para combinar con tu juego.",
+              "button_label": "Ver fundas",
               "link": ""
             }
           },
@@ -120,10 +120,10 @@
             "settings": {
               "tab": "Protectores",
               "product": "protector-de-colchon-premium-impermeable-y-antifluido",
-              "eyebrow": "Sábanas premium 180 hilos",
-              "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
+              "eyebrow": "Protectores de colchón",
+              "title": "Tu colchón a salvo de derrames y accidentes",
+              "text": "Impermeable y antifluido, o termosellado antialérgico. Se lavan en lavadora.",
+              "button_label": "Ver protectores",
               "link": ""
             }
           },
@@ -134,8 +134,8 @@
               "product": "juego-de-sabanas-premium-ajuste-perfecto",
               "eyebrow": "Sábanas premium 180 hilos",
               "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
+              "text": "11 colores y 5 tamaños, con elástico reforzado y fuelle de 35 cm.",
+              "button_label": "Ver sábanas",
               "link": ""
             }
           },
@@ -144,10 +144,10 @@
             "settings": {
               "tab": "Toallas",
               "product": "juego-de-toallas-cuerpo-y-manos-algodon-400gr-doble-secado-beige",
-              "eyebrow": "Sábanas premium 180 hilos",
-              "title": "Sábanas suaves que no se salen de las esquinas",
-              "text": "",
-              "button_label": "Ver producto",
+              "eyebrow": "Toallas de algodón",
+              "title": "Toallas suaves que secan al instante",
+              "text": "Juego de cuerpo y manos en algodón de 400 g, con doble secado.",
+              "button_label": "Ver toallas",
               "link": ""
             }
           }
