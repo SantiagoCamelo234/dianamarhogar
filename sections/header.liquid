@@ -2,6 +2,7 @@
   Encabezado de la tienda nueva: barra de anuncios, logo, menú de categorías,
   buscador, cuenta y cesta. En celular el menú se abre en un panel lateral.
   Las categorías del menú son bloques "Enlace" editables desde Personalizar.
+  (Altura del logo con pasos de 1 px para aceptar cualquier valor guardado.)
 {%- endcomment -%}
 {%- liquid
   assign anuncios = ''
@@ -122,7 +123,7 @@
     { "type": "text", "id": "announce_3", "label": "Anuncio 3", "default": "Envío de 2 a 5 días hábiles" },
     { "type": "header", "content": "Logo" },
     { "type": "image_picker", "id": "logo", "label": "Logo de la tienda" },
-    { "type": "range", "id": "logo_height", "label": "Altura del logo", "min": 24, "max": 72, "step": 2, "unit": "px", "default": 44 },
+    { "type": "range", "id": "logo_height", "label": "Altura del logo", "min": 20, "max": 80, "step": 1, "unit": "px", "default": 44 },
     { "type": "header", "content": "Menú" },
     { "type": "paragraph", "content": "Agrega las categorías del menú como bloques \"Enlace\". Si no hay bloques, se usa el menú de Navegación elegido abajo." },
     { "type": "link_list", "id": "menu", "label": "Menú de respaldo", "default": "main-menu" },
