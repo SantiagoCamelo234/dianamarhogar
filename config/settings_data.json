@@ -25,6 +25,53 @@
       "template-home": {
         "type": "template-home",
         "blocks": {
+          "category_JfJGFJ": {
+            "type": "category",
+            "settings": {
+              "title": "Protectores",
+              "image": "shopify://shop_images/azulportada.jpg",
+              "product": "",
+              "link": ""
+            }
+          },
+          "slide_PmY6kd": {
+            "type": "slide",
+            "settings": {
+              "tab": "Cobijas",
+              "product": "",
+              "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "",
+              "button_label": "Ver producto",
+              "link": ""
+            }
+          },
+          "category_EAEtFw": {
+            "type": "category",
+            "settings": {
+              "title": "Colchas",
+              "image": "shopify://shop_images/AZUL_BEIGE_9f2037a3-b601-48e9-999e-cc6ffb6b7edd.jpg",
+              "product": "",
+              "link": ""
+            }
+          },
+          "category_dBeGr6": {
+            "type": "category",
+            "settings": {
+              "title": "Toallas",
+              "product": "juego-de-toallas-cuerpo-y-manos-algodon-400gr-doble-secado-beige",
+              "link": ""
+            }
+          },
+          "category_9BK4Er": {
+            "type": "category",
+            "settings": {
+              "title": "Sábanas",
+              "product": "juego-de-sabanas-premium-ajuste-perfecto",
+              "link": ""
+            }
+          },
           "slide_hCBRFN": {
             "type": "slide",
             "settings": {
@@ -101,6 +148,11 @@
           }
         },
         "block_order": [
+          "category_JfJGFJ",
+          "slide_PmY6kd",
+          "category_EAEtFw",
+          "category_dBeGr6",
+          "category_9BK4Er",
           "slide_hCBRFN",
           "slide_knEYjM",
           "slide_eCwXpe",
