@@ -169,7 +169,7 @@
     var tabs = $all('[data-dh-slide-tab]', root);
     var tag = $('[data-dh-slide-tagtext]', root);
     if (slides.length < 2) return;
-    var i = 0, timer = null;
+    var i = 0, timer = null, holdUntil = 0;
     var delay = (parseInt(root.getAttribute('data-autoplay'), 10) || 5) * 1000;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -180,10 +180,23 @@
       tabs.forEach(function (t, k) { t.setAttribute('aria-selected', k === i ? 'true' : 'false'); });
       if (tag && tabs[i]) tag.textContent = tabs[i].textContent.trim();
     }
-    function start() { stop(); if (!reduce) timer = setInterval(function () { show(i + 1); }, delay); }
-    function stop() { clearInterval(timer); timer = null; }
+    function start() {
+      stop();
+      if (reduce) return;
+      var wait = Math.max(0, holdUntil - Date.now());
+      timer = setTimeout(function () { timer = setInterval(function () { show(i + 1); }, delay); }, wait);
+    }
+    // Al elegir una categoría, se queda en esa diapositiva un rato antes de seguir.
+    function hold(ms) { holdUntil = Date.now() + ms; start(); }
+    function stop() { clearTimeout(timer); clearInterval(timer); timer = null; }
 
-    tabs.forEach(function (t, k) { t.addEventListener('click', function () { show(k); stop(); setTimeout(start, 8000); }); });
+    tabs.forEach(function (t, k) {
+      t.addEventListener('click', function () {
+        show(k);
+        hold(12000);
+        if (t.scrollIntoView && t.parentNode.scrollWidth > t.parentNode.clientWidth) t.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      });
+    });
     root.addEventListener('pointerenter', stop);
     root.addEventListener('pointerleave', start);
 
@@ -193,7 +206,7 @@
       if (x0 == null) return;
       var dx = e.changedTouches[0].clientX - x0;
       if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
-      x0 = null; setTimeout(start, 6000);
+      x0 = null; hold(8000);
     }, { passive: true });
 
     show(0); start();

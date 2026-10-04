@@ -29,9 +29,9 @@
         <div class="dh-hero-slide" data-dh-slide {% unless forloop.first %}hidden{% endunless %} {{ block.shopify_attributes }} style="display: flex; flex-direction: column; gap: 18px;">
           {%- if block.settings.eyebrow != blank -%}<span class="dh-eyebrow">{{ block.settings.eyebrow }}</span>{%- endif -%}
           {%- if forloop.first -%}
-            <h1>{{ block.settings.title | default: p.title }}</h1>
+            <h1>{{ block.settings.title | default: p.title | default: block.settings.tab }}</h1>
           {%- else -%}
-            <h2 class="dh-hero-h" style="margin: 0; font-family: var(--dh-serif); font-weight: 400; font-size: clamp(36px, 4.6vw, 60px); line-height: 1.06; text-wrap: balance;">{{ block.settings.title | default: p.title }}</h2>
+            <h2 class="dh-hero-h" style="margin: 0; font-family: var(--dh-serif); font-weight: 400; font-size: clamp(36px, 4.6vw, 60px); line-height: 1.06; text-wrap: balance;">{{ block.settings.title | default: p.title | default: block.settings.tab }}</h2>
           {%- endif -%}
           {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
           {%- if p != blank -%}
@@ -630,7 +630,7 @@
           "type": "text",
           "id": "tab",
           "label": "Nombre corto (botón)",
-          "default": "Sábanas"
+          "default": "Categoría"
         },
         {
           "type": "product",
@@ -646,13 +646,13 @@
           "type": "text",
           "id": "eyebrow",
           "label": "Etiqueta",
-          "default": "Sábanas premium 180 hilos"
+          "info": "Opcional. Ej. Sábanas premium 180 hilos"
         },
         {
           "type": "text",
           "id": "title",
           "label": "Titular",
-          "default": "Sábanas suaves que no se salen de las esquinas"
+          "info": "Si lo dejas vacío, se usa el nombre del producto o de la categoría."
         },
         {
           "type": "textarea",
