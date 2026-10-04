@@ -24,6 +24,10 @@
 }
 
 body { background: var(--dh-ground); color: var(--dh-ink); font-family: var(--dh-sans); }
+/* El footer siempre llega al fondo de la pantalla, aunque la página sea corta. */
+body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+body > main { flex: 1 0 auto; }
+body > footer.dh-footer, body > .shopify-section-group-footer-group { flex-shrink: 0; }
 .dh-wrap { max-width: 1280px; margin: 0 auto; padding-inline: 24px; }
 .dh-eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--dh-coral-ink); }
 .dh-h2 { font-family: var(--dh-serif); font-weight: 400; font-size: clamp(28px, 3.2vw, 36px); line-height: 1.15; margin: 0; color: var(--dh-ink); text-wrap: balance; }
