@@ -102,6 +102,15 @@
   .nv-pills { display: flex; flex-wrap: wrap; gap: 8px; }
   .nv-pill { background: var(--nv-blush); color: var(--nv-ink); font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; }
 
+  .nv-price-block { display: grid; gap: 10px; }
+  .nv-perks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .nv-perk { display: inline-flex; align-items: center; gap: 5px; background: #E8F3E9; color: #1F5E23; font-weight: 700; font-size: 13px; padding: 5px 11px; border-radius: 999px; }
+  .nv-rating a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .nv-tiers-hero { display: grid; gap: 8px; }
+  .nv-qty-label { font-weight: 700; color: var(--nv-ink); font-size: 14px; }
+  .nv-tiers-hero .nv-tiers { gap: 10px; max-width: none; margin: 0; padding-top: 4px; }
+  .nv-tiers-hero .nv-tier { padding: 12px 14px; gap: 12px; }
+  .nv-tiers-hero .nv-tier-sub { font-size: 12.5px; }
   .nv-price-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-block: 4px; }
   .nv-price { font-size: 34px; font-weight: 800; color: var(--nv-ink); line-height: 1; font-variant-numeric: tabular-nums; }
   .nv-compare { color: var(--nv-muted); text-decoration: line-through; font-size: 18px; }
@@ -122,7 +131,7 @@
   /* Colores en cuadrícula con su nombre debajo, para distinguir tonos parecidos (ej. gris plata / gris oscuro) */
   .ls-swatches:has(.ls-swatch-color) { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 12px 4px; }
   .ls-swatch-color { position: relative; justify-self: center; margin-bottom: 28px; }
-  .nv-sw-name { position: absolute; top: calc(100% + 5px); left: 50%; transform: translateX(-50%); width: 62px; text-align: center; font-size: 11px; line-height: 1.15; color: var(--nv-muted); pointer-events: none; }
+  .nv-sw-name { position: absolute; top: calc(100% + 5px); left: 50%; transform: translateX(-50%); width: 62px; text-align: center; font-size: 12px; line-height: 1.15; color: var(--nv-muted); pointer-events: none; }
   .ls-swatch-color.active .nv-sw-name { color: var(--nv-ink); font-weight: 700; }
   .ls-swatch-color.active { box-shadow: 0 0 0 2.5px var(--nv-coral); }
   .ls-swatch-size { font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid var(--nv-line); background: #fff; color: var(--nv-ink); cursor: pointer; transition: all .15s; }
@@ -152,7 +161,7 @@
     .nv-sticky { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 800; gap: 8px; align-items: center; padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); background: #fff; border-top: 1px solid var(--nv-line); box-shadow: 0 -6px 18px rgba(0,0,0,.08); transform: translateY(110%); transition: transform .25s ease; }
     .nv-sticky.is-visible { transform: none; }
     .nv-sticky .nv-btn { min-height: 48px; padding: 0 10px; font-size: 15px; }
-    .nv-sticky-price { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; font-size: 11px; color: var(--nv-muted); }
+    .nv-sticky-price { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; font-size: 12px; color: var(--nv-muted); }
     .nv-sticky-price strong { font-size: 17px; color: var(--nv-ink); }
   }
   @media (prefers-reduced-motion: reduce) { .nv-sticky { transition: none; } }
@@ -255,7 +264,7 @@
   .nv-tier-sub { font-size: 13px; color: var(--nv-muted); }
   .nv-tier-price { text-align: right; font-weight: 800; color: var(--nv-ink); font-variant-numeric: tabular-nums; }
   .nv-tier-price s { display: block; font-weight: 500; font-size: 13px; color: var(--nv-muted); }
-  .nv-tag { position: absolute; top: -11px; right: 16px; background: var(--nv-cta); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+  .nv-tag { position: absolute; top: -11px; right: 16px; background: var(--nv-cta); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
   .nv-tag.nv-soft { background: var(--nv-coral); }
 
   /* Comparativa */
@@ -310,6 +319,16 @@
     .nv-hero-grid, .nv-problem-grid { grid-template-columns: 1fr; gap: 24px; }
     .nv-gallery-col { position: static; }
   }
+  @media (max-width: 600px) {
+    /* Celular: foto más baja para que el nombre, las estrellas y el precio se vean sin bajar */
+    .nv-hero { padding-block: 12px 36px; }
+    .nv-hero-grid { gap: 14px; }
+    .ls-gallery { aspect-ratio: 1 / 1; }
+    .ls-thumb-wrapper { width: 58px; height: 58px; }
+    .nv-buy { gap: 14px; }
+    .nv-hero h1 { font-size: 25px; }
+    .nv-price { font-size: 30px; }
+  }
   @media (max-width: 760px) {
     .nv-kit, .nv-steps { grid-template-columns: 1fr; }
   }
@@ -323,7 +342,7 @@
     .nv-table-box { overflow-x: visible; }
     .nv-table, .nv-size-table { font-size: 13px; table-layout: fixed; }
     .nv-table th, .nv-table td, .nv-size-table th, .nv-size-table td { padding: 10px 8px; overflow-wrap: anywhere; }
-    .nv-table th, .nv-size-table th { font-size: 10.5px; letter-spacing: .03em; }
+    .nv-table th, .nv-size-table th { font-size: 12px; letter-spacing: .02em; }
     .nv-table th:first-child, .nv-table td:first-child { width: 56%; }
     .nv-table th:nth-child(2), .nv-table td:nth-child(2) { width: 24%; }
     .nv-table th:nth-child(3), .nv-table td:nth-child(3) { width: 20%; }
@@ -433,23 +452,45 @@
       </div>
 
       <div class="nv-buy">
-        <div class="nv-rating"><span class="nv-stars">★★★★★</span> {{ s.rating_text }}</div>
-        <h1>{{ s.headline | default: product.title }}</h1>
-        {% if s.subheadline != blank %}<p class="nv-lead">{{ s.subheadline }}</p>{% endif %}
+        <div class="nv-rating"><span class="nv-stars">★★★★★</span> {% if s.review_1_name != blank %}<a href="#nv-resenas">{{ s.rating_text }}</a>{% else %}{{ s.rating_text }}{% endif %}</div>
+        {%- if s.title_source == 'headline' -%}
+          <h1>{{ s.headline | default: product.title }}</h1>
+        {%- else -%}
+          <h1>{{ product.title }}</h1>
+        {%- endif -%}
 
-        <div class="nv-pills">
-          {% for i in (1..6) %}
-            {% assign pill_key = 'pill_' | append: i %}
-            {% if s[pill_key] != blank %}<span class="nv-pill">✔ {{ s[pill_key] }}</span>{% endif %}
-          {% endfor %}
-        </div>
-
+        <div class="nv-price-block">
         <div class="nv-price-row">
           <span class="nv-price" id="ls-price">{{ current_variant.price | money_without_trailing_zeros }}</span>
           <span class="nv-compare" id="ls-compare" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>{{ current_variant.compare_at_price | money_without_trailing_zeros }}</span>
           <span class="nv-save" id="ls-badge" {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>
             {% if current_variant.compare_at_price > current_variant.price %}Ahorras {{ current_variant.compare_at_price | minus: current_variant.price | money_without_trailing_zeros }}{% endif %}
           </span>
+        </div>
+        {%- if s.perks != blank -%}
+          {%- assign nv_perks = s.perks | split: '|' -%}
+          <div class="nv-perks">
+            {%- for perk in nv_perks -%}
+              {%- assign perk_txt = perk | strip -%}
+              {%- if perk_txt != blank -%}
+                <span class="nv-perk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>{{ perk_txt }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+        </div>
+
+        {% if s.title_source == 'headline' %}
+          {% if s.subheadline != blank %}<p class="nv-lead">{{ s.subheadline }}</p>{% endif %}
+        {% elsif s.headline != blank %}
+          <p class="nv-lead">{{ s.headline }}</p>
+        {% endif %}
+
+        <div class="nv-pills">
+          {% for i in (1..6) %}
+            {% assign pill_key = 'pill_' | append: i %}
+            {% if s[pill_key] != blank %}<span class="nv-pill">✔ {{ s[pill_key] }}</span>{% endif %}
+          {% endfor %}
         </div>
 
         <div id="nv-comprar">
@@ -494,6 +535,29 @@
               {% endfor %}
             {% endunless %}
 
+
+            {%- if s.show_bundles and s.bundles_in_hero -%}
+              {% comment %} Oferta por cantidad junto a las opciones: el cliente la ve antes del botón. {% endcomment %}
+              <div class="nv-tiers-hero">
+                <span class="nv-qty-label">Cantidad</span>
+                <div class="nv-tiers" id="nv-tiers" data-rsi-offer="{{ s.rsi_offer_name | escape }}">
+          {% for q in (1..3) %}
+            {% assign dk = 'bundle_' | append: q | append: '_discount' %}
+            {% assign lk = 'bundle_' | append: q | append: '_label' %}
+            <button type="button" class="nv-tier {% if q == 1 %}active{% endif %}" data-qty="{{ q }}" data-pct="{{ s[dk] | default: 0 }}" data-fixed="0" data-compare="1" onclick="nvSelectTier(this)">
+              {% if q == 2 and s[dk] > 0 %}<span class="nv-tag">Más popular</span>{% endif %}
+              {% if q == 3 and s[dk] > 0 %}<span class="nv-tag nv-soft">Mayor ahorro</span>{% endif %}
+              <span class="nv-radio"></span>
+              <span>
+                <span class="nv-tier-name">{{ q }} {% if q == 1 %}{{ s.bundle_unit_singular }}{% else %}{{ s.bundle_unit_plural }}{% endif %}</span>
+                <span class="nv-tier-sub">{{ s[lk] }}{% if s[dk] > 0 %} · {{ s[dk] }}% OFF{% endif %}</span>
+              </span>
+              <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
+            </button>
+          {% endfor %}
+                </div>
+              </div>
+            {%- endif -%}
 
             {% comment %} Botones de compra: usan el carrito de Shopify (assets/dh.js). {% endcomment %}
             <div class="nv-rsi-slot nv-buy-pair" data-nv-where="arriba">
@@ -824,8 +888,8 @@
     </section>
   {% endif %}
 
-  <!-- OFERTA POR CANTIDAD -->
-  {% if s.show_bundles %}
+  <!-- OFERTA POR CANTIDAD (sección aparte, solo si no está en la caja de compra) -->
+  {% if s.show_bundles and s.bundles_in_hero != true %}
     <section class="nv-sec nv-alt" id="nv-oferta">
       <div class="nv-wrap">
         <div class="nv-head">
@@ -1620,6 +1684,23 @@
       "default": "4.9/5 · +2.000 juegos vendidos"
     },
     {
+      "type": "select",
+      "id": "title_source",
+      "label": "Título principal",
+      "options": [
+        {
+          "value": "product",
+          "label": "Nombre del producto"
+        },
+        {
+          "value": "headline",
+          "label": "Título de abajo"
+        }
+      ],
+      "default": "product",
+      "info": "Con \"Nombre del producto\", el título de abajo se muestra como texto debajo del precio."
+    },
+    {
       "type": "text",
       "id": "headline",
       "label": "Título",
@@ -1630,6 +1711,13 @@
       "id": "subheadline",
       "label": "Subtítulo",
       "default": "Descansa mejor cada noche con sábanas cómodas, elegantes y fáciles de cuidar. Textura suave, cero motas y elásticos que no se salen del colchón."
+    },
+    {
+      "type": "text",
+      "id": "perks",
+      "label": "Ventajas junto al precio",
+      "default": "Envío gratis | Pagas al recibir | Llega en 2 a 5 días",
+      "info": "Sepáralas con |. Déjalo vacío para ocultarlas."
     },
     {
       "type": "text",
@@ -2435,6 +2523,13 @@
       "id": "show_bundles",
       "label": "Mostrar oferta por cantidad",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "bundles_in_hero",
+      "label": "Mostrar la oferta junto a los tamaños",
+      "default": true,
+      "info": "Aparece antes del botón de compra. Si lo desactivas, la oferta vuelve a su propia sección más abajo."
     },
     {
       "type": "paragraph",
