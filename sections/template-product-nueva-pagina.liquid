@@ -87,7 +87,8 @@
   .ls-media-variant-hidden, .ls-thumb-variant-hidden { display: none !important; }
   .nv-badge-float { position: absolute; top: 14px; left: 14px; z-index: 2; background: #fff; color: var(--nv-ink); font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,.08); pointer-events: none; }
   .nv-badge-float.nv-r { left: auto; right: 14px; background: #B8473D; color: #fff; font-weight: 800; font-size: 14px; box-shadow: none; }
-  .ls-thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+  .ls-thumbnails { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
+  .ls-thumbnails::-webkit-scrollbar { display: none; }
   .ls-thumb-wrapper { width: 76px; height: 76px; flex-shrink: 0; border-radius: 10px; border: 2px solid transparent; background: #fff; cursor: pointer; scroll-snap-align: start; transition: border-color .2s; overflow: hidden; }
   .ls-thumb-wrapper.active { border-color: #B8473D; }
   .ls-thumb-wrapper:hover { border-color: var(--nv-coral-soft); }
