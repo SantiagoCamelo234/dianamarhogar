@@ -143,6 +143,8 @@
   /* Carrusel de beneficios (imágenes 4:5 con su propio texto) */
   .nv-promo { padding-block: 28px 8px; }
   .nv-promo-wrap { max-width: 520px; margin-inline: auto; padding-inline: 10px; }
+  .nv-promo-stack { display: grid; gap: 14px; }
+  .nv-promo-stack img { display: block; width: 100%; height: auto; border-radius: 12px; background: var(--nv-blush); box-shadow: 0 10px 30px rgba(44, 44, 44, .10); }
   .nv-promo-viewport { position: relative; overflow: hidden; border-radius: 12px; aspect-ratio: var(--nv-promo-ratio, 0.8); max-width: 100%; background: var(--nv-blush); box-shadow: 0 10px 30px rgba(44, 44, 44, .10); touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
   .nv-promo-viewport.nv-dragging { cursor: grabbing; }
   .nv-promo-track { display: flex; height: 100%; will-change: transform; }
@@ -523,39 +525,24 @@
   {% if s.show_promo and nv_promo_count > 0 %}
     <section class="nv-promo" aria-label="Beneficios de las sábanas">
       <div class="nv-promo-wrap">
-        <div class="nv-promo-viewport" id="nv-promo" data-autoplay="{{ s.promo_autoplay | times: 1000 }}" style="--nv-promo-ratio: {{ nv_promo_first.aspect_ratio | default: 0.8 }};" tabindex="0" aria-roledescription="carrusel">
-          <div class="nv-promo-track">
-            {% assign nv_promo_n = 0 %}
-            {% for i in (1..4) %}
-              {% assign pk = 'promo_image_' | append: i %}
-              {% assign ak = 'promo_alt_' | append: i %}
-              {% if s[pk] != blank %}
-                {% assign nv_promo_n = nv_promo_n | plus: 1 %}
-                <div class="nv-promo-slide" role="group" aria-roledescription="imagen" aria-label="{{ nv_promo_n }} de {{ nv_promo_count }}">
-                  <img
-                    src="{{ s[pk] | image_url: width: 1080 }}"
-                    srcset="{{ s[pk] | image_url: width: 540 }} 540w, {{ s[pk] | image_url: width: 720 }} 720w, {{ s[pk] | image_url: width: 1080 }} 1080w"
-                    sizes="(max-width: 540px) calc(100vw - 20px), 500px"
-                    alt="{{ s[ak] | default: s[pk].alt | escape }}"
-                    width="{{ s[pk].width }}" height="{{ s[pk].height }}"
-                    {% if nv_promo_n == 1 %}loading="eager" fetchpriority="high"{% else %}loading="lazy" decoding="async"{% endif %}
-                    draggable="false">
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          {% if nv_promo_count > 1 %}
-            <button type="button" class="nv-promo-arrow nv-promo-prev" aria-label="Imagen anterior">‹</button>
-            <button type="button" class="nv-promo-arrow nv-promo-next" aria-label="Imagen siguiente">›</button>
-          {% endif %}
+        {% comment %} Las imágenes van una debajo de la otra (antes era un carrusel). {% endcomment %}
+        <div class="nv-promo-stack">
+          {% assign nv_promo_n = 0 %}
+          {% for i in (1..4) %}
+            {% assign pk = 'promo_image_' | append: i %}
+            {% assign ak = 'promo_alt_' | append: i %}
+            {% if s[pk] != blank %}
+              {% assign nv_promo_n = nv_promo_n | plus: 1 %}
+              <img
+                src="{{ s[pk] | image_url: width: 1080 }}"
+                srcset="{{ s[pk] | image_url: width: 540 }} 540w, {{ s[pk] | image_url: width: 720 }} 720w, {{ s[pk] | image_url: width: 1080 }} 1080w"
+                sizes="(max-width: 540px) calc(100vw - 20px), 500px"
+                alt="{{ s[ak] | default: s[pk].alt | escape }}"
+                width="{{ s[pk].width }}" height="{{ s[pk].height }}"
+                {% if nv_promo_n == 1 %}loading="eager"{% else %}loading="lazy" decoding="async"{% endif %}>
+            {% endif %}
+          {% endfor %}
         </div>
-        {% if nv_promo_count > 1 %}
-          <div class="nv-promo-dots" role="tablist" aria-label="Elegir imagen">
-            {% for i in (1..nv_promo_count) %}
-              <button type="button" class="nv-promo-dot {% if forloop.first %}active{% endif %}" role="tab" aria-label="Ver imagen {{ i }}" data-i="{{ forloop.index0 }}"></button>
-            {% endfor %}
-          </div>
-        {% endif %}
       </div>
     </section>
   {% endif %}
