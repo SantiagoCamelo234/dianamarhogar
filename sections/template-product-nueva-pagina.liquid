@@ -391,6 +391,13 @@
 </style>
 
 {% assign current_variant = product.selected_or_first_available_variant %}
+{%- comment -%}
+  Precio inicial: siempre el más bajo disponible (ej. Sencilla $79.900), como en los anuncios,
+  aunque el enlace traiga ?variant= de otro tamaño. Cambia cuando el cliente elige.
+{%- endcomment -%}
+{%- for v in product.variants -%}
+  {%- if v.available and v.price == product.price_min -%}{%- assign current_variant = v -%}{%- break -%}{%- endif -%}
+{%- endfor -%}
 {% assign s = section.settings %}
 
 <div class="nv-page" id="product-section-{{ section.id }}">
@@ -1188,6 +1195,16 @@
     });
     return selected;
   }
+
+  // Si el enlace trae ?variant= y el cliente aún no eligió nada, se cambia por la variante del
+  // precio inicial: así ReleasIT no abre el formulario con otro tamaño.
+  (function nvResetUrlVariant() {
+    var url = new URL(window.location.href);
+    if (!url.searchParams.has('variant')) return;
+    if (document.querySelector('.ls-swatch-size.active, .ls-swatch-color.active')) return;
+    url.searchParams.set('variant', document.getElementById('ls-variant-id').value);
+    window.history.replaceState({}, '', url.toString());
+  })();
 
   function nvCurrentVariant() {
     var id = parseInt(document.getElementById('ls-variant-id').value, 10);
