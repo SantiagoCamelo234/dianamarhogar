@@ -43,10 +43,9 @@
   .g3 .g3-tool { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
   @media (max-width: 860px) { .g3 .g3-tool { grid-template-columns: 1fr; } }
   .g3 .g3-stage-card { background: linear-gradient(180deg, #FFF 0%, var(--blush-2) 100%); border: 1px solid var(--line); border-radius: 20px; padding: 14px; display: grid; gap: 10px; position: relative; }
-  .g3 .g3-stage { position: relative; height: 440px; perspective: 1400px; perspective-origin: 50% 35%; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; border-radius: 14px; outline: none; overflow: hidden; }
+  .g3 .g3-stage { position: relative; height: 440px; perspective: 1400px; perspective-origin: 50% 35%; cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; border-radius: 14px; outline: none; overflow: hidden; }
   .g3 .g3-stage:focus-visible { box-shadow: 0 0 0 3px var(--coral); }
   .g3 .g3-stage.g3-dragging { cursor: grabbing; }
-  .g3 .g3-stage.g3-armed { box-shadow: inset 0 0 0 2px var(--coral); }
   .g3 .g3-hint-touch { display: none; }
   @media (hover: none) and (pointer: coarse) { .g3 .g3-hint-mouse { display: none; } .g3 .g3-hint-touch { display: inline; } }
   @media (max-width: 860px) { .g3 .g3-stage { height: 340px; } }
@@ -152,7 +151,7 @@
     <!-- Escena -->
     <div class="g3-stage-card">
       <div class="g3-badge" aria-live="polite"><strong id="g3-b-name">Doble</strong><span id="g3-b-dims">140 × 190 cm · alto 25 cm</span></div>
-      <div class="g3-stage" id="g3-stage" tabindex="0" role="img" aria-label="Cama en 3D. Arrastra para girarla (en celular, mantén presionado y arrastra) o usa las flechas del teclado.">
+      <div class="g3-stage" id="g3-stage" tabindex="0" role="img" aria-label="Cama en 3D. Arrastra para girarla (en celular, desliza a los lados) o usa las flechas del teclado.">
         <div class="g3-scene" id="g3-scene">
           <div class="g3-floor" id="g3-floor"></div>
           <div class="g3-box g3-mattress" id="g3-mattress"></div>
@@ -163,7 +162,7 @@
         </div>
       </div>
       <div class="g3-stage-tools">
-        <span class="g3-hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> <span class="g3-hint-mouse">Arrastra para girar</span><span class="g3-hint-touch">Mantén presionado y arrastra para girar</span></span>
+        <span class="g3-hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> <span class="g3-hint-mouse">Arrastra para girar</span><span class="g3-hint-touch">Desliza a los lados para girar</span></span>
         <div class="g3-views" role="group" aria-label="Vista">
           <button type="button" class="g3-chip" data-view="3d" aria-pressed="true">3D</button>
           <button type="button" class="g3-chip" data-view="top" aria-pressed="false">Desde arriba</button>
@@ -485,51 +484,42 @@
   });
   $('g3-height').addEventListener('input', function (e) { state.h = +e.target.value; render(); });
 
-  // Girar: con el mouse, arrastrando. En celular, manteniendo presionado un momento y luego
-  // arrastrando; un deslizamiento normal sigue moviendo la página. También con el teclado.
-  var drag = null, hold = null;
+  // Girar: con el mouse, arrastrando en cualquier dirección. Con el dedo, deslizando a los
+  // lados (gira la cama); deslizar hacia arriba o abajo lo maneja el navegador y mueve la página
+  // (touch-action: pan-y). Para verla desde arriba o de lado están los botones. También con el teclado.
+  var drag = null;
   function startDrag(x, y) { drag = { x: x, y: y, rx: state.rx, rz: state.rz }; stage.classList.add('g3-dragging'); }
-  function moveDrag(x, y) {
+  function moveDrag(x, y, tilt) {
     state.rz = drag.rz + (x - drag.x) * 0.5;
-    state.rx = Math.max(5, Math.min(86, drag.rx - (y - drag.y) * 0.35));
+    if (tilt) state.rx = Math.max(5, Math.min(86, drag.rx - (y - drag.y) * 0.35));
     root.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
     render();
   }
-  function endDrag() { drag = null; stage.classList.remove('g3-dragging', 'g3-armed'); }
+  function endDrag() { drag = null; stage.classList.remove('g3-dragging'); }
 
-  // Mouse y lápiz
+  var touch = null; // { id, x, y, mode: null | 'rotate' }
   stage.addEventListener('pointerdown', function (e) {
-    if (e.pointerType === 'touch') return;
+    if (e.pointerType === 'touch') { touch = { id: e.pointerId, x: e.clientX, y: e.clientY, mode: null }; return; }
     startDrag(e.clientX, e.clientY); stage.setPointerCapture(e.pointerId);
   });
-  stage.addEventListener('pointermove', function (e) { if (drag && e.pointerType !== 'touch') moveDrag(e.clientX, e.clientY); });
-  stage.addEventListener('pointerup', function (e) { if (e.pointerType !== 'touch') endDrag(); });
-  stage.addEventListener('pointercancel', function (e) { if (e.pointerType !== 'touch') endDrag(); });
-
-  // Dedo: se activa al mantener presionado ~0,3 s sin moverse
-  var HOLD_MS = 280, SLOP = 8;
-  function cancelHold() { if (hold) clearTimeout(hold.t); hold = null; if (drag) endDrag(); }
-  stage.addEventListener('touchstart', function (e) {
-    cancelHold();
-    if (e.touches.length !== 1) return;
-    var t = e.touches[0];
-    hold = { x: t.clientX, y: t.clientY, armed: false };
-    hold.t = setTimeout(function () {
-      if (!hold) return;
-      hold.armed = true; stage.classList.add('g3-armed'); startDrag(hold.x, hold.y);
-      if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) {} }
-    }, HOLD_MS);
-  }, { passive: true });
-  stage.addEventListener('touchmove', function (e) {
-    if (!hold) return;
-    var t = e.touches[0];
-    if (hold.armed) { if (e.cancelable) e.preventDefault(); moveDrag(t.clientX, t.clientY); return; }
-    // Se movió antes de activarse: es un desplazamiento de la página
-    if (Math.abs(t.clientX - hold.x) > SLOP || Math.abs(t.clientY - hold.y) > SLOP) cancelHold();
-  }, { passive: false });
-  stage.addEventListener('touchend', cancelHold);
-  stage.addEventListener('touchcancel', cancelHold);
-  stage.addEventListener('contextmenu', function (e) { if (hold || drag) e.preventDefault(); });
+  stage.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'touch') { if (drag) moveDrag(e.clientX, e.clientY, true); return; }
+    if (!touch || e.pointerId !== touch.id) return;
+    if (!touch.mode) {
+      var dx = e.clientX - touch.x, dy = e.clientY - touch.y;
+      if (Math.abs(dx) < 6) return; // todavía no se sabe hacia dónde va
+      if (Math.abs(dx) < Math.abs(dy)) { touch = null; return; } // vertical: es la página
+      touch.mode = 'rotate'; startDrag(touch.x, touch.y);
+      try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    moveDrag(e.clientX, e.clientY, false);
+  });
+  function endPointer(e) {
+    if (e.pointerType === 'touch') { if (touch && e.pointerId === touch.id) touch = null; }
+    if (drag) endDrag();
+  }
+  stage.addEventListener('pointerup', endPointer);
+  stage.addEventListener('pointercancel', endPointer);
   stage.addEventListener('keydown', function (e) {
     var step = { ArrowLeft: [0, -10], ArrowRight: [0, 10], ArrowUp: [-6, 0], ArrowDown: [6, 0] }[e.key];
     if (!step) return; e.preventDefault();
