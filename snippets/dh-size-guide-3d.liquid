@@ -183,8 +183,8 @@
       <div class="card">
         <h2>2. ¿Qué tan alto es tu colchón? <small>(mide del piso del colchón a la parte de arriba)</small></h2>
         <div class="range-row">
-          <input type="range" id="g3-height" min="10" max="{{ pocket }}" step="1" value="25" aria-label="Alto de tu colchón en centímetros">
-          <span class="hval" id="g3-hval">25 cm</span>
+          <input type="range" id="g3-height" min="10" max="{{ pocket }}" step="1" value="{{ pocket }}" aria-label="Alto de tu colchón en centímetros">
+          <span class="hval" id="g3-hval">{{ pocket }} cm</span>
         </div>
         <div>
           <div class="meter" aria-hidden="true"><i id="g3-mark" style="left: 60%"></i></div>
@@ -284,7 +284,7 @@
   var COLORS = (window.G3_DATA && window.G3_DATA.colors) || [];
   var POCKET = window.G3_DATA.pocket || 35;
   var COMMON = window.G3_DATA.common || 30; // fuelle típico de una sábana común
-  var state = { size: Math.max(0, SIZES.findIndex(function (s) { return /doble/i.test(s.name) && !/semi/i.test(s.name); })), h: 25, layer: 2, rx: 58, rz: -32, sheet: 'dh' };
+  var state = { size: Math.max(0, SIZES.findIndex(function (s) { return /doble/i.test(s.name) && !/semi/i.test(s.name); })), h: POCKET, layer: 2, rx: 58, rz: -32, sheet: 'dh' };
   var VIEWS = { '3d': [58, -32], top: [8, 0], side: [84, -90] };
 
   var $ = function (id) { return document.getElementById(id); };
