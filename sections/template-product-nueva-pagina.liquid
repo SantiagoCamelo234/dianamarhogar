@@ -1324,20 +1324,41 @@
     });
   }
 
-  // Cuando se abre el formulario de ReleasIT, marca en él la misma opción de cantidad
-  // que el cliente eligió en la página (ReleasIT siempre abre en "1 unidad").
+  // Cuando se abre el formulario de ReleasIT, marca en él la misma oferta de cantidad
+  // que el cliente eligió en la página (ReleasIT siempre abre en la primera).
+  // Espera a que el formulario esté visible, toca la tarjeta de la oferta y confirma que
+  // quedó marcada; si ReleasIT la reinicia al terminar de abrir, la vuelve a tocar.
+  var nvSyncTimer = null;
   function nvSyncOfferToForm() {
-    var sel = document.querySelector('.nv-tier.active[data-title]');
-    if (!sel || sel.getAttribute('data-first') === '1') return;
-    var title = sel.getAttribute('data-title').trim();
-    var tries = 0;
+    var tiers = Array.prototype.slice.call(document.querySelectorAll('#nv-tiers .nv-tier'));
+    var sel = document.querySelector('#nv-tiers .nv-tier.active');
+    var idx = tiers.indexOf(sel);
+    if (idx <= 0) return; // la primera ya viene marcada
+    var title = (sel.getAttribute('data-title') || '').trim();
+    var t0 = Date.now(), lastClick = 0, okSince = 0;
+    clearTimeout(nvSyncTimer);
     (function poll() {
       var form = document.querySelector('._rsi_main_form_element');
-      var target = form && Array.prototype.filter.call(form.querySelectorAll('.rsi-quantity-title'), function (el) {
-        return el.textContent.trim() === title;
-      })[0];
-      if (target) { target.click(); return; }
-      if (++tries < 40) setTimeout(poll, 150);
+      if (form && form.getBoundingClientRect().height > 0) {
+        var radios = Array.prototype.slice.call(form.querySelectorAll('input[name="quantity_offer"]'));
+        var target = -1;
+        if (title) radios.forEach(function (r, i) {
+          var box = r.closest('label') || r.parentElement;
+          var t = box && box.querySelector('.rsi-quantity-title');
+          if (target < 0 && t && t.textContent.trim() === title) target = i;
+        });
+        if (target < 0 && idx < radios.length) target = idx;
+        if (target >= 0) {
+          if (radios[target].checked) {
+            if (!okSince) okSince = Date.now();
+            if (Date.now() - okSince > 900) return; // se mantuvo marcada: listo
+          } else {
+            okSince = 0;
+            if (Date.now() - lastClick > 400) { (radios[target].closest('label') || radios[target]).click(); lastClick = Date.now(); }
+          }
+        }
+      }
+      if (Date.now() - t0 < 9000) nvSyncTimer = setTimeout(poll, 150);
     })();
   }
 
