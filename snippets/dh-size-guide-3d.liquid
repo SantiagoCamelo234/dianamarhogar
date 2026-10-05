@@ -71,6 +71,7 @@
   .g3 .g3-layer.g3-off { opacity: 0; pointer-events: none; }
   .g3 .g3-dim { position: absolute; white-space: nowrap; font-weight: 800; font-size: 15px; color: var(--green); background: rgba(255,255,255,.92); border: 1.5px solid var(--green); border-radius: 999px; padding: 3px 10px; transform: translate(-50%, -50%); font-variant-numeric: tabular-nums; }
   .g3 .g3-dim.g3-h { color: var(--coral-ink); border-color: var(--coral-ink); }
+  @media (max-width: 600px) { .g3 .g3-dim { font-size: 13px; padding: 2px 8px; } }
   .g3 .g3-ruler { position: absolute; background: var(--green); }
   .g3 .g3-ruler.g3-h { background: var(--coral-ink); }
   .g3 .g3-stage-tools { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -299,6 +300,38 @@
     return Math.min(box.width * 0.54, box.height * 0.74) / 210;
   }
 
+  // Acomoda las etiquetas de medidas en pantalla: si una se sale de la escena la mete,
+  // y si dos se tapan, sube la del alto (o baja la otra). Se mueven en el plano de la pantalla.
+  var declutterT;
+  function declutter() {
+    var st = stage.getBoundingClientRect(), pad = 4;
+    var labels = Array.prototype.filter.call($('g3-dims').querySelectorAll('.g3-dim'), function (el) { return el.style.display !== 'none'; });
+    labels.forEach(function (el) {
+      if (!el.hasAttribute('data-base')) el.setAttribute('data-base', el.style.transform);
+      el.style.transform = el.getAttribute('data-base'); el._dx = 0; el._dy = 0;
+    });
+    function move(el, dx, dy) { el._dx += dx; el._dy += dy; el.style.transform = el.getAttribute('data-base') + ' translate(' + el._dx + 'px,' + el._dy + 'px)'; }
+    function inside(el) {
+      var r = el.getBoundingClientRect(), dx = 0, dy = 0;
+      if (r.left < st.left + pad) dx = st.left + pad - r.left; else if (r.right > st.right - pad) dx = st.right - pad - r.right;
+      if (r.top < st.top + pad) dy = st.top + pad - r.top; else if (r.bottom > st.bottom - pad) dy = st.bottom - pad - r.bottom;
+      if (dx || dy) move(el, dx, dy);
+    }
+    for (var pass = 0; pass < 3; pass++) {
+      labels.forEach(inside);
+      for (var i = 0; i < labels.length; i++) for (var j = i + 1; j < labels.length; j++) {
+        var a = labels[i], b = labels[j], ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        var ox = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left), oy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+        if (ox <= 0 || oy <= 0) continue;
+        var mover = b.classList.contains('g3-m-a') ? b : a, other = mover === a ? b : a;
+        var rm = mover.getBoundingClientRect(), ro = other.getBoundingClientRect();
+        var up = ro.top - rm.bottom - 4; // subir hasta quedar encima
+        var down = ro.bottom - rm.top + 4; // o bajar hasta quedar debajo
+        move(mover, 0, (rm.top + up >= st.top + pad) ? up : down);
+      }
+    }
+  }
+
   // Crea una caja con cara superior y 4 lados. dims en px; z = altura de la base.
   function cuboid(el, W, L, H, z, opts) {
     opts = opts || {};
@@ -359,14 +392,23 @@
       ? '<div class="g3-dim g3-h" style="left:0;top:0;background:var(--bad-bg);color:var(--bad);border-color:var(--bad);transform:translate(-50%,-50%) translate(' + (W / 2) + 'px,' + (L / 2 + 4) + 'px) translateZ(' + ((state.h - COMMON) * k / 2) + 'px)' + bill + '">le faltan ' + (state.h - COMMON) + ' cm</div>' : '';
     $('g3-dims').innerHTML = state.layer === 3 ? fundaDims : gap +
       // ancho
-      '<div class="g3-ruler" style="width:' + W + 'px;height:2px;transform:translate(-50%,-50%) translateY(' + (L / 2 + g) + 'px)"></div>' +
-      '<div class="g3-dim" style="left:0;top:0;transform:translate(-50%,-50%) translateY(' + (L / 2 + g) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">' + s.w + ' cm</div>' +
+      '<div class="g3-ruler g3-m-w" style="width:' + W + 'px;height:2px;transform:translate(-50%,-50%) translateY(' + (L / 2 + g) + 'px)"></div>' +
+      '<div class="g3-dim g3-m-w" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + (W * 0.22) + 'px,' + (L / 2 + g) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">' + s.w + ' cm</div>' +
       // largo
-      '<div class="g3-ruler" style="width:2px;height:' + L + 'px;transform:translate(-50%,-50%) translateX(' + (-(W / 2 + g)) + 'px)"></div>' +
-      '<div class="g3-dim" style="left:0;top:0;transform:translate(-50%,-50%) translateX(' + (-(W / 2 + g)) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">' + s.l + ' cm</div>' +
+      '<div class="g3-ruler g3-m-l" style="width:2px;height:' + L + 'px;transform:translate(-50%,-50%) translateX(' + (-(W / 2 + g)) + 'px)"></div>' +
+      '<div class="g3-dim g3-m-l" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + (-(W / 2 + g)) + 'px,' + (-L * 0.22) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">' + s.l + ' cm</div>' +
       // alto
       '<div class="g3-ruler g3-h" style="width:2px;height:' + H + 'px;transform:translate(-50%,-50%) translate(' + (-(W / 2 + g)) + 'px,' + (L / 2 + g) + 'px) translateZ(' + (H / 2) + 'px) rotateX(-90deg)"></div>' +
-      '<div class="g3-dim g3-h" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + (-(W / 2 + g + 6)) + 'px,' + (L / 2 + g + 6) + 'px) translateZ(' + (H + 14) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">alto ' + state.h + ' cm</div>';
+      '<div class="g3-dim g3-h g3-m-a" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + (-(W / 2 + g + 6)) + 'px,' + (L / 2 + g + 6) + 'px) translateZ(' + (H + 14) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">alto ' + state.h + ' cm</div>';
+
+    // Un borde visto de canto (ej. el ancho en la vista "De lado") no se puede leer: se oculta su medida.
+    var rxr = state.rx * Math.PI / 180, rzr = state.rz * Math.PI / 180;
+    var seeW = Math.sqrt(Math.pow(Math.cos(rzr), 2) + Math.pow(Math.sin(rzr) * Math.cos(rxr), 2));
+    var seeL = Math.sqrt(Math.pow(Math.sin(rzr), 2) + Math.pow(Math.cos(rzr) * Math.cos(rxr), 2));
+    $('g3-dims').querySelectorAll('.g3-m-w').forEach(function (el) { el.style.display = seeW < 0.35 ? 'none' : ''; });
+    $('g3-dims').querySelectorAll('.g3-m-l').forEach(function (el) { el.style.display = seeL < 0.35 ? 'none' : ''; });
+    if (window.requestAnimationFrame) requestAnimationFrame(declutter);
+    clearTimeout(declutterT); declutterT = setTimeout(declutter, 500); // al terminar el giro animado
 
     scene.style.setProperty('--rx', state.rx + 'deg');
     scene.style.setProperty('--rz', state.rz + 'deg');
