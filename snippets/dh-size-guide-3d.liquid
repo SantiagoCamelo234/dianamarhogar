@@ -141,6 +141,7 @@
   @media (prefers-reduced-motion: reduce) { .g3 .g3-scene, .g3 .g3-layer { transition: none; } }
   .g3 .g3-table { margin-top: 18px; }
   .g3 .g3-table summary { cursor: pointer; font-weight: 700; color: var(--coral-ink); min-height: 44px; display: flex; align-items: center; justify-content: center; }
+  .g3 [hidden] { display: none !important; }
 </style>
 <div class="g3">
 <div class="g3-tool">
@@ -180,7 +181,8 @@
         <p class="g3-ideal" id="g3-ideal">Ideal para dos personas.</p>
       </div>
 
-      <div class="g3-card">
+      {%- comment -%} Ocultas a pedido: alto del colchón, comparación, capas, color y calculadora. {%- endcomment -%}
+      <div class="g3-card" hidden>
         <h2>2. ¿Qué tan alto es tu colchón? <small>(mide del piso del colchón a la parte de arriba)</small></h2>
         <div class="g3-range-row">
           <input type="range" id="g3-height" min="10" max="{{ pocket }}" step="1" value="{{ pocket }}" aria-label="Alto de tu colchón en centímetros">
@@ -209,7 +211,7 @@
         </div>
       </div>
 
-      <div class="g3-card">
+      <div class="g3-card" hidden>
         <h2>3. Mira el juego puesto</h2>
         <div class="g3-layers" role="group" aria-label="Qué mostrar">
           <button type="button" class="g3-chip" data-layer="0" aria-pressed="false">Solo colchón</button>
@@ -221,7 +223,7 @@
         <div class="g3-swatches" id="g3-swatches" role="group" aria-label="Color de la sábana"></div>
       </div>
 
-      <div class="g3-card">
+      <div class="g3-card" hidden>
         <h2>¿No sabes tu tamaño? <small>Mide tu colchón</small></h2>
         <form class="g3-calc" id="g3-calc" novalidate>
           <label for="g3-cw">Ancho (cm)<input id="g3-cw" type="number" inputmode="numeric" min="60" max="230" placeholder="Ej. 140"></label>
