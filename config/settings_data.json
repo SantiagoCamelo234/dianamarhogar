@@ -336,7 +336,10 @@
           "show_g3": true,
           "g3_brand": "Bali",
           "g3_common": 30,
-          "g3_funda": "55 × 75 cm"
+          "g3_funda": "55 × 75 cm",
+          "title_source": "product",
+          "perks": "Envío gratis | Pagas al recibir | Llega en 2 a 5 días",
+          "bundles_in_hero": true
         }
       },
       "template-cart": {
