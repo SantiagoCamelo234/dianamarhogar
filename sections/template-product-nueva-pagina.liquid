@@ -673,8 +673,9 @@
         <div class="nv-head">
           <span class="nv-eyebrow">Guía de medidas</span>
           <h2>{{ s.size_guide_title }}</h2>
-          <p>Mide el ancho, el largo y el alto de tu colchón y elige el tamaño que corresponde.</p>
+          <p>{% if s.show_g3 %}Elige un tamaño, gira la cama y mira cómo queda la sábana en tu colchón.{% else %}Mide el ancho, el largo y el alto de tu colchón y elige el tamaño que corresponde.{% endif %}</p>
         </div>
+        {%- capture tabla_html -%}
         <div class="nv-table-box">
           <table class="nv-size-table">
             <thead><tr><th>Tamaño</th><th>Colchón (ancho × largo)</th>{% if s.size_height != blank %}<th>Alto</th>{% endif %}<th>Fundas incluidas</th></tr></thead>
@@ -690,6 +691,12 @@
             </tbody>
           </table>
         </div>
+        {%- endcapture -%}
+        {%- if s.show_g3 -%}
+          {% render 'dh-size-guide-3d', s: s, product: product, table: tabla_html %}
+        {%- else -%}
+          {{ tabla_html }}
+        {%- endif -%}
       </div>
     </section>
   {% elsif s.size_guide_image != blank %}
@@ -1961,6 +1968,35 @@
       "label": "Alto (igual para todos los tamaños)",
       "default": "35 cm",
       "info": "Déjalo vacío para ocultar la columna."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_g3",
+      "label": "Mostrar la guía interactiva en 3D",
+      "default": true,
+      "info": "La tabla queda debajo, en \"Ver tabla de medidas\"."
+    },
+    {
+      "type": "text",
+      "id": "g3_brand",
+      "label": "Nombre de tu sábana en la comparación",
+      "default": "Bali"
+    },
+    {
+      "type": "range",
+      "id": "g3_common",
+      "label": "Fuelle de una sábana común",
+      "min": 20,
+      "max": 34,
+      "step": 1,
+      "unit": "cm",
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "g3_funda",
+      "label": "Medida de las fundas",
+      "default": "55 × 75 cm"
     },
     {
       "type": "text",

@@ -1,0 +1,487 @@
+{%- comment -%}
+  Guía de medidas en 3D (cama que cambia de tamaño, alto del colchón contra el fuelle,
+  comparación con una sábana común, juego puesto y fundas con sus medidas).
+  Uso: {% render 'dh-size-guide-3d', s: section.settings, product: product, table: tabla_html %}
+  Datos: tamaños y medidas de "Guía de medidas" (size_N_name / size_N_measure / size_N_cases),
+  fuelle de "Alto" (size_height). Colores: variantes de color del producto.
+{%- endcomment -%}
+{%- liquid
+  assign pocket = s.size_height | remove: 'cm' | strip | plus: 0
+  if pocket == 0
+    assign pocket = 35
+  endif
+  assign common = s.g3_common | default: 30
+  assign brand = s.g3_brand | default: 'Bali'
+  assign funda = s.g3_funda | default: '55 × 75 cm'
+  assign funda_nums = funda | replace: '×', 'x' | replace: 'X', 'x' | remove: 'cm' | split: 'x'
+-%}
+<style>
+  .g3 {
+    font-family: var(--sans); color: var(--ink);
+    color-scheme: light;
+    --ground: #FFFBF9;
+    --blush: #FCEFEC;
+    --blush-2: #FFF4F1;
+    --ink: #2B2B2B;
+    --text: #4A3F3D;
+    --muted: #6B5E5B;
+    --line: #EFDDD8;
+    --line-2: #E2C9C3;
+    --coral: #E8746A;
+    --coral-ink: #B8473D;
+    --green: #3D4F45;
+    --ok: #2E7D32;
+    --ok-bg: #E8F3E9;
+    --warn: #8A5A00;
+    --warn-bg: #FFF4D6;
+    --bad: #A3262F;
+    --bad-bg: #FFE9EA;
+    --serif: 'Young Serif', Georgia, 'Times New Roman', serif;
+    --sans: 'Figtree', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --sheet: #E7B7B0;
+  }
+  .g3 .tool { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .g3 .tool { grid-template-columns: 1fr; } }
+  .g3 .stage-card { background: linear-gradient(180deg, #FFF 0%, var(--blush-2) 100%); border: 1px solid var(--line); border-radius: 20px; padding: 14px; display: grid; gap: 10px; position: relative; }
+  .g3 .stage { position: relative; height: 440px; perspective: 1400px; perspective-origin: 50% 35%; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; border-radius: 14px; outline: none; overflow: hidden; }
+  .g3 .stage:focus-visible { box-shadow: 0 0 0 3px var(--coral); }
+  .g3 .stage.dragging { cursor: grabbing; }
+  @media (max-width: 860px) { .g3 .stage { height: 340px; } }
+  .g3 .scene { position: absolute; left: 50%; top: 52%; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(var(--rx)) rotateZ(var(--rz)); transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+  .g3 .stage.dragging .scene { transition: none; }
+  .g3 .box { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+  .g3 .face { position: absolute; left: 0; top: 0; backface-visibility: visible; }
+  .g3 .floor { position: absolute; left: 0; top: 0; border-radius: 30px; background: radial-gradient(ellipse at center, rgba(61,79,69,.22), rgba(61,79,69,0) 70%); filter: blur(6px); }
+  .g3 .mattress .top { background-color: #FBF8F4; background-image:
+      radial-gradient(circle at 50% 50%, rgba(160,140,130,.18) 0 1.6px, transparent 2.2px),
+      linear-gradient(0deg, rgba(0,0,0,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,.025) 1px, transparent 1px);
+    background-size: 22px 22px, 22px 22px, 22px 22px; border-radius: 6px; box-shadow: inset 0 0 0 2px #E9E1D9; }
+  .g3 .mattress .side { background: linear-gradient(180deg, #F2ECE6 0%, #E6DDD4 100%); box-shadow: inset 0 2px 0 #FFFFFF, inset 0 -2px 0 #D8CCC1; }
+  .g3 .mattress .side::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed rgba(120,100,90,.35); }
+  .g3 .fitted .top { background: var(--sheet); border-radius: 7px; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 10px, rgba(255,255,255,0) 10px 22px); }
+  .g3 .fitted .side { background: var(--sheet); background-image: linear-gradient(180deg, rgba(255,255,255,.12), rgba(0,0,0,.10)); }
+  .g3 .fitted .side::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 3px, rgba(0,0,0,.05) 3px 6px); border-radius: 0 0 3px 3px; }
+  .g3 .flat .top { background: var(--sheet); filter: brightness(1.04); border-radius: 4px; box-shadow: inset 0 18px 0 rgba(255,255,255,.35); }
+  .g3 .flat .side { background: var(--sheet); filter: brightness(.94); }
+  .g3 .pillow .top { background: var(--sheet); filter: brightness(1.08); border-radius: 14px; box-shadow: inset 0 0 0 3px rgba(255,255,255,.35), inset 0 -6px 12px rgba(0,0,0,.06); }
+  .g3 .pillow .side { background: var(--sheet); filter: brightness(.95); border-radius: 6px; }
+  .g3 .layer { transition: opacity .35s ease, transform .45s cubic-bezier(.2,.7,.2,1); }
+  .g3 .layer.off { opacity: 0; pointer-events: none; }
+  .g3 .dim { position: absolute; white-space: nowrap; font-weight: 800; font-size: 15px; color: var(--green); background: rgba(255,255,255,.92); border: 1.5px solid var(--green); border-radius: 999px; padding: 3px 10px; transform: translate(-50%, -50%); font-variant-numeric: tabular-nums; }
+  .g3 .dim.h { color: var(--coral-ink); border-color: var(--coral-ink); }
+  .g3 .ruler { position: absolute; background: var(--green); }
+  .g3 .ruler.h { background: var(--coral-ink); }
+  .g3 .stage-tools { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .g3 .hint { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .g3 .views { display: flex; gap: 6px; }
+  .g3 .chip { font: inherit; font-size: 14px; font-weight: 700; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line-2); background: #fff; color: var(--ink); cursor: pointer; }
+  .g3 .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .g3 .chip:focus-visible, .g3 .size:focus-visible, .g3 .sw:focus-visible, .g3 input:focus-visible { outline: 3px solid var(--coral); outline-offset: 2px; }
+  .g3 .badge { position: absolute; top: 24px; left: 24px; z-index: 2; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; display: grid; gap: 2px; box-shadow: 0 6px 18px rgba(43,43,43,.06); }
+  .g3 .badge strong { font-family: var(--serif); font-weight: 400; font-size: 22px; }
+  .g3 .badge span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .g3 .panel { display: grid; gap: 14px; }
+  .g3 .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; gap: 12px; }
+  .g3 .card h2 { margin: 0; font-size: 16px; font-weight: 800; }
+  .g3 .card h2 small { font-weight: 500; color: var(--muted); font-size: 13px; }
+  .g3 .sizes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  @media (max-width: 420px) { .g3 .sizes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .g3 .size { font: inherit; cursor: pointer; border: 1.5px solid var(--line-2); background: #fff; border-radius: 12px; padding: 8px 4px; display: grid; gap: 1px; text-align: center; color: var(--ink); }
+  .g3 .size b { font-size: 14px; }
+  .g3 .size span { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .g3 .size[aria-pressed="true"] { border-color: var(--coral-ink); background: var(--blush-2); box-shadow: inset 0 0 0 1px var(--coral-ink); }
+  .g3 .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .g3 .fact { background: var(--blush-2); border-radius: 12px; padding: 10px; display: grid; gap: 2px; }
+  .g3 .fact span { font-size: 12px; color: var(--muted); }
+  .g3 .fact b { font-size: 17px; font-variant-numeric: tabular-nums; }
+  .g3 .ideal { font-size: 14px; color: var(--text); margin: 0; }
+  .g3 .range-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; }
+  .g3 input[type="range"] { width: 100%; accent-color: var(--coral-ink); height: 28px; }
+  .g3 .hval { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; min-width: 72px; text-align: right; }
+  .g3 .meter { position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, #C9B9B4 0 80%, var(--ok) 80% 100%); }
+  .g3 .meter i { position: absolute; top: -5px; width: 4px; height: 20px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); }
+  .g3 .meter-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .g3 .status { border-radius: 12px; padding: 10px 12px; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: flex-start; }
+  .g3 .status.ok { background: var(--ok-bg); color: #1F5E23; }
+  .g3 .status.warn { background: var(--warn-bg); color: var(--warn); }
+  .g3 .status.bad { background: var(--bad-bg); color: var(--bad); }
+  .g3 .vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 420px) { .g3 .vs { grid-template-columns: 1fr; } }
+  .g3 .vs-card { border-radius: 14px; padding: 12px; display: grid; gap: 6px; align-content: start; border: 1.5px solid var(--line); background: #FAF7F6; }
+  .g3 .vs-card h3 { margin: 0; font-size: 14px; font-weight: 800; display: grid; gap: 1px; }
+  .g3 .vs-card h3 small { font-weight: 600; color: var(--muted); font-size: 12px; }
+  .g3 .vs-card p { margin: 0; font-size: 14px; line-height: 1.45; }
+  .g3 .vs-icon { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+  .g3 .vs-card.common .vs-icon { background: var(--bad-bg); color: var(--bad); }
+  .g3 .vs-card.common.meh .vs-icon { background: var(--warn-bg); color: var(--warn); }
+  .g3 .vs-card.ours { border-color: var(--ok); background: var(--ok-bg); }
+  .g3 .vs-card.ours .vs-icon { background: var(--ok); color: #fff; }
+  .g3 .vs-card.ours h3 { color: #1F5E23; }
+  .g3 .vs-why { margin: 0; font-size: 13px; color: var(--text); }
+  .g3 .cta { display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 12px; background: var(--ok); color: #fff; font-weight: 800; font-size: 16px; text-decoration: none; box-shadow: 0 8px 20px rgba(46,125,50,.25); }
+  .g3 .cta:focus-visible { outline: 3px solid var(--coral); outline-offset: 2px; }
+  .g3 .sheet-type { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--muted); }
+  .g3 .fitted.common .top, .g3 .fitted.common .side { filter: saturate(.55) brightness(.97); }
+  .g3 .layers { display: flex; gap: 6px; flex-wrap: wrap; }
+  .g3 .color-label { font-size: 14px; font-weight: 700; margin: 0; }
+  .g3 .color-label span { color: var(--coral-ink); }
+  .g3 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 10px 4px; }
+  .g3 .sw { font: inherit; background: transparent; border: 0; padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--text); }
+  .g3 .sw i { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--line-2); display: block; }
+  .g3 .sw small { font-size: 11px; line-height: 1.15; text-align: center; }
+  .g3 .sw[aria-pressed="true"] i { box-shadow: 0 0 0 2.5px var(--coral-ink); }
+  .g3 .sw[aria-pressed="true"] small { color: var(--ink); font-weight: 700; }
+  .g3 .calc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; gap: 8px; align-items: end; }
+  .g3 .calc label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+  .g3 .calc input { font: inherit; font-size: 16px; min-height: 44px; padding: 0 10px; border: 1.5px solid var(--line-2); border-radius: 10px; width: 100%; font-variant-numeric: tabular-nums; }
+  .g3 .btn { font: inherit; font-weight: 800; min-height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: var(--ok); color: #fff; cursor: pointer; }
+  .g3 .result { margin: 0; font-size: 14px; color: var(--text); min-height: 1.5em; }
+  .g3 .result b { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) { .g3 .scene, .g3 .layer { transition: none; } }
+  .g3 .g3-table { margin-top: 18px; }
+  .g3 .g3-table summary { cursor: pointer; font-weight: 700; color: var(--coral-ink); min-height: 44px; display: flex; align-items: center; justify-content: center; }
+</style>
+<div class="g3">
+<div class="tool">
+    <!-- Escena -->
+    <div class="stage-card">
+      <div class="badge" aria-live="polite"><strong id="g3-b-name">Doble</strong><span id="g3-b-dims">140 × 190 cm · alto 25 cm</span></div>
+      <div class="stage" id="g3-stage" tabindex="0" role="img" aria-label="Cama en 3D. Arrastra para girarla o usa las flechas del teclado.">
+        <div class="scene" id="g3-scene">
+          <div class="floor" id="g3-floor"></div>
+          <div class="box mattress" id="g3-mattress"></div>
+          <div class="box layer fitted" id="g3-fitted"></div>
+          <div class="box layer flat" id="g3-flat"></div>
+          <div class="box layer pillows" id="g3-pillows"></div>
+          <div class="box" id="g3-dims"></div>
+        </div>
+      </div>
+      <div class="stage-tools">
+        <span class="hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Arrastra para girar</span>
+        <div class="views" role="group" aria-label="Vista">
+          <button type="button" class="chip" data-view="3d" aria-pressed="true">3D</button>
+          <button type="button" class="chip" data-view="top" aria-pressed="false">Desde arriba</button>
+          <button type="button" class="chip" data-view="side" aria-pressed="false">De lado</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel -->
+    <div class="panel">
+      <div class="card">
+        <h2>1. Elige el tamaño</h2>
+        <div class="sizes" id="g3-sizes" role="group" aria-label="Tamaño"></div>
+        <div class="facts">
+          <div class="fact"><span>Colchón</span><b id="g3-f-dims">140 × 190</b></div>
+          <div class="fact"><span>Fuelle</span><b>{{ pocket }} cm</b></div>
+          <div class="fact"><span>Fundas ({{ funda }})</span><b id="g3-f-cases">2</b></div>
+        </div>
+        <p class="ideal" id="g3-ideal">Ideal para dos personas.</p>
+      </div>
+
+      <div class="card">
+        <h2>2. ¿Qué tan alto es tu colchón? <small>(mide del piso del colchón a la parte de arriba)</small></h2>
+        <div class="range-row">
+          <input type="range" id="g3-height" min="10" max="{{ pocket }}" step="1" value="25" aria-label="Alto de tu colchón en centímetros">
+          <span class="hval" id="g3-hval">25 cm</span>
+        </div>
+        <div>
+          <div class="meter" aria-hidden="true"><i id="g3-mark" style="left: 60%"></i></div>
+          <div class="meter-scale" aria-hidden="true"><span>10</span><span>15</span><span>20</span><span>25</span><span>{{ common }} · común</span><span>{{ pocket }} · {{ brand }}</span></div>
+        </div>
+        <div class="vs" aria-live="polite">
+          <div class="vs-card common" id="g3-vs-common">
+            <h3>Sábana común <small>fuelle hasta {{ common }} cm</small></h3>
+            <span class="vs-icon" id="g3-vs-common-icon">!</span>
+            <p id="g3-vs-common-text">Queda justa: con el movimiento se sale de las esquinas.</p>
+          </div>
+          <div class="vs-card ours" id="g3-vs-ours">
+            <h3>Sábana {{ brand }} <small>fuelle de {{ pocket }} cm</small></h3>
+            <span class="vs-icon">✓</span>
+            <p id="g3-vs-ours-text">Sobran 10 cm de tela para meterla por debajo: no se sale.</p>
+          </div>
+        </div>
+        <p class="vs-why">Fuelle de {{ pocket }} cm y elástico reforzado en todo el borde: abraza el colchón y se queda en su lugar toda la noche.</p>
+        <div class="sheet-type" role="group" aria-label="Ver en la cama">Ver en la cama:
+          <button type="button" class="chip" data-sheet="dh" aria-pressed="true">Sábana {{ brand }}</button>
+          <button type="button" class="chip" data-sheet="common" aria-pressed="false">Sábana común</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3. Mira el juego puesto</h2>
+        <div class="layers" role="group" aria-label="Qué mostrar">
+          <button type="button" class="chip" data-layer="0" aria-pressed="false">Solo colchón</button>
+          <button type="button" class="chip" data-layer="1" aria-pressed="false">+ Sábana ajustable</button>
+          <button type="button" class="chip" data-layer="2" aria-pressed="true">+ Sobresábana y fundas</button>
+          <button type="button" class="chip" data-layer="3" aria-pressed="false">Solo fundas · medidas</button>
+        </div>
+        <p class="color-label">Color: <span id="g3-color-name">Palo de rosa</span></p>
+        <div class="swatches" id="g3-swatches" role="group" aria-label="Color de la sábana"></div>
+      </div>
+
+      <div class="card">
+        <h2>¿No sabes tu tamaño? <small>Mide tu colchón</small></h2>
+        <form class="calc" id="g3-calc" novalidate>
+          <label for="g3-cw">Ancho (cm)<input id="g3-cw" type="number" inputmode="numeric" min="60" max="230" placeholder="Ej. 140"></label>
+          <label for="g3-cl">Largo (cm)<input id="g3-cl" type="number" inputmode="numeric" min="150" max="230" placeholder="Ej. 190"></label>
+          <button type="submit" class="btn">Ver</button>
+        </form>
+        <p class="result" id="g3-result" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+  <details class="g3-table">
+    <summary>Ver tabla de medidas</summary>
+    {{ table }}
+  </details>
+</div>
+<script>
+  window.G3_DATA = {
+    pocket: {{ pocket | json }},
+    common: {{ common | json }},
+    funda: {{ funda | json }},
+    fundaW: {{ funda_nums[1] | strip | plus: 0 | json }},
+    fundaL: {{ funda_nums[0] | strip | plus: 0 | json }},
+    sizes: [
+      {%- for i in (1..6) -%}
+        {%- assign zn = 'size_' | append: i | append: '_name' -%}
+        {%- assign zm = 'size_' | append: i | append: '_measure' -%}
+        {%- assign zf = 'size_' | append: i | append: '_cases' -%}
+        {%- if s[zn] != blank -%}
+          {%- assign nums = s[zm] | replace: '×', 'x' | replace: 'X', 'x' | remove: 'cm' | split: 'x' -%}
+          { "name": {{ s[zn] | json }}, "w": {{ nums[0] | strip | plus: 0 }}, "l": {{ nums[1] | strip | plus: 0 }}, "cases": {{ s[zf] | split: ' ' | first | plus: 0 | at_least: 1 }} },
+        {%- endif -%}
+      {%- endfor -%}
+    ].filter(function (x) { return x.w > 0 && x.l > 0; }),
+    colors: [
+      {%- for option in product.options_with_values -%}
+        {%- assign on = option.name | downcase -%}
+        {%- if on contains 'color' or on contains 'colour' -%}
+          {%- for v in option.values -%}{{ v | json }},{%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    ]
+  };
+  (function () {
+    var HEX = { 'gris plata': '#C9CCD1', 'gris': '#C9CCD1', 'gris oscuro': '#5A5D63', 'azul bebe': '#B9D6EE', 'negro': '#1E1E1E', 'azul oscuro': '#1F2B4A', 'blanco': '#F4F2EE', 'verde manzana': '#A8D672', 'lila': '#C8B6DD', 'palo de rosa': '#E7B7B0', 'azul indigo': '#3E4C8A', 'beige': '#E6D5BC' };
+    var norm = function (t) { return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim(); };
+    var IDEAL = { sencilla: 'Ideal para una persona o cuarto juvenil.', semidoble: 'Para una persona que quiere más espacio.', doble: 'Ideal para dos personas.', queen: 'Dos personas con espacio de sobra.', king: 'La más amplia: dos personas y hasta los niños.' };
+    var d = window.G3_DATA;
+    d.sizes.forEach(function (s) { s.ideal = IDEAL[norm(s.name)] || ''; });
+    var cols = d.colors.map(function (n) { return [n, HEX[norm(n)] || '#E7B7B0']; });
+    d.colors = cols.length ? cols : [['Palo de rosa', '#E7B7B0'], ['Gris Plata', '#C9CCD1'], ['Beige', '#E6D5BC'], ['Azul Bebé', '#B9D6EE'], ['Blanco', '#F4F2EE']];
+    // El primer color de la lista es el que se muestra al cargar
+    document.querySelector('.g3').style.setProperty('--sheet', d.colors[0][1]);
+    var cn = document.getElementById('g3-color-name'); if (cn) cn.textContent = d.colors[0][0];
+  })();
+
+(function () {
+  var root = document.querySelector('.g3');
+  if (!root || !window.G3_DATA || !window.G3_DATA.sizes.length) return;
+  var SIZES = (window.G3_DATA && window.G3_DATA.sizes) || [];
+  var COLORS = (window.G3_DATA && window.G3_DATA.colors) || [];
+  var POCKET = window.G3_DATA.pocket || 35;
+  var COMMON = window.G3_DATA.common || 30; // fuelle típico de una sábana común
+  var state = { size: Math.max(0, SIZES.findIndex(function (s) { return /doble/i.test(s.name) && !/semi/i.test(s.name); })), h: 25, layer: 2, rx: 58, rz: -32, sheet: 'dh' };
+  var VIEWS = { '3d': [58, -32], top: [8, 0], side: [84, -90] };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var stage = $('g3-stage'), scene = $('g3-scene');
+
+  function scaleFor() {
+    // cm → px: la King (200 cm) siempre cabe en la escena
+    var box = stage.getBoundingClientRect();
+    return Math.min(box.width * 0.54, box.height * 0.74) / 210;
+  }
+
+  // Crea una caja con cara superior y 4 lados. dims en px; z = altura de la base.
+  function cuboid(el, W, L, H, z, opts) {
+    opts = opts || {};
+    var faces = [];
+    var top = '<div class="face top" style="width:' + W + 'px;height:' + L + 'px;transform:translate(-50%,-50%) translateZ(' + (z + H) + 'px)"></div>';
+    faces.push(top);
+    if (H > 0.5) {
+      faces.push('<div class="face side" style="width:' + W + 'px;height:' + H + 'px;transform:translate(-50%,-50%) translateY(' + (L / 2) + 'px) translateZ(' + (z + H / 2) + 'px) rotateX(-90deg)"></div>');
+      faces.push('<div class="face side" style="width:' + W + 'px;height:' + H + 'px;transform:translate(-50%,-50%) translateY(' + (-L / 2) + 'px) translateZ(' + (z + H / 2) + 'px) rotateX(-90deg) rotateY(180deg)"></div>');
+      faces.push('<div class="face side" style="width:' + L + 'px;height:' + H + 'px;transform:translate(-50%,-50%) translateX(' + (W / 2) + 'px) translateZ(' + (z + H / 2) + 'px) rotateZ(90deg) rotateX(-90deg)"></div>');
+      faces.push('<div class="face side" style="width:' + L + 'px;height:' + H + 'px;transform:translate(-50%,-50%) translateX(' + (-W / 2) + 'px) translateZ(' + (z + H / 2) + 'px) rotateZ(-90deg) rotateX(-90deg)"></div>');
+    }
+    return faces.join('');
+  }
+
+  function render() {
+    var s = SIZES[state.size];
+    var k = scaleFor();
+    var W = s.w * k, L = s.l * k, H = state.h * k;
+    var off = 0.8 * k; // la tela queda apenas por fuera del colchón
+
+    $('g3-floor').style.cssText = 'width:' + (W + 60) + 'px;height:' + (L + 60) + 'px;transform:translate(-50%,-50%) translateZ(-1px)';
+    $('g3-mattress').innerHTML = cuboid(null, W, L, H, 0);
+
+    // Sábana ajustable: cubre la parte de arriba y baja por los lados hasta el fuelle (35 cm)
+    var pocket = state.sheet === 'common' ? COMMON : POCKET;
+    var cover = Math.min(state.h, pocket) * k;
+    $('g3-fitted').classList.toggle('common', state.sheet === 'common');
+    $('g3-fitted').innerHTML = cuboid(null, W + off * 2, L + off * 2, cover, H - cover + off * 0.6);
+
+    // Sobresábana: arriba, desde los pies hasta antes de las almohadas, cae un poco por los lados
+    var flatL = L - 66 * k, drop = Math.min(18 * k, H * 0.8);
+    $('g3-flat').innerHTML = '<div class="box" style="transform:translateY(' + (33 * k) + 'px)">' + cuboid(null, W + off * 6, flatL, drop, H + off - drop + 1.4 * k) + '</div>';
+
+    // Almohadas (una en Sencilla)
+    // Fundas a tamaño real: 75 cm de ancho × 55 cm de fondo. Si dos no caben a lo ancho, se montan un poco (como en una cama real).
+    var FW = window.G3_DATA.fundaW || 75, FL = window.G3_DATA.fundaL || 55;
+    var pw = FW * k, pl = FL * k, ph = 11 * k;
+    var baseZ = H + (state.layer === 3 ? 0 : off * 2);
+    var y = -L / 2 + pl / 2 + 6 * k;
+    var dx = Math.min((FW + 4) / 2, (s.w - FW) / 2) * k;
+    var pil = s.cases === 1
+      ? '<div class="box pillow" style="transform:translateY(' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ) + '</div>'
+      : '<div class="box pillow" style="transform:translate(' + (-dx) + 'px,' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ) + '</div>' +
+        '<div class="box pillow" style="transform:translate(' + dx + 'px,' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ + 2 * k) + '</div>';
+    $('g3-pillows').innerHTML = pil;
+
+    // Medidas: ancho (frente), largo (lado derecho) y alto (esquina)
+    var g = 22; // separación de las reglas
+    var bill = ' rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)';
+    var px0 = s.cases === 1 ? 0 : -dx; // funda de la izquierda
+    var fundaDims =
+      '<div class="ruler h" style="width:' + pw + 'px;height:2px;transform:translate(-50%,-50%) translate(' + px0 + 'px,' + (y + pl / 2 + 10) + 'px) translateZ(' + (baseZ + ph) + 'px)"></div>' +
+      '<div class="dim h" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + px0 + 'px,' + (y + pl / 2 + 10) + 'px) translateZ(' + (baseZ + ph + 4) + 'px)' + bill + '">' + FW + ' cm</div>' +
+      '<div class="ruler h" style="width:2px;height:' + pl + 'px;transform:translate(-50%,-50%) translate(' + (px0 - pw / 2 - 10) + 'px,' + y + 'px) translateZ(' + (baseZ + ph) + 'px)"></div>' +
+      '<div class="dim h" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + (px0 - pw / 2 - 10) + 'px,' + y + 'px) translateZ(' + (baseZ + ph + 4) + 'px)' + bill + '">' + FL + ' cm</div>';
+    var gap = (state.sheet === 'common' && state.layer === 1 && state.h > COMMON)
+      ? '<div class="dim h" style="left:0;top:0;background:var(--bad-bg);color:var(--bad);border-color:var(--bad);transform:translate(-50%,-50%) translate(' + (W / 2) + 'px,' + (L / 2 + 4) + 'px) translateZ(' + ((state.h - COMMON) * k / 2) + 'px)' + bill + '">le faltan ' + (state.h - COMMON) + ' cm</div>' : '';
+    $('g3-dims').innerHTML = state.layer === 3 ? fundaDims : gap +
+      // ancho
+      '<div class="ruler" style="width:' + W + 'px;height:2px;transform:translate(-50%,-50%) translateY(' + (L / 2 + g) + 'px)"></div>' +
+      '<div class="dim" style="left:0;top:0;transform:translate(-50%,-50%) translateY(' + (L / 2 + g) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">' + s.w + ' cm</div>' +
+      // largo
+      '<div class="ruler" style="width:2px;height:' + L + 'px;transform:translate(-50%,-50%) translateX(' + (-(W / 2 + g)) + 'px)"></div>' +
+      '<div class="dim" style="left:0;top:0;transform:translate(-50%,-50%) translateX(' + (-(W / 2 + g)) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">' + s.l + ' cm</div>' +
+      // alto
+      '<div class="ruler h" style="width:2px;height:' + H + 'px;transform:translate(-50%,-50%) translate(' + (-(W / 2 + g)) + 'px,' + (L / 2 + g) + 'px) translateZ(' + (H / 2) + 'px) rotateX(-90deg)"></div>' +
+      '<div class="dim h" style="left:0;top:0;transform:translate(-50%,-50%) translate(' + (-(W / 2 + g + 6)) + 'px,' + (L / 2 + g + 6) + 'px) translateZ(' + (H + 14) + 'px) rotateZ(' + (-state.rz) + 'deg) rotateX(' + (-state.rx) + 'deg)">alto ' + state.h + ' cm</div>';
+
+    scene.style.setProperty('--rx', state.rx + 'deg');
+    scene.style.setProperty('--rz', state.rz + 'deg');
+
+    $('g3-fitted').classList.toggle('off', state.layer < 1);
+    $('g3-flat').classList.toggle('off', state.layer < 2);
+    $('g3-pillows').classList.toggle('off', state.layer < 2);
+    if (state.layer === 3) { $('g3-fitted').classList.add('off'); $('g3-flat').classList.add('off'); }
+
+    // Textos
+    $('g3-b-name').textContent = s.name;
+    $('g3-b-dims').textContent = state.layer === 3 ? (s.cases === 1 ? '1 funda' : s.cases + ' fundas') + ' de ' + window.G3_DATA.funda : s.w + ' × ' + s.l + ' cm · alto ' + state.h + ' cm';
+    $('g3-f-dims').textContent = s.w + ' × ' + s.l;
+    $('g3-f-cases').textContent = s.cases === 1 ? '1 funda' : s.cases + ' fundas';
+    $('g3-ideal').textContent = s.ideal;
+    root.querySelectorAll('#g3-sizes .size').forEach(function (b, i) { b.setAttribute('aria-pressed', i === state.size ? 'true' : 'false'); });
+    root.querySelectorAll('[data-layer]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-layer') === state.layer ? 'true' : 'false'); });
+
+    // Alto del colchón vs. fuelle
+    $('g3-hval').textContent = state.h + ' cm';
+    $('g3-mark').style.left = ((state.h - 10) / 25 * 100) + '%';
+    // Comparación: sábana común (30 cm) vs. Bali (35 cm)
+    var c = $('g3-vs-common'), ci = $('g3-vs-common-icon'), ct = $('g3-vs-common-text'), ot = $('g3-vs-ours-text');
+    if (state.h <= COMMON) {
+      c.className = 'vs-card common meh'; ci.textContent = '!';
+      ct.textContent = state.h >= 25 ? 'Queda muy justa: con el movimiento se sale de las esquinas.' : 'Queda justa y con poca tela por debajo: se suelta de las esquinas al moverte.';
+    } else {
+      c.className = 'vs-card common'; ci.textContent = '✕';
+      ct.textContent = 'No alcanza: le faltan ' + (state.h - COMMON) + ' cm y se sale del colchón.';
+    }
+    ot.textContent = state.h < POCKET
+      ? 'Cubre tu colchón de ' + state.h + ' cm y sobran ' + (POCKET - state.h) + ' cm para meterla por debajo: no se sale.'
+      : 'Cubre completo tu colchón de 35 cm gracias al fuelle profundo.';
+    root.querySelectorAll('[data-sheet]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-sheet') === state.sheet ? 'true' : 'false'); });
+  }
+
+  // Botones de tamaño y colores
+  $('g3-sizes').innerHTML = SIZES.map(function (s, i) {
+    return '<button type="button" class="size" data-size="' + i + '" aria-pressed="false"><b>' + s.name + '</b><span>' + s.w + '×' + s.l + '</span></button>';
+  }).join('');
+  $('g3-swatches').innerHTML = COLORS.map(function (c, i) {
+    return '<button type="button" class="sw" data-color="' + c[1] + '" data-name="' + c[0] + '" aria-pressed="' + (i === 0 ? 'true' : 'false') + '"><i style="background:' + c[1] + '" aria-hidden="true"></i><small>' + c[0] + '</small></button>';
+  }).join('');
+
+  root.addEventListener('click', function (e) {
+    var t = e.target.closest('button'); if (!t) return;
+    if (t.hasAttribute('data-size')) {
+      state.size = +t.getAttribute('data-size'); render();
+      // También se elige ese tamaño en la caja de compra
+      var name = SIZES[state.size].name.toLowerCase();
+      var sw = Array.prototype.find.call(document.querySelectorAll('.ls-swatch-size'), function (el) { return (el.getAttribute('data-value') || '').toLowerCase() === name; });
+      if (sw && !sw.classList.contains('active') && typeof window.selectLsVariant === 'function') window.selectLsVariant(sw);
+    }
+    if (t.hasAttribute('data-sheet')) { state.sheet = t.getAttribute('data-sheet'); if (state.layer !== 1) state.layer = 1; render(); }
+    if (t.hasAttribute('data-layer')) {
+      state.layer = +t.getAttribute('data-layer');
+      // En "Solo fundas" la cámara mira más desde arriba para leer las medidas de la funda
+      if (state.layer === 3) { state.rx = 30; state.rz = -12; root.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); }); }
+      render();
+    }
+    if (t.hasAttribute('data-color')) {
+      root.style.setProperty('--sheet', t.getAttribute('data-color'));
+      $('g3-color-name').textContent = t.getAttribute('data-name');
+      root.querySelectorAll('.sw').forEach(function (b) { b.setAttribute('aria-pressed', b === t ? 'true' : 'false'); });
+      if (state.layer === 0) { state.layer = 2; render(); }
+    }
+    if (t.hasAttribute('data-view')) {
+      var v = VIEWS[t.getAttribute('data-view')]; state.rx = v[0]; state.rz = v[1];
+      root.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', b === t ? 'true' : 'false'); });
+      render();
+    }
+  });
+  $('g3-height').addEventListener('input', function (e) { state.h = +e.target.value; render(); });
+
+  // Girar arrastrando (mouse y dedo) y con el teclado
+  var drag = null;
+  stage.addEventListener('pointerdown', function (e) { drag = { x: e.clientX, y: e.clientY, rx: state.rx, rz: state.rz }; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); });
+  stage.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    state.rz = drag.rz + (e.clientX - drag.x) * 0.5;
+    state.rx = Math.max(5, Math.min(86, drag.rx - (e.clientY - drag.y) * 0.35));
+    root.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    render();
+  });
+  function endDrag() { drag = null; stage.classList.remove('dragging'); }
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
+  stage.addEventListener('keydown', function (e) {
+    var step = { ArrowLeft: [0, -10], ArrowRight: [0, 10], ArrowUp: [-6, 0], ArrowDown: [6, 0] }[e.key];
+    if (!step) return; e.preventDefault();
+    state.rx = Math.max(5, Math.min(86, state.rx + step[0])); state.rz += step[1]; render();
+  });
+
+  // Calculadora: medida del colchón → tamaño recomendado
+  $('g3-calc').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var w = +$('g3-cw').value, l = +$('g3-cl').value, out = $('g3-result');
+    if (!w || !l) { out.innerHTML = 'Escribe el <b>ancho</b> y el <b>largo</b> de tu colchón en centímetros.'; return; }
+    if (w > l) { var tmp = w; w = l; l = tmp; }
+    var best = 0, bestD = Infinity;
+    SIZES.forEach(function (s, i) { var d = Math.abs(s.w - w) * 2 + Math.abs(s.l - l); if (d < bestD) { bestD = d; best = i; } });
+    var s = SIZES[best];
+    state.size = best; render();
+    var dw = Math.abs(s.w - w), dl = Math.abs(s.l - l);
+    out.innerHTML = (dw <= 6 && dl <= 8)
+      ? 'Tu colchón de <b>' + w + ' × ' + l + ' cm</b> es <b>' + s.name + '</b> (' + s.w + ' × ' + s.l + ' cm). Ya lo marcamos arriba.'
+      : 'Lo más cercano es <b>' + s.name + '</b> (' + s.w + ' × ' + s.l + ' cm), pero tu medida es diferente. Mídelo otra vez o escríbenos por WhatsApp y te ayudamos.';
+  });
+
+  // Si eligen el tamaño en la caja de compra, la guía lo muestra
+  document.addEventListener('click', function (e) {
+    var sw = e.target.closest && e.target.closest('.ls-swatch-size');
+    if (!sw) return;
+    var i = SIZES.findIndex(function (s) { return s.name.toLowerCase() === (sw.getAttribute('data-value') || '').toLowerCase(); });
+    if (i > -1 && i !== state.size) { state.size = i; render(); }
+  });
+  window.addEventListener('resize', render);
+  render();
+})();
+
+</script>
