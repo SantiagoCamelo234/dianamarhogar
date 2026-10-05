@@ -138,7 +138,27 @@
           "logistics_img_3": "shopify://shop_images/Logo_TCC_svg.png",
           "logistics_img_4": "shopify://shop_images/2001.png",
           "comparison_product_image": "shopify://shop_images/ChatGPT_Image_18_jun_2026_16_57_47.png",
-          "comparison_other_image": "shopify://shop_images/JUEGO-DE-SABANAS-PARA-CAMA-SENCILLA-2.png"
+          "comparison_other_image": "shopify://shop_images/JUEGO-DE-SABANAS-PARA-CAMA-SENCILLA-2.png",
+          "show_g3": true,
+          "size_height": "35 cm",
+          "g3_brand": "Bali",
+          "g3_common": 30,
+          "g3_funda": "55 × 75 cm",
+          "size_1_name": "Sencilla",
+          "size_1_measure": "100 × 190 cm",
+          "size_1_cases": "1 funda",
+          "size_2_name": "Semidoble",
+          "size_2_measure": "120 × 190 cm",
+          "size_2_cases": "2 fundas",
+          "size_3_name": "Doble",
+          "size_3_measure": "140 × 190 cm",
+          "size_3_cases": "2 fundas",
+          "size_4_name": "Queen",
+          "size_4_measure": "160 × 190 cm",
+          "size_4_cases": "2 fundas",
+          "size_5_name": "King",
+          "size_5_measure": "200 × 200 cm",
+          "size_5_cases": "2 fundas"
         }
       },
       "template-product-nueva-pagina": {

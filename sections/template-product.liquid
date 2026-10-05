@@ -781,7 +781,29 @@ color:#166534;
 </div>
 
   <!-- GUIA DE MEDIDAS -->
-  {% if section.settings.size_guide_image != blank %}
+  {%- comment -%}
+    Guía 3D interactiva: solo en productos con opción de tamaño (sábanas).
+    Los demás (fundas, toallas...) siguen mostrando la imagen de la guía.
+  {%- endcomment -%}
+  {%- assign g3_has_size = false -%}
+  {%- for option in product.options -%}
+    {%- assign g3_on = option | downcase -%}
+    {%- if g3_on contains 'tama' or g3_on contains 'talla' or g3_on contains 'size' -%}{%- assign g3_has_size = true -%}{%- endif -%}
+  {%- endfor -%}
+  {% if section.settings.show_g3 and g3_has_size and section.settings.size_1_name != blank %}
+  <div class="ls-wrapper" id="ls-medidas" style="margin-top: 40px;">
+    {% if section.settings.size_guide_title != blank %}
+      <h2 class="ls-section-title" style="margin-bottom: 8px;">{{ section.settings.size_guide_title }}</h2>
+    {% endif %}
+    <p style="text-align: center; color: #666; margin: 0 auto 24px; max-width: 560px;">Elige un tamaño, gira la cama y mira cómo queda la sábana en tu colchón.</p>
+    {%- capture g3_table -%}
+      {%- if section.settings.size_guide_image != blank -%}
+        <img src="{{ section.settings.size_guide_image | image_url: width: 1200 }}" alt="Guía de Medidas" style="display: block; max-width: 100%; height: auto; margin: 10px auto 0; border-radius: 8px;" width="1200" height="800" loading="lazy">
+      {%- endif -%}
+    {%- endcapture -%}
+    {% render 'dh-size-guide-3d', s: section.settings, product: product, table: g3_table %}
+  </div>
+  {% elsif section.settings.size_guide_image != blank %}
   <div class="ls-wrapper" style="margin-top: 40px; text-align: center;">
     {% if section.settings.size_guide_title != blank %}
       <h2 class="ls-section-title">{{ section.settings.size_guide_title }}</h2>
@@ -1973,7 +1995,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_3_product_image",
       "label": "Foto del Producto (Reseña 3)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_4_image",
       "label": "Foto Perfil Reseña 4"
@@ -1992,7 +2015,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_4_product_image",
       "label": "Foto del Producto (Reseña 4)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_5_image",
       "label": "Foto Perfil Reseña 5"
@@ -2011,7 +2035,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_5_product_image",
       "label": "Foto del Producto (Reseña 5)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_6_image",
       "label": "Foto Perfil Reseña 6"
@@ -2030,7 +2055,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_6_product_image",
       "label": "Foto del Producto (Reseña 6)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_7_image",
       "label": "Foto Perfil Reseña 7"
@@ -2049,7 +2075,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_7_product_image",
       "label": "Foto del Producto (Reseña 7)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_8_image",
       "label": "Foto Perfil Reseña 8"
@@ -2068,7 +2095,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_8_product_image",
       "label": "Foto del Producto (Reseña 8)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_9_image",
       "label": "Foto Perfil Reseña 9"
@@ -2087,7 +2115,8 @@ color:#166534;
       "type": "image_picker",
       "id": "review_9_product_image",
       "label": "Foto del Producto (Reseña 9)"
-    }    ,{
+    },
+    {
       "type": "image_picker",
       "id": "review_10_image",
       "label": "Foto Perfil Reseña 10"
@@ -2106,8 +2135,7 @@ color:#166534;
       "type": "image_picker",
       "id": "review_10_product_image",
       "label": "Foto del Producto (Reseña 10)"
-    }
-    ,
+    },
     {
       "type": "header",
       "content": "Guía de Medidas"
@@ -2122,6 +2150,151 @@ color:#166534;
       "type": "image_picker",
       "id": "size_guide_image",
       "label": "Imagen Guía de Medidas"
+    },
+    {
+      "type": "header",
+      "content": "Guía de medidas 3D"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_g3",
+      "label": "Mostrar la guía interactiva en 3D",
+      "default": true,
+      "info": "Solo aparece en productos con opción de tamaño. La imagen de la guía queda debajo, en \"Ver tabla de medidas\"."
+    },
+    {
+      "type": "text",
+      "id": "size_height",
+      "label": "Fuelle (alto que cubre la sábana)",
+      "default": "35 cm"
+    },
+    {
+      "type": "text",
+      "id": "g3_brand",
+      "label": "Nombre de tu sábana en la comparación",
+      "default": "Bali"
+    },
+    {
+      "type": "range",
+      "id": "g3_common",
+      "label": "Fuelle de una sábana común",
+      "min": 20,
+      "max": 34,
+      "step": 1,
+      "unit": "cm",
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "g3_funda",
+      "label": "Medida de las fundas",
+      "default": "55 × 75 cm"
+    },
+    {
+      "type": "text",
+      "id": "size_1_name",
+      "label": "Tamaño 1",
+      "default": "Sencilla",
+      "info": "Escribe el nombre igual que en la variante (ej. Doble)."
+    },
+    {
+      "type": "text",
+      "id": "size_1_measure",
+      "label": "Medida colchón 1 (ancho × largo)",
+      "default": "100 × 190 cm"
+    },
+    {
+      "type": "text",
+      "id": "size_1_cases",
+      "label": "Fundas 1",
+      "default": "1 funda"
+    },
+    {
+      "type": "text",
+      "id": "size_2_name",
+      "label": "Tamaño 2",
+      "default": "Semidoble"
+    },
+    {
+      "type": "text",
+      "id": "size_2_measure",
+      "label": "Medida colchón 2 (ancho × largo)",
+      "default": "120 × 190 cm"
+    },
+    {
+      "type": "text",
+      "id": "size_2_cases",
+      "label": "Fundas 2",
+      "default": "2 fundas"
+    },
+    {
+      "type": "text",
+      "id": "size_3_name",
+      "label": "Tamaño 3",
+      "default": "Doble"
+    },
+    {
+      "type": "text",
+      "id": "size_3_measure",
+      "label": "Medida colchón 3 (ancho × largo)",
+      "default": "140 × 190 cm"
+    },
+    {
+      "type": "text",
+      "id": "size_3_cases",
+      "label": "Fundas 3",
+      "default": "2 fundas"
+    },
+    {
+      "type": "text",
+      "id": "size_4_name",
+      "label": "Tamaño 4",
+      "default": "Queen"
+    },
+    {
+      "type": "text",
+      "id": "size_4_measure",
+      "label": "Medida colchón 4 (ancho × largo)",
+      "default": "160 × 190 cm"
+    },
+    {
+      "type": "text",
+      "id": "size_4_cases",
+      "label": "Fundas 4",
+      "default": "2 fundas"
+    },
+    {
+      "type": "text",
+      "id": "size_5_name",
+      "label": "Tamaño 5",
+      "default": "King"
+    },
+    {
+      "type": "text",
+      "id": "size_5_measure",
+      "label": "Medida colchón 5 (ancho × largo)",
+      "default": "200 × 200 cm"
+    },
+    {
+      "type": "text",
+      "id": "size_5_cases",
+      "label": "Fundas 5",
+      "default": "2 fundas"
+    },
+    {
+      "type": "text",
+      "id": "size_6_name",
+      "label": "Tamaño 6"
+    },
+    {
+      "type": "text",
+      "id": "size_6_measure",
+      "label": "Medida colchón 6 (ancho × largo)"
+    },
+    {
+      "type": "text",
+      "id": "size_6_cases",
+      "label": "Fundas 6"
     },
     {
       "type": "header",
@@ -2315,16 +2488,15 @@ color:#166534;
       "label": "Logo Transportadora 4"
     },
     {
-    "type": "image_picker",
-    "id": "comparison_product_image",
-    "label": "Imagen producto Dianamar"
+      "type": "image_picker",
+      "id": "comparison_product_image",
+      "label": "Imagen producto Dianamar"
     },
     {
       "type": "image_picker",
       "id": "comparison_other_image",
       "label": "Imagen comparación"
     }
-
   ]
 }
 {% endschema %}
