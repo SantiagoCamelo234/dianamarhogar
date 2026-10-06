@@ -166,8 +166,10 @@
   }
   @media (prefers-reduced-motion: reduce) { .nv-sticky { transition: none; } }
   .nv-final .nv-rsi-slot { max-width: 460px; }
-  .nv-wa { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 460px; min-height: 54px; padding: 10px 18px; border-radius: 14px; background: #25D366; color: #fff; font-weight: 800; font-size: 16px; text-decoration: none; box-shadow: 0 8px 20px rgba(37, 211, 102, .25); transition: background .2s; }
-  .nv-wa:hover { background: #1EBE5A; color: #fff; }
+  /* WhatsApp: secundario, de contorno, para no competir con "Realizar pedido" */
+  .nv-wa { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 460px; min-height: 46px; padding: 8px 16px; border-radius: 12px; background: transparent; color: rgba(255, 255, 255, .88); border: 1.5px solid rgba(255, 255, 255, .35); font-weight: 600; font-size: 14.5px; text-decoration: none; transition: border-color .2s, background .2s; }
+  .nv-wa svg { color: #25D366; width: 20px; height: 20px; flex: none; }
+  .nv-wa:hover { border-color: rgba(255, 255, 255, .7); background: rgba(255, 255, 255, .06); color: #fff; }
   .nv-wa:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
   /* Cifras */
