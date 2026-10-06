@@ -37,7 +37,10 @@
   <!-- End Google Tag Manager (noscript) -->
 
   <!-- Incluye la sección del Header -->
-  {% section 'header' %}
+  {%- comment -%} En las páginas de producto no se muestra el encabezado (solo ahí). {%- endcomment -%}
+  {%- unless template.name == 'product' -%}
+    {% section 'header' %}
+  {%- endunless -%}
 
   <!-- Contenido dinámico (cambia dependiendo de la URL visitada) -->
   <main role="main">
