@@ -339,7 +339,10 @@
           "g3_funda": "55 × 75 cm",
           "title_source": "product",
           "perks": "Envío gratis | Pagas al recibir | Llega en 2 a 5 días",
-          "bundles_in_hero": true
+          "bundles_in_hero": true,
+          "whatsapp_number": "573223438327",
+          "whatsapp_label": "¿Dudas? Escríbenos por WhatsApp",
+          "whatsapp_text": "Hola, tengo una pregunta sobre"
         }
       },
       "template-cart": {
