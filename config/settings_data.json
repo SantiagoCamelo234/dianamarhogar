@@ -647,7 +647,10 @@
           "logistics_img_4": "shopify://shop_images/2001.png",
           "final_title": "Esta noche puedes dormir mejor",
           "final_text": "Pídelo ahora, recíbelo en 2 a 5 días hábiles y paga solo cuando llegue a tu puerta.",
-          "final_stock": "Unidades limitadas por color"
+          "final_stock": "Unidades limitadas por color",
+          "whatsapp_number": "573223438327",
+          "whatsapp_label": "¿Dudas? Escríbenos por WhatsApp",
+          "whatsapp_text": "Hola, tengo una pregunta sobre"
         }
       },
       "template-cart": {
