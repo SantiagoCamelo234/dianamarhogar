@@ -1096,17 +1096,30 @@
     return map;
   })();
 
+  /* Portadas del combo: la foto asignada a cada variante en el admin. */
+  function lsComboPortadaIds() {
+    var ids = [];
+    Object.keys(lsFeaturedMediaByColor).forEach(function (color) {
+      lsFeaturedMediaByColor[color].forEach(function (id) { if (ids.indexOf(id) === -1) ids.push(id); });
+    });
+    return ids;
+  }
+
+  /* Combo: al elegir un color se ven su portada, las fotos cuyo "Alt text" contiene ese color
+     (ej. "Sábanas gris oscuro", "Protector gris plata (también va en el combo gris oscuro)")
+     y las fotos sin ningún color del combo (ej. "Detalle protector termosellado"). */
   function lsVisibleMediaIdsForColor(colorValue) {
     var targetColor = lsNormalizeColor(colorValue);
     if (!targetColor) return null;
-    var matchingIds = [];
+    var comboColors = Object.keys(lsFeaturedMediaByColor);
+    var portadaIds = lsComboPortadaIds();
+    var matchingIds = (lsFeaturedMediaByColor[targetColor] || []).slice();
     document.querySelectorAll('#ls-main-gallery .ls-media-item[data-media-id]').forEach(function (item) {
-      if (lsNormalizeColor(item.getAttribute('data-color')) === targetColor) {
-        matchingIds.push(parseInt(item.getAttribute('data-media-id'), 10));
-      }
-    });
-    (lsFeaturedMediaByColor[targetColor] || []).forEach(function (mediaId) {
-      if (matchingIds.indexOf(mediaId) === -1) matchingIds.push(mediaId);
+      var id = parseInt(item.getAttribute('data-media-id'), 10);
+      if (matchingIds.indexOf(id) !== -1 || portadaIds.indexOf(id) !== -1) return;
+      var alt = lsNormalizeColor(item.getAttribute('data-color'));
+      var hasComboColor = comboColors.some(function (c) { return alt.indexOf(c) !== -1; });
+      if (alt.indexOf(targetColor) !== -1 || !hasComboColor) matchingIds.push(id);
     });
     return matchingIds.length ? matchingIds : null;
   }
@@ -1118,11 +1131,13 @@
     var thumbs = document.querySelectorAll('.ls-thumb-wrapper');
 
     if (lsIsInitialGalleryLoad) {
+      /* Combo: al abrir solo se ven las portadas del combo, no las de las sábanas (que también se llaman "portada..."). */
+      var comboPortadaIds = lsComboPortadaIds();
       var portadaIds = [];
       mediaItems.forEach(function (item) {
         var id = parseInt(item.getAttribute('data-media-id'), 10);
         var visibleForColor = !visibleIds || visibleIds.indexOf(id) !== -1;
-        if (visibleForColor && (item.getAttribute('data-filename') || '').indexOf('portada') !== -1) portadaIds.push(id);
+        if (visibleForColor && comboPortadaIds.indexOf(id) !== -1) portadaIds.push(id);
       });
       if (portadaIds.length > 0) visibleIds = portadaIds;
       lsIsInitialGalleryLoad = false;
