@@ -368,16 +368,20 @@
     $('g3-flat').innerHTML = '<div class="g3-box" style="transform:translateY(' + (33 * k) + 'px)">' + cuboid(null, W + off * 6, flatL, drop, H + off - drop + 1.4 * k) + '</div>';
 
     // Almohadas (una en Sencilla)
-    // Fundas a tamaño real: 75 cm de ancho × 55 cm de fondo. Si dos no caben a lo ancho, se montan un poco (como en una cama real).
+    // Fundas a tamaño real: 75 cm de ancho × 55 cm de fondo. Si dos no caben a lo ancho
+    // (Semidoble, Doble), se dibujan un poco más pequeñas y en proporción para que queden lado a lado.
     var FW = window.G3_DATA.fundaW || 75, FL = window.G3_DATA.fundaL || 55;
-    var pw = FW * k, pl = FL * k, ph = 11 * k;
+    var GAP = 4; // cm entre fundas y a cada borde
+    var fitW = s.cases === 1 ? FW : Math.min(FW, (s.w - GAP * 3) / 2);
+    var fit = fitW / FW;
+    var pw = fitW * k, pl = FL * fit * k, ph = 11 * Math.max(fit, 0.8) * k;
     var baseZ = H + (state.layer === 3 ? 0 : off * 2);
     var y = -L / 2 + pl / 2 + 6 * k;
-    var dx = Math.min((FW + 4) / 2, (s.w - FW) / 2) * k;
+    var dx = (fitW + GAP) / 2 * k;
     var pil = s.cases === 1
       ? '<div class="g3-box g3-pillow" style="transform:translateY(' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ) + '</div>'
       : '<div class="g3-box g3-pillow" style="transform:translate(' + (-dx) + 'px,' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ) + '</div>' +
-        '<div class="g3-box g3-pillow" style="transform:translate(' + dx + 'px,' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ + 2 * k) + '</div>';
+        '<div class="g3-box g3-pillow" style="transform:translate(' + dx + 'px,' + y + 'px)">' + cuboid(null, pw, pl, ph, baseZ) + '</div>';
     $('g3-pillows').innerHTML = pil;
 
     // Medidas: ancho (frente), largo (lado derecho) y alto (esquina)
