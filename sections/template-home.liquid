@@ -92,7 +92,7 @@
       <div><strong>{{ s.trust_1_title }}</strong><span>{{ s.trust_1_text }}</span></div>
     </div>
     <div class="dh-trust-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg>
       <div><strong>{{ s.trust_2_title }}</strong><span>{{ s.trust_2_text }}</span></div>
     </div>
     <div class="dh-trust-item">
@@ -250,12 +250,17 @@
 <section class="dh-section" aria-labelledby="dh-pay-title">
   <div class="dh-wrap">
     <div class="dh-head-center">
-      <span class="dh-eyebrow">Compra como prefieras</span>
-      <h2 class="dh-h2" id="dh-pay-title">{{ s.pay_title }}</h2>
+      {%- if s.show_mp -%}
+        <span class="dh-eyebrow">Compra como prefieras</span>
+        <h2 class="dh-h2" id="dh-pay-title">{{ s.pay_title }}</h2>
+      {%- else -%}
+        <span class="dh-eyebrow">Compra sin riesgo</span>
+        <h2 class="dh-h2" id="dh-pay-title">{{ s.pay_title_cod | default: 'Pagas cuando lo recibes' }}</h2>
+      {%- endif -%}
     </div>
-    <div class="dh-pay">
+    <div class="dh-pay"{% unless s.show_mp %} style="grid-template-columns: minmax(0, 620px); justify-content: center;"{% endunless %}>
       <div class="dh-pay-card">
-        <span class="dh-pay-pill">La más elegida</span>
+        {%- if s.show_mp -%}<span class="dh-pay-pill">La más elegida</span>{%- endif -%}
         <h3>Pago contra entrega</h3>
         <p>{{ s.cod_text }}</p>
         <ol style="padding-left: 20px;">
@@ -264,12 +269,14 @@
           <li>Recibes y pagas al transportador</li>
         </ol>
       </div>
+      {%- if s.show_mp -%}
       <div class="dh-pay-card is-mp">
         <span class="dh-pay-pill">Pago anticipado</span>
         <h3>Mercado Pago</h3>
         <p>{{ s.mp_text }}</p>
         {%- if s.mp_benefit != blank -%}<p class="dh-pay-note">{{ s.mp_benefit }}</p>{%- endif -%}
       </div>
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -340,7 +347,7 @@
       "type": "text",
       "id": "hero_proof",
       "label": "Texto de confianza bajo los botones",
-      "default": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago"
+      "default": "4.9/5 en opiniones · Pago contra entrega"
     },
     {
       "type": "header",
@@ -362,13 +369,13 @@
       "type": "text",
       "id": "trust_2_title",
       "label": "2 · Título",
-      "default": "Mercado Pago"
+      "default": "Te llamamos para confirmar"
     },
     {
       "type": "text",
       "id": "trust_2_text",
       "label": "2 · Texto",
-      "default": "Tarjeta o PSE, pago seguro"
+      "default": "Antes de despachar tu pedido"
     },
     {
       "type": "text",
@@ -576,6 +583,19 @@
     {
       "type": "header",
       "content": "Formas de pago"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mp",
+      "label": "Mostrar Mercado Pago",
+      "default": false,
+      "info": "Actívalo cuando Mercado Pago esté configurado en la tienda."
+    },
+    {
+      "type": "text",
+      "id": "pay_title_cod",
+      "label": "Título (solo contra entrega)",
+      "default": "Pagas cuando lo recibes"
     },
     {
       "type": "text",

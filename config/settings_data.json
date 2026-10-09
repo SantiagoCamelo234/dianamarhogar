@@ -176,11 +176,11 @@
         ],
         "settings": {
           "hero_autoplay": 5,
-          "hero_proof": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago",
+          "hero_proof": "4.9/5 en opiniones · Pago contra entrega",
           "trust_1_title": "Pago contra entrega",
           "trust_1_text": "Pagas en efectivo al recibir",
-          "trust_2_title": "Mercado Pago",
-          "trust_2_text": "Tarjeta o PSE, pago seguro",
+          "trust_2_title": "Te llamamos para confirmar",
+          "trust_2_text": "Antes de despachar tu pedido",
           "trust_3_title": "Envío 2 a 5 días",
           "trust_3_text": "A toda Colombia",
           "trust_4_title": "Cambio garantizado",
@@ -222,7 +222,9 @@
           "rating_text": "4.9 de 5",
           "help_title": "¿No sabes qué tamaño elegir?",
           "help_text": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón.",
-          "whatsapp": "+57 322 343 8327"
+          "whatsapp": "+57 322 343 8327",
+          "show_mp": false,
+          "pay_title_cod": "Pagas cuando lo recibes"
         }
       },
       "footer": {
