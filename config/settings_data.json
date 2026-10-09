@@ -24,15 +24,205 @@
       },
       "template-home": {
         "type": "template-home",
+        "blocks": {
+          "review_t3NgXd": {
+            "type": "review",
+            "settings": {
+              "name": "Clienta Dianamar",
+              "text": "Excelente calidad, llegaron rápido y tal cual las fotos."
+            }
+          },
+          "category_DVtyzt": {
+            "type": "category",
+            "settings": {
+              "title": "Fundas",
+              "image": "shopify://shop_images/negro_1b3d8b39-b28c-4c31-98c6-a04c8f3dee3f.png",
+              "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
+              "link": ""
+            }
+          },
+          "category_6Xh7zG": {
+            "type": "category",
+            "settings": {
+              "title": "Cobijas",
+              "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
+              "product": "",
+              "link": ""
+            }
+          },
+          "category_JfJGFJ": {
+            "type": "category",
+            "settings": {
+              "title": "Protectores",
+              "image": "shopify://shop_images/azulportada.jpg",
+              "product": "",
+              "link": ""
+            }
+          },
+          "category_EAEtFw": {
+            "type": "category",
+            "settings": {
+              "title": "Colchas",
+              "image": "shopify://shop_images/AZUL_BEIGE_9f2037a3-b601-48e9-999e-cc6ffb6b7edd.jpg",
+              "product": "",
+              "link": ""
+            }
+          },
+          "category_dBeGr6": {
+            "type": "category",
+            "settings": {
+              "title": "Toallas",
+              "product": "juego-de-toallas-cuerpo-y-manos-algodon-400gr-doble-secado-beige",
+              "link": ""
+            }
+          },
+          "category_9BK4Er": {
+            "type": "category",
+            "settings": {
+              "title": "Sábanas",
+              "product": "juego-de-sabanas-premium-ajuste-perfecto",
+              "link": ""
+            }
+          },
+          "slide_hCBRFN": {
+            "type": "slide",
+            "settings": {
+              "tab": "Colchas",
+              "product": "",
+              "image": "shopify://shop_images/AZUL_BEIGE_9f2037a3-b601-48e9-999e-cc6ffb6b7edd.jpg",
+              "eyebrow": "Colchas",
+              "title": "El toque elegante que tu habitación necesita",
+              "text": "Colores iguales a las fotos y un material que conserva su forma lavado tras lavado.",
+              "button_label": "Ver colchas",
+              "link": "/search?q=colcha&type=product"
+            }
+          },
+          "slide_knEYjM": {
+            "type": "slide",
+            "settings": {
+              "tab": "Cobijas",
+              "product": "",
+              "image": "shopify://shop_images/IMG_1535_b9d9d9e2-7a07-4324-852b-3fee795aeb88.jpg",
+              "eyebrow": "Cobijas",
+              "title": "Calor al instante, sin sofocarte",
+              "text": "Suaves y abrigadas para las noches frías, en colores idénticos a las fotos.",
+              "button_label": "Ver cobijas",
+              "link": "/search?q=cobija&type=product"
+            }
+          },
+          "slide_eCwXpe": {
+            "type": "slide",
+            "settings": {
+              "tab": "Fundas",
+              "product": "fundas-de-almohada-premium-55x75-cm-con-embone",
+              "eyebrow": "Fundas de almohada",
+              "title": "Fundas a juego con tus sábanas",
+              "text": "55 × 75 cm con embone, en 9 colores para combinar con tu juego.",
+              "button_label": "Ver fundas",
+              "link": ""
+            }
+          },
+          "slide_aNDfcH": {
+            "type": "slide",
+            "settings": {
+              "tab": "Protectores",
+              "product": "protector-de-colchon-premium-impermeable-y-antifluido",
+              "eyebrow": "Protectores de colchón",
+              "title": "Tu colchón a salvo de derrames y accidentes",
+              "text": "Impermeable y antifluido, o termosellado antialérgico. Se lavan en lavadora.",
+              "button_label": "Ver protectores",
+              "link": ""
+            }
+          },
+          "slide_jkVCjr": {
+            "type": "slide",
+            "settings": {
+              "tab": "Sábanas",
+              "product": "juego-de-sabanas-premium-ajuste-perfecto",
+              "eyebrow": "Sábanas premium 180 hilos",
+              "title": "Sábanas suaves que no se salen de las esquinas",
+              "text": "11 colores y 5 tamaños, con elástico reforzado y fuelle de 35 cm.",
+              "button_label": "Ver sábanas",
+              "link": ""
+            }
+          },
+          "slide_TtPYLm": {
+            "type": "slide",
+            "settings": {
+              "tab": "Toallas",
+              "product": "juego-de-toallas-cuerpo-y-manos-algodon-400gr-doble-secado-beige",
+              "eyebrow": "Toallas de algodón",
+              "title": "Toallas suaves que secan al instante",
+              "text": "Juego de cuerpo y manos en algodón de 400 g, con doble secado.",
+              "button_label": "Ver toallas",
+              "link": ""
+            }
+          }
+        },
+        "block_order": [
+          "review_t3NgXd",
+          "category_DVtyzt",
+          "category_6Xh7zG",
+          "category_JfJGFJ",
+          "category_EAEtFw",
+          "category_dBeGr6",
+          "category_9BK4Er",
+          "slide_hCBRFN",
+          "slide_knEYjM",
+          "slide_eCwXpe",
+          "slide_aNDfcH",
+          "slide_jkVCjr",
+          "slide_TtPYLm"
+        ],
         "settings": {
-          "image": "shopify://shop_images/paloderosa_sin_marca_24ba587b-ffe0-48a9-9c11-c73070161d33.png",
-          "title": "Transforma tu Descanso",
-          "text": "Prendas suaves y elegantes, creadas para hacer de tu cama tu lugar favorito.",
-          "button_label": "Explorar Colección",
-          "button_link": "",
-          "collection_title": "Nuestros Productos Más Vendidos",
-          "collection": "frontpage",
-          "product_limit": 8
+          "hero_autoplay": 5,
+          "hero_proof": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago",
+          "trust_1_title": "Pago contra entrega",
+          "trust_1_text": "Pagas en efectivo al recibir",
+          "trust_2_title": "Mercado Pago",
+          "trust_2_text": "Tarjeta o PSE, pago seguro",
+          "trust_3_title": "Envío 2 a 5 días",
+          "trust_3_text": "A toda Colombia",
+          "trust_4_title": "Cambio garantizado",
+          "trust_4_text": "Por defectos de fabricación",
+          "cats_title": "Compra por categoría",
+          "cats_motion": "right",
+          "best_eyebrow": "Los favoritos",
+          "best_title": "Más vendidos",
+          "featured_products": [
+            "fundas-de-almohada-premium-55x75-cm-con-embone",
+            "juego-de-sabanas-premium-ajuste-perfecto",
+            "juego-de-toallas-cuerpo-y-manos-algodon-400gr-doble-secado-beige",
+            "protector-de-colchon-premium-impermeable-y-antifluido"
+          ],
+          "featured_collection": "",
+          "show_pack": true,
+          "pack_eyebrow": "Pack cama completa",
+          "pack_title": "Sábanas + protector termosellado",
+          "pack_text": "Todo lo que tu cama necesita en un solo pedido. Elige tamaño y color y recíbelo listo para tender.",
+          "pack_price": "79.900",
+          "pack_before": "259.900",
+          "pack_save": "",
+          "pack_button": "Armar mi pack",
+          "pack_link": "",
+          "pack_product_1": "juego-de-sabanas-premium-ajuste-perfecto",
+          "pack_product_2": "protector-de-colchon-premium-impermeable-y-antifluido",
+          "pack_product_3": "",
+          "benefits_eyebrow": "Por qué elegirnos",
+          "benefits_title": "Calidad que se nota desde la primera noche",
+          "benefit_image_1": "shopify://shop_images/Suavidad_que_se_siente.png",
+          "benefit_image_2": "shopify://shop_images/Colcha_floral__transforma_tu_habitacion.png",
+          "benefit_image_3": "shopify://shop_images/Protege_lo_que_mas_usas.png",
+          "benefit_image_4": "shopify://shop_images/Textiles_que_transforman_tu_hogar.png",
+          "pay_title": "Dos formas de pagar, las dos seguras",
+          "cod_text": "Haces tu pedido sin tarjeta ni registro. Te llamamos para confirmar antes de despachar y pagas en efectivo cuando el producto llega a tu puerta.",
+          "mp_text": "Paga en línea con tarjeta débito o crédito, PSE y los demás medios de Mercado Pago. Tu pedido sale apenas se confirma el pago.",
+          "mp_benefit": "+5% De descuento en todas tus compras",
+          "reviews_title": "Lo que dicen nuestras clientas",
+          "rating_text": "4.9 de 5",
+          "help_title": "¿No sabes qué tamaño elegir?",
+          "help_text": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón.",
+          "whatsapp": "+57 322 343 8327"
         }
       },
       "footer": {

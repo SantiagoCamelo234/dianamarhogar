@@ -1,111 +1,744 @@
-<div class="hero-banner" style="background-image: url('{{ section.settings.image | image_url: width: 1600 }}'); background-color: var(--accent-pink);">
-  <div class="hero-content">
-    {% if section.settings.title != blank %}
-      <h2>{{ section.settings.title | escape }}</h2>
-    {% endif %}
-    {% if section.settings.text != blank %}
-      <p>{{ section.settings.text | escape }}</p>
-    {% endif %}
-    {% if section.settings.button_label != blank and section.settings.button_link != blank %}
-      <a href="{{ section.settings.button_link }}" class="btn-primary" style="text-decoration: none; display: inline-block;">{{ section.settings.button_label | escape }}</a>
-    {% endif %}
-  </div>
-</div>
+{%- comment -%}
+  Inicio de la tienda nueva.
+  Bloques: "Diapositiva" (carrusel principal, una por producto/categoría),
+  "Categoría" (círculos) y "Opinión". Todo lo demás son ajustes de la sección.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign slides = section.blocks | where: 'type', 'slide'
+  assign cats = section.blocks | where: 'type', 'category'
+  assign reviews = section.blocks | where: 'type', 'review'
+-%}
 
-<section class="home-products">
-  <div style="text-align: center; margin-bottom: 40px; margin-top: 30px;">
-    {% render 'custom-countdown' %}
+{%- comment -%} ---------- Carrusel de productos ---------- {%- endcomment -%}
+{%- if slides.size > 0 -%}
+<section class="dh-hero" aria-roledescription="carrusel" aria-label="Nuestros productos" data-dh-hero data-autoplay="{{ s.hero_autoplay }}">
+  <div class="dh-wrap dh-hero-inner">
+    <div class="dh-hero-copy">
+      {%- for block in slides -%}
+        {%- liquid
+          assign p = block.settings.product
+          assign href = block.settings.link
+          if href == blank and p != blank
+            assign href = p.url
+          endif
+          if href == blank
+            assign href = routes.all_products_collection_url
+          endif
+        -%}
+        <div class="dh-hero-slide" data-dh-slide {% unless forloop.first %}hidden{% endunless %} {{ block.shopify_attributes }} style="display: flex; flex-direction: column; gap: 18px;">
+          {%- if block.settings.eyebrow != blank -%}<span class="dh-eyebrow">{{ block.settings.eyebrow }}</span>{%- endif -%}
+          {%- if forloop.first -%}
+            <h1>{{ block.settings.title | default: p.title | default: block.settings.tab }}</h1>
+          {%- else -%}
+            <h2 class="dh-hero-h" style="margin: 0; font-family: var(--dh-serif); font-weight: 400; font-size: clamp(36px, 4.6vw, 60px); line-height: 1.06; text-wrap: balance;">{{ block.settings.title | default: p.title | default: block.settings.tab }}</h2>
+          {%- endif -%}
+          {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+          {%- if p != blank -%}
+            <div class="dh-hero-price">
+              <strong>{% if p.price_varies %}Desde {% endif %}{{ p.price_min | money_without_trailing_zeros }}</strong>
+              {%- if p.compare_at_price > p.price -%}<s>{{ p.compare_at_price | money_without_trailing_zeros }}</s>{%- endif -%}
+            </div>
+          {%- endif -%}
+          <div class="dh-hero-actions">
+            <a href="{{ href }}" class="dh-btn dh-btn-primary">{{ block.settings.button_label | default: 'Ver producto' }}</a>
+            <a href="{{ routes.all_products_collection_url }}" class="dh-btn dh-btn-soft">Ver toda la tienda</a>
+          </div>
+          {%- if s.hero_proof != blank -%}<span class="dh-hero-proof"><span class="dh-stars" aria-hidden="true">★★★★★</span> {{ s.hero_proof }}</span>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="dh-hero-media">
+      <div class="dh-hero-frame">
+        {%- for block in slides -%}
+          {%- liquid
+            assign p = block.settings.product
+            assign img = block.settings.image
+            if img == blank and p != blank
+              assign img = p.featured_media.preview_image | default: p.featured_image
+            endif
+          -%}
+          {%- if img != blank -%}
+            <img data-dh-slide-img class="{% if forloop.first %}is-active{% endif %}"
+              src="{{ img | image_url: width: 900 }}"
+              srcset="{{ img | image_url: width: 480 }} 480w, {{ img | image_url: width: 720 }} 720w, {{ img | image_url: width: 1000 }} 1000w"
+              sizes="(max-width: 760px) 100vw, 520px"
+              alt="{{ block.settings.tab | default: p.title | escape }} Dianamar Hogar" width="800" height="1000"
+              {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+          {%- else -%}
+            <img data-dh-slide-img class="{% if forloop.first %}is-active{% endif %}" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" width="1" height="1">
+          {%- endif -%}
+        {%- endfor -%}
+        <span class="dh-hero-tag" data-dh-slide-tagtext>{{ slides.first.settings.tab | default: slides.first.settings.product.title }}</span>
+      </div>
+      {%- if slides.size > 1 -%}
+        <div class="dh-rail dh-hero-tabs" role="tablist" aria-label="Elegir producto">
+          {%- for block in slides -%}
+            <button type="button" class="dh-chip" role="tab" data-dh-slide-tab aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ block.settings.tab | default: block.settings.product.title }}</button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
   </div>
-  {% if section.settings.collection_title != blank %}
-    <h3 class="home-section-title">{{ section.settings.collection_title | escape }}</h3>
-  {% endif %}
-  
-  <div class="product-grid">
-    {% assign collection = collections[section.settings.collection] %}
-    {% for product in collection.products limit: section.settings.product_limit %}
-      <a href="{{ product.url | within: collection }}" class="product-card" style="text-decoration: none; color: inherit;">
-        <div class="product-card-img">
-          {% if product.featured_image %}
-            <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title | escape }}" width="800" height="1000" loading="lazy">
-          {% endif %}
-        </div>
-        <h4 class="product-card-title">{{ product.title }}</h4>
-        <div class="product-card-price">
-          {% if product.compare_at_price > product.price %}
-            <span style="text-decoration: line-through; color: var(--text-light); margin-right: 6px; font-weight: normal; font-size: 0.9em;">{{ product.compare_at_price | money }}</span>
-            {% assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
-            <span class="discount-badge">-{{ discount_pct }}%</span>
-          {% endif %}
-          {{ product.price | money }}
-        </div>
-      </a>
-    {% else %}
-      <p style="text-align:center; width:100%; color:var(--text-light); grid-column: 1/-1;">Asigna una colección en el Editor de Tema para mostrar productos reales aquí.</p>
-    {% endfor %}
+</section>
+{%- endif -%}
+
+{%- comment -%} ---------- Franja de confianza ---------- {%- endcomment -%}
+<section class="dh-trust" aria-label="Por qué comprar con nosotros">
+  <div class="dh-wrap dh-trust-grid">
+    <div class="dh-trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/></svg>
+      <div><strong>{{ s.trust_1_title }}</strong><span>{{ s.trust_1_text }}</span></div>
+    </div>
+    <div class="dh-trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+      <div><strong>{{ s.trust_2_title }}</strong><span>{{ s.trust_2_text }}</span></div>
+    </div>
+    <div class="dh-trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>
+      <div><strong>{{ s.trust_3_title }}</strong><span>{{ s.trust_3_text }}</span></div>
+    </div>
+    <div class="dh-trust-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><strong>{{ s.trust_4_title }}</strong><span>{{ s.trust_4_text }}</span></div>
+    </div>
   </div>
 </section>
 
+{%- comment -%} ---------- Categorías ---------- {%- endcomment -%}
+{%- if cats.size > 0 -%}
+<section class="dh-section" aria-labelledby="dh-cats-title">
+  <div class="dh-wrap">
+    <div class="dh-head">
+      <h2 class="dh-h2" id="dh-cats-title">{{ s.cats_title }}</h2>
+      <a class="dh-link" href="{{ routes.all_products_collection_url }}">Ver todo</a>
+    </div>
+    <div class="dh-cats" data-dh-cats data-motion="{{ s.cats_motion | default: 'right' }}" role="list" aria-label="Categorías, desliza para ver más">
+      {%- for block in cats -%}
+        {%- liquid
+          assign p = block.settings.product
+          assign img = block.settings.image
+          if img == blank and p != blank
+            assign img = p.featured_media.preview_image | default: p.featured_image
+          endif
+          assign href = block.settings.link
+          if href == blank and p != blank
+            assign href = p.url
+          endif
+        -%}
+        <a role="listitem" class="dh-cat" href="{{ href | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }}>
+          <span class="dh-cat-img">
+            {%- if img != blank -%}
+              <img src="{{ img | image_url: width: 400 }}" alt="" width="200" height="200" loading="lazy">
+            {%- else -%}
+              <span style="font-size: 13px; color: var(--dh-muted); padding: 12px; text-align: center;">{{ block.settings.title }}</span>
+            {%- endif -%}
+          </span>
+          {{ block.settings.title }}
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- comment -%} ---------- Más vendidos ---------- {%- endcomment -%}
+{%- assign featured = s.featured_products -%}
+{%- if featured.size > 0 or s.featured_collection != blank -%}
+<section class="dh-section dh-home-products" aria-labelledby="dh-best-title" style="padding-top: 8px;">
+  <div class="dh-wrap">
+    <div class="dh-head">
+      <div style="display: grid; gap: 6px;">
+        <span class="dh-eyebrow">{{ s.best_eyebrow }}</span>
+        <h2 class="dh-h2" id="dh-best-title">{{ s.best_title }}</h2>
+      </div>
+      <a class="dh-link" href="{{ routes.all_products_collection_url }}">Ver todos los productos</a>
+    </div>
+    <div class="dh-grid">
+      {%- if featured.size > 0 -%}
+        {%- for product in featured limit: 8 -%}
+          {% render 'dh-product-card', product: product %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for product in s.featured_collection.products limit: 8 -%}
+          {% render 'dh-product-card', product: product, collection: s.featured_collection %}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- comment -%} ---------- Pack cama completa ---------- {%- endcomment -%}
+{%- if s.show_pack -%}
+<section class="dh-section" style="padding-top: 8px;" aria-labelledby="dh-pack-title">
+  <div class="dh-wrap">
+    <div class="dh-pack">
+      <div class="dh-pack-copy">
+        <span class="dh-eyebrow">{{ s.pack_eyebrow }}</span>
+        <h2 id="dh-pack-title">{{ s.pack_title }}</h2>
+        {%- if s.pack_text != blank -%}<p>{{ s.pack_text }}</p>{%- endif -%}
+        {%- if s.pack_price != blank -%}
+          <div style="display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;">
+            <strong style="font-size: 30px;">{{ s.pack_price }}</strong>
+            {%- if s.pack_before != blank -%}<s style="color: #C9D4CD;">{{ s.pack_before }}</s>{%- endif -%}
+            {%- if s.pack_save != blank -%}<span style="background: var(--dh-coral-soft); color: var(--dh-ink); font-weight: 800; font-size: 13px; padding: 5px 12px; border-radius: 999px;">{{ s.pack_save }}</span>{%- endif -%}
+          </div>
+        {%- endif -%}
+        <a href="{{ s.pack_link | default: routes.all_products_collection_url }}" class="dh-btn" style="align-self: flex-start; background: #fff; color: var(--dh-ink);">{{ s.pack_button }}</a>
+      </div>
+      {%- comment -%} Solo se muestran las imágenes que existen; se reparten el espacio (1, 2 o 3). {%- endcomment -%}
+      {%- liquid
+        assign pack_count = 0
+        for i in (1..3)
+          assign ik = 'pack_image_' | append: i
+          assign pk = 'pack_product_' | append: i
+          if s[ik] != blank or s[pk].featured_image != blank
+            assign pack_count = pack_count | plus: 1
+          endif
+        endfor
+      -%}
+      {%- if pack_count > 0 -%}
+        <div class="dh-pack-imgs" data-count="{{ pack_count }}">
+          {%- for i in (1..3) -%}
+            {%- liquid
+              assign ik = 'pack_image_' | append: i
+              assign pk = 'pack_product_' | append: i
+              assign img = s[ik]
+              assign img_alt = ''
+              if img == blank and s[pk] != blank
+                assign img = s[pk].featured_image
+                assign img_alt = s[pk].title
+              endif
+            -%}
+            {%- if img != blank -%}
+              <img src="{{ img | image_url: width: 800 }}"
+                srcset="{{ img | image_url: width: 400 }} 400w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1100 }} 1100w"
+                sizes="(max-width: 760px) {% if pack_count == 1 %}100vw{% elsif pack_count == 2 %}50vw{% else %}34vw{% endif %}, {% if pack_count == 1 %}620px{% elsif pack_count == 2 %}310px{% else %}210px{% endif %}"
+                alt="{{ img_alt | escape }}" width="{{ img.width | default: 800 }}" height="{{ img.height | default: 1000 }}" loading="lazy">
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- comment -%} ---------- Imágenes de beneficios ---------- {%- endcomment -%}
+{%- if s.benefit_image_1 != blank -%}
+<section class="dh-section dh-section-blush" aria-labelledby="dh-benefits-title">
+  <div class="dh-wrap">
+    <div class="dh-head-center">
+      <span class="dh-eyebrow">{{ s.benefits_eyebrow }}</span>
+      <h2 class="dh-h2" id="dh-benefits-title">{{ s.benefits_title }}</h2>
+    </div>
+    <div class="dh-benefits">
+      {%- for i in (1..4) -%}
+        {%- assign ik = 'benefit_image_' | append: i -%}
+        {%- if s[ik] != blank -%}
+          <img src="{{ s[ik] | image_url: width: 700 }}" srcset="{{ s[ik] | image_url: width: 400 }} 400w, {{ s[ik] | image_url: width: 700 }} 700w" sizes="(max-width: 760px) 100vw, 300px" alt="{{ s[ik].alt | escape }}" width="{{ s[ik].width }}" height="{{ s[ik].height }}" loading="lazy">
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- comment -%} ---------- Formas de pago ---------- {%- endcomment -%}
+<section class="dh-section" aria-labelledby="dh-pay-title">
+  <div class="dh-wrap">
+    <div class="dh-head-center">
+      <span class="dh-eyebrow">Compra como prefieras</span>
+      <h2 class="dh-h2" id="dh-pay-title">{{ s.pay_title }}</h2>
+    </div>
+    <div class="dh-pay">
+      <div class="dh-pay-card">
+        <span class="dh-pay-pill">La más elegida</span>
+        <h3>Pago contra entrega</h3>
+        <p>{{ s.cod_text }}</p>
+        <ol style="padding-left: 20px;">
+          <li>Haces tu pedido sin tarjeta</li>
+          <li>Te llamamos para confirmar</li>
+          <li>Recibes y pagas al transportador</li>
+        </ol>
+      </div>
+      <div class="dh-pay-card is-mp">
+        <span class="dh-pay-pill">Pago anticipado</span>
+        <h3>Mercado Pago</h3>
+        <p>{{ s.mp_text }}</p>
+        {%- if s.mp_benefit != blank -%}<p class="dh-pay-note">{{ s.mp_benefit }}</p>{%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ---------- Opiniones ---------- {%- endcomment -%}
+{%- if reviews.size > 0 -%}
+<section class="dh-section" style="background: #fff; border-block: 1px solid var(--dh-line);" aria-labelledby="dh-rev-title">
+  <div class="dh-wrap">
+    <div class="dh-head">
+      <div style="display: grid; gap: 6px;">
+        <span class="dh-eyebrow">Opiniones reales</span>
+        <h2 class="dh-h2" id="dh-rev-title">{{ s.reviews_title }}</h2>
+      </div>
+      {%- if s.rating_text != blank -%}<span style="font-weight: 700;"><span class="dh-stars" aria-hidden="true">★★★★★</span> {{ s.rating_text }}</span>{%- endif -%}
+    </div>
+    <div class="dh-reviews">
+      {%- for block in reviews -%}
+        <figure class="dh-review" {{ block.shopify_attributes }}>
+          <span class="dh-stars" aria-label="5 de 5 estrellas">★★★★★</span>
+          <blockquote>“{{ block.settings.text }}”</blockquote>
+          <figcaption><strong>{{ block.settings.name }}</strong><span>✓ Compra verificada</span></figcaption>
+        </figure>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- comment -%} ---------- Ayuda por WhatsApp ---------- {%- endcomment -%}
+{%- if s.whatsapp != blank -%}
+<section class="dh-section">
+  <div class="dh-wrap">
+    <div class="dh-help">
+      <div style="flex: 1 1 380px;">
+        <h2 class="dh-h2">{{ s.help_title }}</h2>
+        <p>{{ s.help_text }}</p>
+      </div>
+      <a class="dh-btn dh-btn-primary" href="https://wa.me/{{ s.whatsapp | remove: '+' | remove: ' ' }}" target="_blank" rel="noopener">Escribir al {{ s.whatsapp }}</a>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
 {% schema %}
 {
-  "name": "Home Page Banner + Grid",
+  "name": "Inicio",
+  "max_blocks": 30,
   "settings": [
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Hero Image (Fondo Principal)"
-    },
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Hero Title",
-      "default": "Transforma tu Descanso"
-    },
-    {
-      "type": "textarea",
-      "id": "text",
-      "label": "Hero Text (Subtítulo)",
-      "default": "Prendas suaves y elegantes, creadas para hacer de tu cama tu lugar favorito."
-    },
-    {
-      "type": "text",
-      "id": "button_label",
-      "label": "Button Label",
-      "default": "Explorar Colección"
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "Button Link"
-    },
-    {
       "type": "header",
-      "content": "Grilla de Productos"
+      "content": "Carrusel de productos"
     },
     {
-      "type": "text",
-      "id": "collection_title",
-      "label": "Título de Colección",
-      "default": "Nuestros Más Vendidos"
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Selecciona la colección a mostrar"
+      "type": "paragraph",
+      "content": "Agrega un bloque \"Diapositiva\" por cada producto o categoría. El precio sale solo del producto elegido."
     },
     {
       "type": "range",
-      "id": "product_limit",
-      "min": 4,
-      "max": 16,
-      "step": 4,
-      "label": "Límite de Productos",
-      "default": 4
+      "id": "hero_autoplay",
+      "label": "Cambiar cada",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "hero_proof",
+      "label": "Texto de confianza bajo los botones",
+      "default": "4.9/5 en opiniones · Pago contra entrega o Mercado Pago"
+    },
+    {
+      "type": "header",
+      "content": "Franja de confianza"
+    },
+    {
+      "type": "text",
+      "id": "trust_1_title",
+      "label": "1 · Título",
+      "default": "Pago contra entrega"
+    },
+    {
+      "type": "text",
+      "id": "trust_1_text",
+      "label": "1 · Texto",
+      "default": "Pagas en efectivo al recibir"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_title",
+      "label": "2 · Título",
+      "default": "Mercado Pago"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_text",
+      "label": "2 · Texto",
+      "default": "Tarjeta o PSE, pago seguro"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_title",
+      "label": "3 · Título",
+      "default": "Envío 2 a 5 días"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_text",
+      "label": "3 · Texto",
+      "default": "A toda Colombia"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_title",
+      "label": "4 · Título",
+      "default": "Cambio garantizado"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_text",
+      "label": "4 · Texto",
+      "default": "Por defectos de fabricación"
+    },
+    {
+      "type": "header",
+      "content": "Categorías"
+    },
+    {
+      "type": "text",
+      "id": "cats_title",
+      "label": "Título",
+      "default": "Compra por categoría"
+    },
+    {
+      "type": "select",
+      "id": "cats_motion",
+      "label": "Movimiento de las categorías",
+      "options": [
+        {
+          "value": "right",
+          "label": "Hacia la derecha"
+        },
+        {
+          "value": "left",
+          "label": "Hacia la izquierda"
+        },
+        {
+          "value": "none",
+          "label": "Sin movimiento"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "header",
+      "content": "Más vendidos"
+    },
+    {
+      "type": "text",
+      "id": "best_eyebrow",
+      "label": "Etiqueta",
+      "default": "Los favoritos"
+    },
+    {
+      "type": "text",
+      "id": "best_title",
+      "label": "Título",
+      "default": "Más vendidos"
+    },
+    {
+      "type": "product_list",
+      "id": "featured_products",
+      "label": "Productos",
+      "limit": 8
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "O una colección",
+      "info": "Se usa si no eliges productos arriba."
+    },
+    {
+      "type": "header",
+      "content": "Pack"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pack",
+      "label": "Mostrar el pack",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "pack_eyebrow",
+      "label": "Etiqueta",
+      "default": "Pack cama completa"
+    },
+    {
+      "type": "text",
+      "id": "pack_title",
+      "label": "Título",
+      "default": "Sábanas + protector + fundas, en el mismo color"
+    },
+    {
+      "type": "textarea",
+      "id": "pack_text",
+      "label": "Texto",
+      "default": "Todo lo que tu cama necesita en un solo pedido. Elige tamaño y color y recíbelo listo para tender."
+    },
+    {
+      "type": "text",
+      "id": "pack_price",
+      "label": "Precio del pack (opcional)"
+    },
+    {
+      "type": "text",
+      "id": "pack_before",
+      "label": "Precio antes (opcional)"
+    },
+    {
+      "type": "text",
+      "id": "pack_save",
+      "label": "Etiqueta de ahorro (opcional)",
+      "info": "Ej. Ahorra $30.000"
+    },
+    {
+      "type": "text",
+      "id": "pack_button",
+      "label": "Texto del botón",
+      "default": "Armar mi pack"
+    },
+    {
+      "type": "url",
+      "id": "pack_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "image_picker",
+      "id": "pack_image_1",
+      "label": "Imagen 1"
+    },
+    {
+      "type": "product",
+      "id": "pack_product_1",
+      "label": "O producto 1 (usa su foto)"
+    },
+    {
+      "type": "image_picker",
+      "id": "pack_image_2",
+      "label": "Imagen 2"
+    },
+    {
+      "type": "product",
+      "id": "pack_product_2",
+      "label": "O producto 2 (usa su foto)"
+    },
+    {
+      "type": "image_picker",
+      "id": "pack_image_3",
+      "label": "Imagen 3"
+    },
+    {
+      "type": "product",
+      "id": "pack_product_3",
+      "label": "O producto 3 (usa su foto)"
+    },
+    {
+      "type": "header",
+      "content": "Imágenes de beneficios"
+    },
+    {
+      "type": "text",
+      "id": "benefits_eyebrow",
+      "label": "Etiqueta",
+      "default": "Por qué elegirnos"
+    },
+    {
+      "type": "text",
+      "id": "benefits_title",
+      "label": "Título",
+      "default": "Calidad que se nota desde la primera noche"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_1",
+      "label": "Imagen 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_2",
+      "label": "Imagen 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_3",
+      "label": "Imagen 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "benefit_image_4",
+      "label": "Imagen 4"
+    },
+    {
+      "type": "header",
+      "content": "Formas de pago"
+    },
+    {
+      "type": "text",
+      "id": "pay_title",
+      "label": "Título",
+      "default": "Dos formas de pagar, las dos seguras"
+    },
+    {
+      "type": "textarea",
+      "id": "cod_text",
+      "label": "Contra entrega",
+      "default": "Haces tu pedido sin tarjeta ni registro. Te llamamos para confirmar antes de despachar y pagas en efectivo cuando el producto llega a tu puerta."
+    },
+    {
+      "type": "textarea",
+      "id": "mp_text",
+      "label": "Mercado Pago",
+      "default": "Paga en línea con tarjeta débito o crédito, PSE y los demás medios de Mercado Pago. Tu pedido sale apenas se confirma el pago."
+    },
+    {
+      "type": "text",
+      "id": "mp_benefit",
+      "label": "Beneficio por pagar anticipado (opcional)",
+      "info": "Ej. Envío prioritario. Déjalo vacío para no mostrarlo."
+    },
+    {
+      "type": "header",
+      "content": "Opiniones"
+    },
+    {
+      "type": "text",
+      "id": "reviews_title",
+      "label": "Título",
+      "default": "Lo que dicen nuestras clientas"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "Calificación",
+      "default": "4.9 de 5"
+    },
+    {
+      "type": "header",
+      "content": "Ayuda"
+    },
+    {
+      "type": "text",
+      "id": "help_title",
+      "label": "Título",
+      "default": "¿No sabes qué tamaño elegir?"
+    },
+    {
+      "type": "text",
+      "id": "help_text",
+      "label": "Texto",
+      "default": "Escríbenos por WhatsApp y te ayudamos a escoger según la medida de tu colchón."
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "WhatsApp",
+      "default": "+57 322 343 8327"
     }
   ],
-  "presets": [
+  "blocks": [
     {
-      "name": "Sección Principal Home",
-      "category": "Home"
+      "type": "slide",
+      "name": "Diapositiva",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab",
+          "label": "Nombre corto (botón)",
+          "default": "Categoría"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Producto (foto y precio automáticos)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen (opcional, reemplaza la del producto)"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Etiqueta",
+          "info": "Opcional. Ej. Sábanas premium 180 hilos"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titular",
+          "info": "Si lo dejas vacío, se usa el nombre del producto o de la categoría."
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Texto"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón",
+          "default": "Ver producto"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace del botón (opcional)",
+          "info": "Si está vacío, lleva al producto elegido."
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "name": "Categoría",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Nombre",
+          "default": "Sábanas"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "O producto (usa su foto)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Opinión",
+      "limit": 9,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre",
+          "default": "Clienta Dianamar"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Opinión",
+          "default": "Excelente calidad, llegaron rápido y tal cual las fotos."
+        }
+      ]
     }
   ]
 }

@@ -22,6 +22,11 @@
   
   <!-- Carga nuestro archivo CSS extraído -->
   {{ 'theme.css' | asset_url | stylesheet_tag }}
+  {%- if template.name == 'index' -%}
+    {%- comment -%} Página principal con el diseño nuevo (solo aquí): fuentes y estilos. {%- endcomment -%}
+    <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    {{ 'dh.css' | asset_url | stylesheet_tag }}
+  {%- endif -%}
   
   <!-- Hook esencial para plugins de Shopify -->
   {{ content_for_header }}
@@ -48,5 +53,8 @@
 
   <!-- Carga nuestro archivo JS extraído -->
   {{ 'theme.js' | asset_url | script_tag }}
+  {%- if template.name == 'index' -%}
+    <script src="{{ 'dh.js' | asset_url }}" defer></script>
+  {%- endif -%}
 </body>
 </html>
