@@ -1175,6 +1175,8 @@
     preselect: {{ s.preselect_on_load | json }},
     defaultSize: {{ s.default_size | json }},
     defaultColor: {{ s.default_color | json }},
+    trackAtc: {{ s.track_add_to_cart | json }},
+    currency: {{ cart.currency.iso_code | default: shop.currency | json }},
     defaultQty: {{ s.default_qty | default: '1' | plus: 0 }},
     tierWhy: { 1: {{ s.tier_why_1 | json }}, 2: {{ s.tier_why_2 | json }}, 3: {{ s.tier_why_3 | json }} }
   };
@@ -1712,12 +1714,38 @@
   function nvCloseLightbox() { document.getElementById('nv-lightbox').classList.remove('open'); }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') nvCloseLightbox(); });
 
+  /* ---------- Píxel de Meta: AddToCart al tocar "Realizar pedido" ----------
+     ReleasIT no pasa por el carrito, así que Meta nunca recibía AddToCart. Se envía al
+     abrir el formulario con la variante (ID = el del catálogo de Shopify en Meta), la
+     cantidad y el valor de la oferta elegida. Máximo uno cada 30 s para no duplicar. */
+  var nvLastAtc = 0;
+  function nvTrackAddToCart() {
+    if (!nvConfig.trackAtc || typeof window.fbq !== 'function') return;
+    if (Date.now() - nvLastAtc < 30000) return;
+    var v = nvCurrentVariant();
+    if (!v) return;
+    nvLastAtc = Date.now();
+    var t = document.querySelector('#nv-tiers .nv-tier.active');
+    var qty = t ? parseInt(t.getAttribute('data-qty'), 10) || 1 : 1;
+    var cents = t && t.hasAttribute('data-now') ? parseFloat(t.getAttribute('data-now')) : v.price * qty;
+    var id = String(v.id);
+    window.fbq('track', 'AddToCart', {
+      content_ids: [id],
+      content_type: 'product',
+      contents: [{ id: id, quantity: qty }],
+      content_name: lsProductJson.title,
+      value: Math.round(cents) / 100,
+      currency: nvConfig.currency,
+      num_items: qty
+    }, { eventID: 'atc-' + id + '-' + nvLastAtc });
+  }
+
   // Todos los botones de ReleasIT (incluida la barra fija de abajo) pasan por aquí.
   // Se escucha en window y en fase de captura para actuar antes que ReleasIT.
   window.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest(NV_RSI_BUTTON);
     if (!btn) return;
-    if (!nvMissingGroups().length) { nvHideChooseMsg(); nvSyncOfferToForm(); return; }
+    if (!nvMissingGroups().length) { nvHideChooseMsg(); nvSyncOfferToForm(); nvTrackAddToCart(); return; }
     e.preventDefault();
     e.stopImmediatePropagation();
     nvOrderNow(btn);
@@ -2826,6 +2854,13 @@
       "max": 10,
       "step": 1,
       "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "track_add_to_cart",
+      "label": "Enviar \"Agregar al carrito\" al píxel de Meta al tocar Realizar pedido",
+      "default": true,
+      "info": "ReleasIT no usa el carrito, así que sin esto Meta no recibe ese paso."
     },
     {
       "type": "checkbox",
