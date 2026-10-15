@@ -681,12 +681,13 @@
           (Clarity: en promedio se ve el 23 % de la página). Usa las mismas reseñas de abajo.
         {%- endcomment -%}
         {%- if s.show_hero_reviews and s.review_1_name != blank -%}
-          <div class="nv-hrev">
+          {%- comment -%} Sin la sección de abajo, este bloque es el destino de "4.9/5" (#nv-resenas). {%- endcomment -%}
+          <div class="nv-hrev"{% unless s.show_reviews_section %} id="nv-resenas"{% endunless %}>
             <div class="nv-hrev-head">
               <span><span class="nv-stars">★★★★★</span> {{ s.rating_text }}</span>
-              <a href="#nv-resenas">Ver todas</a>
+              {%- if s.show_reviews_section -%}<a href="#nv-resenas">Ver todas</a>{%- endif -%}
             </div>
-            <div class="nv-hrev-list">
+            <div class="nv-hrev-list" id="nv-hrev-list">
               {%- assign nv_h = 0 -%}
               {%- for i in (1..10) -%}
                 {%- assign rn = 'review_' | append: i | append: '_name' -%}
@@ -985,8 +986,8 @@
     </section>
   {% endif %}
 
-  <!-- RESEÑAS -->
-  {% if s.review_1_name != blank %}
+  <!-- RESEÑAS (se puede ocultar si ya se muestran junto al botón) -->
+  {% if s.review_1_name != blank and s.show_reviews_section %}
     <section class="nv-sec nv-alt" id="nv-resenas">
       <div class="nv-wrap">
         <div class="nv-head">
@@ -1631,6 +1632,32 @@
       if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
       else if (!v.paused) { v.pause(); }
     }, { threshold: 0.5 }).observe(v);
+  })();
+
+  /* ---------- Reseñas junto al botón: avanzan solas hacia la derecha ----------
+     Una tarjeta cada 3,5 s; al llegar a la última vuelve al inicio. Se detiene mientras la
+     persona las toca o arrastra (y 6 s después), y solo corre cuando se ven en pantalla. */
+  (function nvHeroReviewsAutoplay() {
+    var list = document.getElementById('nv-hrev-list');
+    if (!list || list.children.length < 2) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var timer = null, visible = false, pausedUntil = 0;
+    function step() {
+      if (!visible || document.hidden || Date.now() < pausedUntil) return;
+      var card = list.children[0];
+      var gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+      var stepPx = card.getBoundingClientRect().width + gap;
+      var atEnd = list.scrollLeft + list.clientWidth >= list.scrollWidth - 4;
+      list.scrollTo({ left: atEnd ? 0 : list.scrollLeft + stepPx, behavior: 'smooth' });
+    }
+    function pause() { pausedUntil = Date.now() + 6000; }
+    ['pointerdown', 'touchstart', 'wheel', 'mouseenter'].forEach(function (ev) {
+      list.addEventListener(ev, pause, { passive: true });
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; }, { threshold: 0.5 }).observe(list);
+    } else { visible = true; }
+    timer = setInterval(step, 3500);
   })();
 
   /* ---------- Fecha estimada de entrega ----------
@@ -2588,6 +2615,13 @@
       "content": "Reseñas"
     },
     {
+      "type": "checkbox",
+      "id": "show_reviews_section",
+      "label": "Mostrar la sección de reseñas más abajo",
+      "default": true,
+      "info": "Apágala si ya muestras las reseñas junto al botón de compra."
+    },
+    {
       "type": "text",
       "id": "reviews_title",
       "label": "Título",
@@ -2973,7 +3007,7 @@
       "id": "hero_reviews_count",
       "label": "Cuántas reseñas junto al botón",
       "min": 2,
-      "max": 4,
+      "max": 10,
       "step": 1,
       "default": 3
     },
