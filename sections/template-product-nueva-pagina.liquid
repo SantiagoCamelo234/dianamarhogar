@@ -111,6 +111,31 @@
   .nv-tiers-hero .nv-tiers { gap: 10px; max-width: none; margin: 0; padding-top: 4px; }
   .nv-tiers-hero .nv-tier { padding: 12px 14px; gap: 12px; }
   .nv-tiers-hero .nv-tier-sub { font-size: 12.5px; }
+  .nv-tier-unit { display: block; font-size: 12.5px; color: var(--nv-muted); }
+  /* Fecha estimada de entrega junto al precio */
+  .nv-eta { display: flex; align-items: center; gap: 8px; margin: 0; padding: 8px 12px; background: #fff; border: 1px solid var(--nv-line); border-radius: 10px; font-size: 14px; color: var(--nv-ink); }
+  .nv-eta svg { flex: 0 0 auto; }
+  /* Así funciona tu pedido (debajo del botón de compra) */
+  .nv-howto { display: grid; gap: 10px; padding: 12px 14px; background: #fff; border: 1px solid var(--nv-line); border-radius: 12px; }
+  .nv-howto-title { font-weight: 700; font-size: 14px; color: var(--nv-ink); }
+  .nv-howto ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 12.5px; line-height: 1.35; color: var(--nv-text); counter-reset: nvh; }
+  .nv-howto li { counter-increment: nvh; display: grid; gap: 6px; align-content: start; }
+  /* Video del anuncio junto al botón de compra */
+  .nv-hvid { display: grid; gap: 8px; justify-items: center; }
+  .nv-hvid-title { justify-self: start; font-weight: 700; font-size: 14px; color: var(--nv-ink); }
+  .nv-hvid-player { display: block; width: 100%; max-width: 300px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 14px; background: #000; }
+  /* Reseñas con foto junto al botón de compra */
+  .nv-hrev { display: grid; gap: 8px; min-width: 0; }
+  .nv-hrev-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--nv-text); }
+  .nv-hrev-head a { color: var(--nv-ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+  .nv-hrev-list { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 4px; }
+  .nv-hrev-list::-webkit-scrollbar { display: none; }
+  .nv-hrev-card { flex: 0 0 72%; max-width: 280px; scroll-snap-align: start; margin: 0; background: #fff; border: 1px solid var(--nv-line); border-radius: 12px; overflow: hidden; display: grid; align-content: start; }
+  .nv-hrev-card img { width: 100%; height: 130px; object-fit: cover; display: block; cursor: zoom-in; }
+  .nv-hrev-card figcaption { padding: 10px 12px; display: grid; gap: 4px; }
+  .nv-hrev-card p { margin: 0; font-size: 13px; line-height: 1.4; color: var(--nv-ink); }
+  .nv-hrev-card span { font-size: 12px; color: var(--nv-muted); }
+  .nv-howto li::before { content: counter(nvh); width: 24px; height: 24px; border-radius: 50%; background: var(--nv-ink); color: #fff; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }
   .nv-price-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-block: 4px; }
   .nv-price { font-size: 34px; font-weight: 800; color: var(--nv-ink); line-height: 1; font-variant-numeric: tabular-nums; }
   .nv-compare { color: var(--nv-muted); text-decoration: line-through; font-size: 18px; }
@@ -136,6 +161,7 @@
   .ls-swatch-color.active { box-shadow: 0 0 0 2.5px var(--nv-coral); }
   .ls-swatch-size { font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid var(--nv-line); background: #fff; color: var(--nv-ink); cursor: pointer; transition: all .15s; }
   .ls-swatch-size.active { border-color: var(--nv-coral); background: var(--nv-blush); }
+  .nv-sw-measure { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 500; color: var(--nv-muted); }
 
   .nv-guarantee-mini { display: flex; gap: 12px; align-items: flex-start; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; }
   .nv-guarantee-mini strong { display: block; font-size: 14px; color: #166534; }
@@ -207,6 +233,8 @@
     .nv-promo-next { right: 10px; }
   }
   @media (prefers-reduced-motion: reduce) { .nv-promo-track.nv-anim { transition: none; } }
+  /* En computador el carrusel no se estira: mismo ancho que en celular */
+  @media (min-width: 900px) { .nv-promo-wrap:has(#nv-promo) { max-width: 520px; padding-inline: 10px; } }
 
   /* Problema */
   .nv-problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
@@ -336,6 +364,29 @@
     .nv-hero { padding-block: 12px 36px; }
     .nv-hero-grid { gap: 14px; }
     .ls-gallery { aspect-ratio: 1 / 1; }
+    /* Foto compacta 5:4 (recortada): el precio, la talla y la oferta suben en la primera
+       pantalla. Clarity: en promedio solo se ve el 23 % de la página. */
+    .nv-compact-gallery .ls-gallery { aspect-ratio: 5 / 4; }
+    .nv-compact-gallery .ls-media-item img { object-fit: cover; }
+    /* Primera pantalla compacta: lo que decide la compra (precio, talla, color, oferta y
+       botón) va primero; el texto y los beneficios pasan debajo del botón. */
+    .nv-compact-gallery .ls-thumb-wrapper { width: 46px; height: 46px; }
+    .nv-compact-gallery .nv-buy { gap: 12px; }
+    .nv-compact-gallery .nv-buy > .nv-lead,
+    .nv-compact-gallery .nv-buy > .nv-pills { order: 3; }
+    .nv-compact-gallery .nv-buy > .nv-guarantee-mini,
+    .nv-compact-gallery .nv-buy > .nv-btn-ghost,
+    .nv-compact-gallery .nv-buy > .nv-trustline { order: 4; }
+    .nv-compact-gallery .nv-lead { font-size: 15px; }
+    .nv-compact-gallery .ls-form { gap: 14px; }
+    /* Tallas en 3 columnas parejas; el nombre nunca se parte en dos líneas */
+    .nv-compact-gallery .ls-swatches:has(.ls-swatch-size) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .nv-compact-gallery .ls-swatch-size { padding: 11px 4px; font-size: 14px; text-align: center; white-space: nowrap; }
+    /* Colores en círculos pequeños; el nombre se lee en "Color: …" */
+    .nv-compact-gallery .ls-swatches:has(.ls-swatch-color) { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px 4px; }
+    .nv-compact-gallery .ls-swatch-color { width: 38px; height: 38px; margin-bottom: 0; border-width: 2px; }
+    .nv-compact-gallery .nv-sw-name { display: none; }
+    .nv-compact-gallery .nv-tiers-hero .nv-tier { padding: 10px 12px; }
     .ls-thumb-wrapper { width: 58px; height: 58px; }
     .nv-buy { gap: 14px; }
     .nv-hero h1 { font-size: 25px; }
@@ -405,7 +456,7 @@
 {%- endfor -%}
 {% assign s = section.settings %}
 
-<div class="nv-page" id="product-section-{{ section.id }}">
+<div class="nv-page{% if s.compact_gallery %} nv-compact-gallery{% endif %}" id="product-section-{{ section.id }}">
 
   {% comment %} Fondo animado: usa las mismas imágenes del "Carrusel de colores" (portadas). {% endcomment %}
   {% if s.show_bg_covers %}
@@ -434,6 +485,31 @@
   <section class="nv-hero">
     <div class="nv-wrap nv-hero-grid">
       <div class="nv-gallery-col">
+        {%- comment -%}
+          Foto inicial: si la página abre con un color elegido (ej. Gris Plata), se muestra y
+          se carga primero una foto de ese color, en lugar de la portada.
+        {%- endcomment -%}
+        {%- assign nv_first_media = product.media.first -%}
+        {%- if s.preselect_on_load and s.default_color != blank -%}
+          {%- comment -%}
+            La primera foto del color en el orden de la galería (la misma que queda de primera
+            en las miniaturas): su texto alternativo es el color, o es la foto de una variante
+            de ese color.
+          {%- endcomment -%}
+          {%- assign nv_dc = s.default_color | downcase | strip -%}
+          {%- assign nv_color_ids = '|' -%}
+          {%- for v in product.variants -%}
+            {%- assign nv_vopts = v.options | join: '|' | downcase -%}
+            {%- if v.featured_media and nv_vopts contains nv_dc -%}
+              {%- assign nv_color_ids = nv_color_ids | append: v.featured_media.id | append: '|' -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- for m in product.media -%}
+            {%- assign nv_ma = m.alt | downcase | strip -%}
+            {%- assign nv_mid = '|' | append: m.id | append: '|' -%}
+            {%- if nv_ma == nv_dc or nv_color_ids contains nv_mid -%}{%- assign nv_first_media = m -%}{%- break -%}{%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
         <div class="ls-gallery" id="ls-main-gallery">
           {% if current_variant.compare_at_price > current_variant.price %}
             {% assign nv_pct = current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price %}
@@ -442,14 +518,14 @@
           {% if product.media.size > 0 %}
             {% for media in product.media %}
               {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
-              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
+              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless media.id == nv_first_media.id %}style="display: none;"{% endunless %}>
                 {% case media.media_type %}
                   {% when 'video' %}
                     {{ media | video_tag: controls: true, autoplay: true, loop: true, muted: true }}
                   {% when 'external_video' %}
                     {{ media | external_video_tag }}
                   {% else %}
-                    <img src="{{ media | image_url: width: 900 }}" alt="{{ media.alt | default: product.title | escape }}" width="900" height="900" {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+                    <img src="{{ media | image_url: width: 900 }}" alt="{{ media.alt | default: product.title | escape }}" width="900" height="900" {% if media.id == nv_first_media.id %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
                 {% endcase %}
               </div>
             {% endfor %}
@@ -462,7 +538,7 @@
           <div class="ls-thumbnails">
             {% for media in product.media %}
               {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
-              <div class="ls-thumb-wrapper {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')">
+              <div class="ls-thumb-wrapper {% if media.id == nv_first_media.id %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')">
                 <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="74" height="74" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
               </div>
             {% endfor %}
@@ -496,6 +572,12 @@
               {%- endif -%}
             {%- endfor -%}
           </div>
+        {%- endif -%}
+        {%- if s.show_eta -%}
+          <p class="nv-eta" id="nv-eta" data-min="{{ s.eta_min_days }}" data-max="{{ s.eta_max_days }}" hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="7" width="14" height="10" rx="1"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg>
+            <span>Pídelo hoy y recíbelo entre el <b id="nv-eta-from"></b> y el <b id="nv-eta-to"></b></span>
+          </p>
         {%- endif -%}
         </div>
 
@@ -546,7 +628,16 @@
                              data-option-index="{{ option.position }}"
                              data-value="{{ value | escape }}"
                              onclick="selectLsVariant(this)"
-                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectLsVariant(this);}">{{ value }}</div>
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectLsVariant(this);}">{{ value }}
+                          {%- if s.show_size_measure -%}
+                            {%- assign nv_val = value | downcase | strip -%}
+                            {%- for zi in (1..6) -%}
+                              {%- assign zn = 'size_' | append: zi | append: '_name' -%}
+                              {%- assign zm = 'size_' | append: zi | append: '_measure' -%}
+                              {%- assign nv_zn = s[zn] | downcase | strip -%}
+                              {%- if s[zn] != blank and nv_zn == nv_val -%}<small class="nv-sw-measure">{{ s[zm] | remove: ' cm' | remove: ' ' }}</small>{%- break -%}{%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}</div>
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -569,7 +660,9 @@
               <span class="nv-radio"></span>
               <span>
                 <span class="nv-tier-name">{{ q }} {% if q == 1 %}{{ s.bundle_unit_singular }}{% else %}{{ s.bundle_unit_plural }}{% endif %}</span>
-                <span class="nv-tier-sub">{{ s[lk] }}{% if s[dk] > 0 %} · {{ s[dk] }}% OFF{% endif %}</span>
+                {% assign wk = 'tier_why_' | append: q %}
+                <span class="nv-tier-sub">{{ s[wk] | default: s[lk] }}{% if s[dk] > 0 %} · {{ s[dk] }}% OFF{% endif %}</span>
+                <span class="nv-tier-unit"></span>
               </span>
               <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
             </button>
@@ -582,6 +675,65 @@
             <div class="nv-rsi-slot"><div id="rsi-button-hook" class="_rsi-buy-now-button-app-block-hook"></div></div>
           {% endform %}
         </div>
+
+        {%- comment -%}
+          Reseñas con foto junto al botón: la mayoría no baja hasta la sección de opiniones
+          (Clarity: en promedio se ve el 23 % de la página). Usa las mismas reseñas de abajo.
+        {%- endcomment -%}
+        {%- if s.show_hero_reviews and s.review_1_name != blank -%}
+          {%- comment -%} Sin la sección de abajo, este bloque es el destino de "4.9/5" (#nv-resenas). {%- endcomment -%}
+          <div class="nv-hrev"{% unless s.show_reviews_section %} id="nv-resenas"{% endunless %}>
+            <div class="nv-hrev-head">
+              <span><span class="nv-stars">★★★★★</span> {{ s.rating_text }}</span>
+              {%- if s.show_reviews_section -%}<a href="#nv-resenas">Ver todas</a>{%- endif -%}
+            </div>
+            <div class="nv-hrev-list" id="nv-hrev-list">
+              {%- assign nv_h = 0 -%}
+              {%- for i in (1..10) -%}
+                {%- assign rn = 'review_' | append: i | append: '_name' -%}
+                {%- assign rt = 'review_' | append: i | append: '_text' -%}
+                {%- assign rp = 'review_' | append: i | append: '_product_image' -%}
+                {%- if s[rn] != blank and s[rp] != blank and nv_h < s.hero_reviews_count -%}
+                  {%- assign nv_h = nv_h | plus: 1 -%}
+                  <figure class="nv-hrev-card">
+                    <img src="{{ s[rp] | image_url: width: 480 }}" alt="Foto de {{ s[rn] | escape }}" width="480" height="320" loading="lazy" onclick="nvOpenLightbox('{{ s[rp] | image_url: width: 1200 }}')">
+                    <figcaption>
+                      <p>"{{ s[rt] }}"</p>
+                      <span>{{ s[rn] }} · ✔ Compra verificada</span>
+                    </figcaption>
+                  </figure>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%}
+          Video del anuncio que trajo al cliente (ej. Sara): ver en la página lo mismo que le
+          hizo hacer clic da confianza. Se reproduce sin sonido solo cuando está en pantalla.
+        {%- endcomment -%}
+        {%- if s.hero_video != blank or s.hero_video_url != blank -%}
+          <div class="nv-hvid">
+            {%- if s.hero_video_title != blank -%}<span class="nv-hvid-title">{{ s.hero_video_title }}</span>{%- endif -%}
+            {%- if s.hero_video != blank -%}
+              {{ s.hero_video | video_tag: muted: true, loop: true, playsinline: true, controls: true, preload: 'none', image_size: '540x', class: 'nv-hvid-player' }}
+            {%- else -%}
+              <video class="nv-hvid-player" src="{{ s.hero_video_url }}"{% if s.hero_video_poster != blank %} poster="{{ s.hero_video_poster }}"{% endif %} muted loop playsinline controls preload="none"></video>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if s.show_howto -%}
+          <div class="nv-howto">
+            <span class="nv-howto-title">{{ s.howto_title }}</span>
+            <ol>
+              {%- for i in (1..3) -%}
+                {%- assign hk = 'howto_' | append: i -%}
+                {%- if s[hk] != blank -%}<li>{{ s[hk] }}</li>{%- endif -%}
+              {%- endfor -%}
+            </ol>
+          </div>
+        {%- endif -%}
 
         {% if s.guarantee_title != blank %}
           <div class="nv-guarantee-mini">
@@ -629,7 +781,39 @@
   {% if s.show_promo and nv_promo_count > 0 %}
     <section class="nv-promo" aria-label="Beneficios de las sábanas">
       <div class="nv-promo-wrap">
-        {% comment %} Las imágenes van una debajo de la otra (antes era un carrusel). {% endcomment %}
+        {% if s.promo_layout == 'carousel' and nv_promo_count > 1 %}
+        {% comment %} Carrusel: ocupa el alto de una sola imagen en lugar de las cuatro. {% endcomment %}
+        <div class="nv-promo-viewport" id="nv-promo" data-autoplay="{{ s.promo_autoplay | times: 1000 }}" style="--nv-promo-ratio: {{ nv_promo_first.aspect_ratio | default: 0.8 }};" tabindex="0" aria-roledescription="carrusel">
+          <div class="nv-promo-track">
+            {% assign nv_promo_n = 0 %}
+            {% for i in (1..4) %}
+              {% assign pk = 'promo_image_' | append: i %}
+              {% assign ak = 'promo_alt_' | append: i %}
+              {% if s[pk] != blank %}
+                {% assign nv_promo_n = nv_promo_n | plus: 1 %}
+                <div class="nv-promo-slide" role="group" aria-roledescription="imagen" aria-label="{{ nv_promo_n }} de {{ nv_promo_count }}">
+                  <img
+                    src="{{ s[pk] | image_url: width: 1080 }}"
+                    srcset="{{ s[pk] | image_url: width: 540 }} 540w, {{ s[pk] | image_url: width: 720 }} 720w, {{ s[pk] | image_url: width: 1080 }} 1080w"
+                    sizes="(max-width: 540px) calc(100vw - 20px), 500px"
+                    alt="{{ s[ak] | default: s[pk].alt | escape }}"
+                    width="{{ s[pk].width }}" height="{{ s[pk].height }}"
+                    loading="lazy" decoding="async"
+                    draggable="false">
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <button type="button" class="nv-promo-arrow nv-promo-prev" aria-label="Imagen anterior">‹</button>
+          <button type="button" class="nv-promo-arrow nv-promo-next" aria-label="Imagen siguiente">›</button>
+        </div>
+        <div class="nv-promo-dots" role="tablist" aria-label="Elegir imagen">
+          {% for i in (1..nv_promo_count) %}
+            <button type="button" class="nv-promo-dot {% if forloop.first %}active{% endif %}" role="tab" aria-label="Ver imagen {{ i }}" data-i="{{ forloop.index0 }}"></button>
+          {% endfor %}
+        </div>
+        {% else %}
+        {% comment %} Las imágenes van una debajo de la otra. {% endcomment %}
         <div class="nv-promo-stack">
           {% assign nv_promo_n = 0 %}
           {% for i in (1..4) %}
@@ -647,6 +831,7 @@
             {% endif %}
           {% endfor %}
         </div>
+        {% endif %}
       </div>
     </section>
   {% endif %}
@@ -801,8 +986,8 @@
     </section>
   {% endif %}
 
-  <!-- RESEÑAS -->
-  {% if s.review_1_name != blank %}
+  <!-- RESEÑAS (se puede ocultar si ya se muestran junto al botón) -->
+  {% if s.review_1_name != blank and s.show_reviews_section %}
     <section class="nv-sec nv-alt" id="nv-resenas">
       <div class="nv-wrap">
         <div class="nv-head">
@@ -907,7 +1092,9 @@
               <span class="nv-radio"></span>
               <span>
                 <span class="nv-tier-name">{{ q }} {% if q == 1 %}{{ s.bundle_unit_singular }}{% else %}{{ s.bundle_unit_plural }}{% endif %}</span>
-                <span class="nv-tier-sub">{{ s[lk] }}{% if s[dk] > 0 %} · {{ s[dk] }}% OFF{% endif %}</span>
+                {% assign wk = 'tier_why_' | append: q %}
+                <span class="nv-tier-sub">{{ s[wk] | default: s[lk] }}{% if s[dk] > 0 %} · {{ s[dk] }}% OFF{% endif %}</span>
+                <span class="nv-tier-unit"></span>
               </span>
               <span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>
             </button>
@@ -1037,6 +1224,17 @@
 <script>
   var lsProductJson = {{ product | json }};
   var nvMoneyFormat = {{ shop.money_format | json }};
+
+  // Selección inicial y textos de la oferta (ajustes de la sección).
+  var nvConfig = {
+    preselect: {{ s.preselect_on_load | json }},
+    defaultSize: {{ s.default_size | json }},
+    defaultColor: {{ s.default_color | json }},
+    trackAtc: {{ s.track_add_to_cart | json }},
+    currency: {{ cart.currency.iso_code | default: shop.currency | json }},
+    defaultQty: {{ s.default_qty | default: '1' | plus: 0 }},
+    tierWhy: { 1: {{ s.tier_why_1 | json }}, 2: {{ s.tier_why_2 | json }}, 3: {{ s.tier_why_3 | json }} }
+  };
 
   var lsVariantPrices = {
     {% for variant in product.variants %}
@@ -1240,27 +1438,31 @@
     url.searchParams.set('variant', match.id);
     window.history.replaceState({}, '', url.toString());
 
-    var d = lsVariantPrices[match.id];
-    if (d) {
-      document.getElementById('ls-price').innerHTML = d.price;
-      var cmp = document.getElementById('ls-compare');
-      var badge = document.getElementById('ls-badge');
-      var floatBadge = document.getElementById('nv-badge-float');
-      if (d.has_discount) {
-        cmp.innerHTML = d.compare_at_price; cmp.style.display = '';
-        badge.innerHTML = 'Ahorras ' + d.save; badge.style.display = '';
-        if (floatBadge) { floatBadge.textContent = '-' + d.discount_pct + '%'; floatBadge.style.display = ''; }
-      } else {
-        cmp.style.display = 'none';
-        badge.style.display = 'none';
-        if (floatBadge) floatBadge.style.display = 'none';
-      }
-    }
+    nvShowVariantPrice(match.id);
 
     if (lsGalleryData.colorOptionIndex > 0) {
       applyLsGalleryVariantFilter(match.options[lsGalleryData.colorOptionIndex - 1]);
     }
     nvRenderTiers();
+  }
+
+  // Precio de arriba para 1 unidad de la variante.
+  function nvShowVariantPrice(variantId) {
+    var d = lsVariantPrices[variantId];
+    if (!d) return;
+    document.getElementById('ls-price').innerHTML = d.price;
+    var cmp = document.getElementById('ls-compare');
+    var badge = document.getElementById('ls-badge');
+    var floatBadge = document.getElementById('nv-badge-float');
+    if (d.has_discount) {
+      cmp.innerHTML = d.compare_at_price; cmp.style.display = '';
+      badge.innerHTML = 'Ahorras ' + d.save; badge.style.display = '';
+      if (floatBadge) { floatBadge.textContent = '-' + d.discount_pct + '%'; floatBadge.style.display = ''; }
+    } else {
+      cmp.style.display = 'none';
+      badge.style.display = 'none';
+      if (floatBadge) floatBadge.style.display = 'none';
+    }
   }
 
   /* ---------- Oferta por cantidad ---------- */
@@ -1310,7 +1512,8 @@
     box.querySelectorAll('.nv-tier').forEach(function (t) { t.remove(); });
     var slot = box.querySelector('.nv-rsi-slot');
     var items = offer.offers.slice().sort(function (x, y) { return (x.pos || 0) - (y.pos || 0); });
-    var preselected = items.findIndex(function (o) { return o.pres; });
+    var preselected = nvConfig.preselect ? items.findIndex(function (o) { return (o.qty || 1) === nvConfig.defaultQty; }) : -1;
+    if (preselected < 0) preselected = items.findIndex(function (o) { return o.pres; });
     if (preselected < 0) preselected = 0;
     items.forEach(function (o, i) {
       var ds = o.ds || {};
@@ -1327,10 +1530,14 @@
       btn.setAttribute('data-title', o.title || '');
       btn.setAttribute('data-first', i === 0 ? '1' : '0');
       btn.onclick = function () { nvSelectTier(btn); };
+      var why = nvConfig.tierWhy[o.qty || 1] || '';
+      var pctTxt = pct > 0 && (o.title || '').indexOf('%') === -1 ? (Math.round(pct * 100) / 100) + '% de descuento' : '';
+      var sub = [why, pctTxt].filter(Boolean).join(' · ');
       btn.innerHTML =
         (tag ? '<span class="nv-tag' + (o.bestDealBadge && o.bestDealBadge.show ? '' : ' nv-soft') + '">' + nvEscape(tag) + '</span>' : '') +
         '<span class="nv-radio"></span><span><span class="nv-tier-name">' + nvEscape(o.title || (o.qty + ' unidades')) + '</span>' +
-        (pct > 0 && (o.title || '').indexOf('%') === -1 ? '<span class="nv-tier-sub">' + (Math.round(pct * 100) / 100) + '% de descuento</span>' : '') +
+        (sub ? '<span class="nv-tier-sub">' + nvEscape(sub) + '</span>' : '') +
+        '<span class="nv-tier-unit"></span>' +
         '</span><span class="nv-tier-price"><span class="nv-tier-now">—</span><s class="nv-tier-was"></s></span>';
       box.insertBefore(btn, slot);
     });
@@ -1351,6 +1558,10 @@
       var was = useCompare ? v.compare_at_price * qty : full;
       t.querySelector('.nv-tier-now').textContent = nvFormatMoney(now);
       t.querySelector('.nv-tier-was').textContent = was > now ? nvFormatMoney(was) : '';
+      t.setAttribute('data-now', now);
+      t.setAttribute('data-was', was);
+      var unit = t.querySelector('.nv-tier-unit');
+      if (unit) unit.textContent = qty > 1 ? nvFormatMoney(now / qty) + ' c/u' : '';
     });
   }
 
@@ -1398,6 +1609,77 @@
     document.getElementById('ls-quantity').dispatchEvent(new Event('change', { bubbles: true }));
   }
 
+  /* ---------- Selección inicial ----------
+     Al abrir la página queda elegida la talla predeterminada (ej. Sencilla), el color
+     predeterminado (ej. Gris Plata) con sus fotos, y la oferta predeterminada (ej. 3 juegos).
+     El precio de arriba es el de 1 unidad; el de la oferta se ve en su tarjeta. */
+  function nvPreselectDefaults() {
+    if (!nvConfig.preselect) return;
+    nvAutoSelectDefault();
+    var tier = Array.prototype.filter.call(document.querySelectorAll('#nv-tiers .nv-tier'), function (t) {
+      return parseInt(t.getAttribute('data-qty'), 10) === nvConfig.defaultQty;
+    })[0];
+    if (tier) nvSelectTier(tier);
+  }
+
+  /* ---------- Video junto al botón: se reproduce solo cuando se ve ---------- */
+  (function nvHeroVideo() {
+    var v = document.querySelector('.nv-hvid-player');
+    if (!v || !('IntersectionObserver' in window)) return;
+    v.muted = true;
+    new IntersectionObserver(function (entries) {
+      var e = entries[0];
+      if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      else if (!v.paused) { v.pause(); }
+    }, { threshold: 0.5 }).observe(v);
+  })();
+
+  /* ---------- Reseñas junto al botón: avanzan solas hacia la derecha ----------
+     Una tarjeta cada 3,5 s; al llegar a la última vuelve al inicio. Se detiene mientras la
+     persona las toca o arrastra (y 6 s después), y solo corre cuando se ven en pantalla. */
+  (function nvHeroReviewsAutoplay() {
+    var list = document.getElementById('nv-hrev-list');
+    if (!list || list.children.length < 2) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var timer = null, visible = false, pausedUntil = 0;
+    function step() {
+      if (!visible || document.hidden || Date.now() < pausedUntil) return;
+      var card = list.children[0];
+      var gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+      var stepPx = card.getBoundingClientRect().width + gap;
+      var atEnd = list.scrollLeft + list.clientWidth >= list.scrollWidth - 4;
+      list.scrollTo({ left: atEnd ? 0 : list.scrollLeft + stepPx, behavior: 'smooth' });
+    }
+    function pause() { pausedUntil = Date.now() + 6000; }
+    ['pointerdown', 'touchstart', 'wheel', 'mouseenter'].forEach(function (ev) {
+      list.addEventListener(ev, pause, { passive: true });
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; }, { threshold: 0.5 }).observe(list);
+    } else { visible = true; }
+    timer = setInterval(step, 3500);
+  })();
+
+  /* ---------- Fecha estimada de entrega ----------
+     Cuenta días hábiles (de lunes a sábado) desde hoy. */
+  (function nvEta() {
+    var el = document.getElementById('nv-eta');
+    if (!el) return;
+    var min = parseInt(el.getAttribute('data-min'), 10) || 2;
+    var max = parseInt(el.getAttribute('data-max'), 10) || 5;
+    var days = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+    var months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    function addBiz(n) {
+      var d = new Date(), k = 0;
+      while (k < n) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0) k++; }
+      return d;
+    }
+    function fmt(d) { return days[d.getDay()] + ' ' + d.getDate() + ' de ' + months[d.getMonth()]; }
+    document.getElementById('nv-eta-from').textContent = fmt(addBiz(min));
+    document.getElementById('nv-eta-to').textContent = fmt(addBiz(Math.max(min, max)));
+    el.hidden = false;
+  })();
+
   /* ---------- Botones "Pedir ahora": abren el formulario de ReleasIT ---------- */
   function nvMissingGroups() {
     var missing = [];
@@ -1431,7 +1713,14 @@
       return v.available && v.options.every(function (opt, i) { return selected[i] === undefined || opt === selected[i]; });
     });
     var wantSencilla = sizeIdx >= 0 && selected[sizeIdx] === undefined;
-    var pick = (wantSencilla && matches.filter(function (v) { return lsNormalizeColor(v.options[sizeIdx]) === 'sencilla'; })[0]) || matches[0];
+    var defaultSize = lsNormalizeColor(nvConfig.defaultSize || 'Sencilla');
+    var colorIdx = lsGalleryData.colorOptionIndex - 1;
+    var defaultColor = lsNormalizeColor(nvConfig.defaultColor);
+    var sizeMatches = wantSencilla ? matches.filter(function (v) { return lsNormalizeColor(v.options[sizeIdx]) === defaultSize; }) : matches;
+    var colorPick = defaultColor && colorIdx >= 0 && selected[colorIdx] === undefined
+      ? sizeMatches.filter(function (v) { return lsNormalizeColor(v.options[colorIdx]) === defaultColor; })[0]
+      : null;
+    var pick = colorPick || sizeMatches[0] || matches[0];
     if (!pick) return false;
     var order = pick.options.map(function (_, i) { return i; });
     if (sizeIdx > 0) { order.splice(sizeIdx, 1); order.unshift(sizeIdx); } // primero la talla, luego el color
@@ -1518,12 +1807,38 @@
   function nvCloseLightbox() { document.getElementById('nv-lightbox').classList.remove('open'); }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') nvCloseLightbox(); });
 
+  /* ---------- Píxel de Meta: AddToCart al tocar "Realizar pedido" ----------
+     ReleasIT no pasa por el carrito, así que Meta nunca recibía AddToCart. Se envía al
+     abrir el formulario con la variante (ID = el del catálogo de Shopify en Meta), la
+     cantidad y el valor de la oferta elegida. Máximo uno cada 30 s para no duplicar. */
+  var nvLastAtc = 0;
+  function nvTrackAddToCart() {
+    if (!nvConfig.trackAtc || typeof window.fbq !== 'function') return;
+    if (Date.now() - nvLastAtc < 30000) return;
+    var v = nvCurrentVariant();
+    if (!v) return;
+    nvLastAtc = Date.now();
+    var t = document.querySelector('#nv-tiers .nv-tier.active');
+    var qty = t ? parseInt(t.getAttribute('data-qty'), 10) || 1 : 1;
+    var cents = t && t.hasAttribute('data-now') ? parseFloat(t.getAttribute('data-now')) : v.price * qty;
+    var id = String(v.id);
+    window.fbq('track', 'AddToCart', {
+      content_ids: [id],
+      content_type: 'product',
+      contents: [{ id: id, quantity: qty }],
+      content_name: lsProductJson.title,
+      value: Math.round(cents) / 100,
+      currency: nvConfig.currency,
+      num_items: qty
+    }, { eventID: 'atc-' + id + '-' + nvLastAtc });
+  }
+
   // Todos los botones de ReleasIT (incluida la barra fija de abajo) pasan por aquí.
   // Se escucha en window y en fase de captura para actuar antes que ReleasIT.
   window.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest(NV_RSI_BUTTON);
     if (!btn) return;
-    if (!nvMissingGroups().length) { nvHideChooseMsg(); nvSyncOfferToForm(); return; }
+    if (!nvMissingGroups().length) { nvHideChooseMsg(); nvSyncOfferToForm(); nvTrackAddToCart(); return; }
     e.preventDefault();
     e.stopImmediatePropagation();
     nvOrderNow(btn);
@@ -1543,8 +1858,11 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    applyLsGalleryVariantFilter('');
+    // Con color elegido al abrir, la galería ya viene en ese color: no se pasa por las portadas.
+    if (nvConfig.preselect && nvConfig.defaultColor) { lsIsInitialGalleryLoad = false; }
+    else { applyLsGalleryVariantFilter(''); }
     nvBuildTiersFromRsi();
+    nvPreselectDefaults();
     nvRenderTiers();
 
     var gallery = document.getElementById('ls-main-gallery');
@@ -1824,6 +2142,16 @@
       "id": "show_promo",
       "label": "Mostrar carrusel de beneficios",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "promo_layout",
+      "label": "Cómo se muestran las imágenes",
+      "options": [
+        { "value": "stack", "label": "Una debajo de la otra" },
+        { "value": "carousel", "label": "Carrusel (ocupa el alto de una sola imagen)" }
+      ],
+      "default": "stack"
     },
     {
       "type": "image_picker",
@@ -2287,6 +2615,13 @@
       "content": "Reseñas"
     },
     {
+      "type": "checkbox",
+      "id": "show_reviews_section",
+      "label": "Mostrar la sección de reseñas más abajo",
+      "default": true,
+      "info": "Apágala si ya muestras las reseñas junto al botón de compra."
+    },
+    {
       "type": "text",
       "id": "reviews_title",
       "label": "Título",
@@ -2540,6 +2875,171 @@
       "label": "Nombre de la oferta en ReleasIT",
       "default": "2 25",
       "info": "Si se deja vacío, se usa la oferta activa de este producto."
+    },
+    {
+      "type": "checkbox",
+      "id": "preselect_on_load",
+      "label": "Abrir con talla, color y oferta ya elegidos",
+      "default": false,
+      "info": "El cliente ve de entrada el precio del anuncio y puede pedir con un solo toque."
+    },
+    {
+      "type": "text",
+      "id": "default_size",
+      "label": "Talla elegida al abrir",
+      "default": "Sencilla"
+    },
+    {
+      "type": "text",
+      "id": "default_color",
+      "label": "Color elegido al abrir",
+      "info": "Escríbelo igual que en el producto (ej. Gris Plata). Si no está disponible en esa talla, se elige el primero que sí."
+    },
+    {
+      "type": "select",
+      "id": "default_qty",
+      "label": "Oferta elegida al abrir",
+      "options": [
+        { "value": "1", "label": "1 unidad" },
+        { "value": "2", "label": "2 unidades" },
+        { "value": "3", "label": "3 unidades" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "tier_why_1",
+      "label": "Para qué sirve: 1 unidad"
+    },
+    {
+      "type": "text",
+      "id": "tier_why_2",
+      "label": "Para qué sirve: 2 unidades"
+    },
+    {
+      "type": "text",
+      "id": "tier_why_3",
+      "label": "Para qué sirve: 3 unidades"
+    },
+    {
+      "type": "header",
+      "content": "Entrega y pedido"
+    },
+    {
+      "type": "checkbox",
+      "id": "compact_gallery",
+      "label": "Primera pantalla compacta en celular",
+      "default": false,
+      "info": "Foto 5:4, tallas en una fila, colores pequeños y el texto debajo del botón, para que el precio, la oferta y el botón se vean antes."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_eta",
+      "label": "Mostrar fecha estimada de entrega",
+      "default": false,
+      "info": "Se calcula sola con días hábiles (lunes a sábado) desde hoy."
+    },
+    {
+      "type": "range",
+      "id": "eta_min_days",
+      "label": "Entrega desde (días hábiles)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "eta_max_days",
+      "label": "Entrega hasta (días hábiles)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "track_add_to_cart",
+      "label": "Enviar \"Agregar al carrito\" al píxel de Meta al tocar Realizar pedido",
+      "default": true,
+      "info": "ReleasIT no usa el carrito, así que sin esto Meta no recibe ese paso."
+    },
+    {
+      "type": "video",
+      "id": "hero_video",
+      "label": "Video junto al botón de compra",
+      "info": "Sube el video del anuncio que mejor funciona (ej. Sara). Se ve sin sonido y en bucle."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_url",
+      "label": "O enlace .mp4 del video",
+      "info": "Solo si no elegiste un video arriba (ej. un enlace de Contenido > Archivos)."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_poster",
+      "label": "Imagen de portada del video (enlace)",
+      "info": "Solo con el enlace .mp4. Se ve mientras el video empieza."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_title",
+      "label": "Título del video",
+      "default": "Mira lo que trae el juego"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_measure",
+      "label": "Mostrar la medida debajo de cada talla",
+      "default": false,
+      "info": "Usa las medidas de la \"Guía de medidas\" (ej. Doble → 140×190)."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hero_reviews",
+      "label": "Mostrar reseñas con foto junto al botón de compra",
+      "default": false,
+      "info": "Usa las reseñas de la sección \"Opiniones\" que tienen foto del producto."
+    },
+    {
+      "type": "range",
+      "id": "hero_reviews_count",
+      "label": "Cuántas reseñas junto al botón",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_howto",
+      "label": "Mostrar \"Así funciona tu pedido\" debajo del botón",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "howto_title",
+      "label": "Título",
+      "default": "Así funciona tu pedido"
+    },
+    {
+      "type": "text",
+      "id": "howto_1",
+      "label": "Paso 1",
+      "default": "Llenas tus datos. Sin tarjeta."
+    },
+    {
+      "type": "text",
+      "id": "howto_2",
+      "label": "Paso 2",
+      "default": "Te llamamos para confirmar."
+    },
+    {
+      "type": "text",
+      "id": "howto_3",
+      "label": "Paso 3",
+      "default": "Pagas en efectivo cuando llega."
     },
     {
       "type": "text",
