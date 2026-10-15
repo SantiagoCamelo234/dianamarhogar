@@ -120,6 +120,10 @@
   .nv-howto-title { font-weight: 700; font-size: 14px; color: var(--nv-ink); }
   .nv-howto ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 12.5px; line-height: 1.35; color: var(--nv-text); counter-reset: nvh; }
   .nv-howto li { counter-increment: nvh; display: grid; gap: 6px; align-content: start; }
+  /* Video del anuncio junto al botón de compra */
+  .nv-hvid { display: grid; gap: 8px; justify-items: center; }
+  .nv-hvid-title { justify-self: start; font-weight: 700; font-size: 14px; color: var(--nv-ink); }
+  .nv-hvid-player { display: block; width: 100%; max-width: 300px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 14px; background: #000; }
   /* Reseñas con foto junto al botón de compra */
   .nv-hrev { display: grid; gap: 8px; min-width: 0; }
   .nv-hrev-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--nv-text); }
@@ -157,6 +161,7 @@
   .ls-swatch-color.active { box-shadow: 0 0 0 2.5px var(--nv-coral); }
   .ls-swatch-size { font-weight: 600; font-size: 14px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid var(--nv-line); background: #fff; color: var(--nv-ink); cursor: pointer; transition: all .15s; }
   .ls-swatch-size.active { border-color: var(--nv-coral); background: var(--nv-blush); }
+  .nv-sw-measure { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 500; color: var(--nv-muted); }
 
   .nv-guarantee-mini { display: flex; gap: 12px; align-items: flex-start; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; }
   .nv-guarantee-mini strong { display: block; font-size: 14px; color: #166534; }
@@ -480,6 +485,25 @@
   <section class="nv-hero">
     <div class="nv-wrap nv-hero-grid">
       <div class="nv-gallery-col">
+        {%- comment -%}
+          Foto inicial: si la página abre con un color elegido (ej. Gris Plata), se muestra y
+          se carga primero una foto de ese color, en lugar de la portada.
+        {%- endcomment -%}
+        {%- assign nv_first_media = product.media.first -%}
+        {%- if s.preselect_on_load and s.default_color != blank -%}
+          {%- assign nv_dc = s.default_color | downcase | strip -%}
+          {%- assign nv_found = false -%}
+          {%- for m in product.media -%}
+            {%- assign nv_ma = m.alt | downcase | strip -%}
+            {%- if nv_ma == nv_dc -%}{%- assign nv_first_media = m -%}{%- assign nv_found = true -%}{%- break -%}{%- endif -%}
+          {%- endfor -%}
+          {%- unless nv_found -%}
+            {%- for v in product.variants -%}
+              {%- assign nv_vopts = v.options | join: '|' | downcase -%}
+              {%- if v.featured_media and nv_vopts contains nv_dc -%}{%- assign nv_first_media = v.featured_media -%}{%- break -%}{%- endif -%}
+            {%- endfor -%}
+          {%- endunless -%}
+        {%- endif -%}
         <div class="ls-gallery" id="ls-main-gallery">
           {% if current_variant.compare_at_price > current_variant.price %}
             {% assign nv_pct = current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price %}
@@ -488,14 +512,14 @@
           {% if product.media.size > 0 %}
             {% for media in product.media %}
               {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
-              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless forloop.first %}style="display: none;"{% endunless %}>
+              <div class="ls-media-item" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" {% unless media.id == nv_first_media.id %}style="display: none;"{% endunless %}>
                 {% case media.media_type %}
                   {% when 'video' %}
                     {{ media | video_tag: controls: true, autoplay: true, loop: true, muted: true }}
                   {% when 'external_video' %}
                     {{ media | external_video_tag }}
                   {% else %}
-                    <img src="{{ media | image_url: width: 900 }}" alt="{{ media.alt | default: product.title | escape }}" width="900" height="900" {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+                    <img src="{{ media | image_url: width: 900 }}" alt="{{ media.alt | default: product.title | escape }}" width="900" height="900" {% if media.id == nv_first_media.id %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
                 {% endcase %}
               </div>
             {% endfor %}
@@ -508,7 +532,7 @@
           <div class="ls-thumbnails">
             {% for media in product.media %}
               {% assign ls_media_filename = media.preview_image.src | split: '/' | last | split: '?' | first | downcase %}
-              <div class="ls-thumb-wrapper {% if forloop.first %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')">
+              <div class="ls-thumb-wrapper {% if media.id == nv_first_media.id %}active{% endif %}" data-media-id="{{ media.id }}" data-color="{{ media.alt | escape }}" data-filename="{{ ls_media_filename | escape }}" onclick="changeLsMedia(this, '{{ media.id }}')">
                 <img src="{{ media.preview_image | image_url: width: 150 }}" alt="{{ media.alt | default: product.title | escape }}" width="74" height="74" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
               </div>
             {% endfor %}
@@ -598,7 +622,16 @@
                              data-option-index="{{ option.position }}"
                              data-value="{{ value | escape }}"
                              onclick="selectLsVariant(this)"
-                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectLsVariant(this);}">{{ value }}</div>
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectLsVariant(this);}">{{ value }}
+                          {%- if s.show_size_measure -%}
+                            {%- assign nv_val = value | downcase | strip -%}
+                            {%- for zi in (1..6) -%}
+                              {%- assign zn = 'size_' | append: zi | append: '_name' -%}
+                              {%- assign zm = 'size_' | append: zi | append: '_measure' -%}
+                              {%- assign nv_zn = s[zn] | downcase | strip -%}
+                              {%- if s[zn] != blank and nv_zn == nv_val -%}<small class="nv-sw-measure">{{ s[zm] | remove: ' cm' | remove: ' ' }}</small>{%- break -%}{%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}</div>
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -665,6 +698,21 @@
                 {%- endif -%}
               {%- endfor -%}
             </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%}
+          Video del anuncio que trajo al cliente (ej. Sara): ver en la página lo mismo que le
+          hizo hacer clic da confianza. Se reproduce sin sonido solo cuando está en pantalla.
+        {%- endcomment -%}
+        {%- if s.hero_video != blank or s.hero_video_url != blank -%}
+          <div class="nv-hvid">
+            {%- if s.hero_video_title != blank -%}<span class="nv-hvid-title">{{ s.hero_video_title }}</span>{%- endif -%}
+            {%- if s.hero_video != blank -%}
+              {{ s.hero_video | video_tag: muted: true, loop: true, playsinline: true, controls: true, preload: 'none', image_size: '540x', class: 'nv-hvid-player' }}
+            {%- else -%}
+              <video class="nv-hvid-player" src="{{ s.hero_video_url }}" muted loop playsinline controls preload="none"></video>
+            {%- endif -%}
           </div>
         {%- endif -%}
 
@@ -1567,6 +1615,18 @@
     if (tier) nvSelectTier(tier);
   }
 
+  /* ---------- Video junto al botón: se reproduce solo cuando se ve ---------- */
+  (function nvHeroVideo() {
+    var v = document.querySelector('.nv-hvid-player');
+    if (!v || !('IntersectionObserver' in window)) return;
+    v.muted = true;
+    new IntersectionObserver(function (entries) {
+      var e = entries[0];
+      if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      else if (!v.paused) { v.pause(); }
+    }, { threshold: 0.5 }).observe(v);
+  })();
+
   /* ---------- Fecha estimada de entrega ----------
      Cuenta días hábiles (de lunes a sábado) desde hoy. */
   (function nvEta() {
@@ -1765,7 +1825,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    applyLsGalleryVariantFilter('');
+    // Con color elegido al abrir, la galería ya viene en ese color: no se pasa por las portadas.
+    if (nvConfig.preselect && nvConfig.defaultColor) { lsIsInitialGalleryLoad = false; }
+    else { applyLsGalleryVariantFilter(''); }
     nvBuildTiersFromRsi();
     nvPreselectDefaults();
     nvRenderTiers();
@@ -2861,6 +2923,31 @@
       "label": "Enviar \"Agregar al carrito\" al píxel de Meta al tocar Realizar pedido",
       "default": true,
       "info": "ReleasIT no usa el carrito, así que sin esto Meta no recibe ese paso."
+    },
+    {
+      "type": "video",
+      "id": "hero_video",
+      "label": "Video junto al botón de compra",
+      "info": "Sube el video del anuncio que mejor funciona (ej. Sara). Se ve sin sonido y en bucle."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_url",
+      "label": "O enlace .mp4 del video",
+      "info": "Solo si no elegiste un video arriba (ej. un enlace de Contenido > Archivos)."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_title",
+      "label": "Título del video",
+      "default": "Mira lo que trae el juego"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_measure",
+      "label": "Mostrar la medida debajo de cada talla",
+      "default": false,
+      "info": "Usa las medidas de la \"Guía de medidas\" (ej. Doble → 140×190)."
     },
     {
       "type": "checkbox",
