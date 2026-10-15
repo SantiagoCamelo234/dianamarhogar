@@ -491,18 +491,24 @@
         {%- endcomment -%}
         {%- assign nv_first_media = product.media.first -%}
         {%- if s.preselect_on_load and s.default_color != blank -%}
+          {%- comment -%}
+            La primera foto del color en el orden de la galería (la misma que queda de primera
+            en las miniaturas): su texto alternativo es el color, o es la foto de una variante
+            de ese color.
+          {%- endcomment -%}
           {%- assign nv_dc = s.default_color | downcase | strip -%}
-          {%- assign nv_found = false -%}
+          {%- assign nv_color_ids = '|' -%}
+          {%- for v in product.variants -%}
+            {%- assign nv_vopts = v.options | join: '|' | downcase -%}
+            {%- if v.featured_media and nv_vopts contains nv_dc -%}
+              {%- assign nv_color_ids = nv_color_ids | append: v.featured_media.id | append: '|' -%}
+            {%- endif -%}
+          {%- endfor -%}
           {%- for m in product.media -%}
             {%- assign nv_ma = m.alt | downcase | strip -%}
-            {%- if nv_ma == nv_dc -%}{%- assign nv_first_media = m -%}{%- assign nv_found = true -%}{%- break -%}{%- endif -%}
+            {%- assign nv_mid = '|' | append: m.id | append: '|' -%}
+            {%- if nv_ma == nv_dc or nv_color_ids contains nv_mid -%}{%- assign nv_first_media = m -%}{%- break -%}{%- endif -%}
           {%- endfor -%}
-          {%- unless nv_found -%}
-            {%- for v in product.variants -%}
-              {%- assign nv_vopts = v.options | join: '|' | downcase -%}
-              {%- if v.featured_media and nv_vopts contains nv_dc -%}{%- assign nv_first_media = v.featured_media -%}{%- break -%}{%- endif -%}
-            {%- endfor -%}
-          {%- endunless -%}
         {%- endif -%}
         <div class="ls-gallery" id="ls-main-gallery">
           {% if current_variant.compare_at_price > current_variant.price %}
