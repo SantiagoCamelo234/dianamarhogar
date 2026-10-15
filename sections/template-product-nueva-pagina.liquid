@@ -1561,7 +1561,8 @@
       t.setAttribute('data-now', now);
       t.setAttribute('data-was', was);
       var unit = t.querySelector('.nv-tier-unit');
-      if (unit) unit.textContent = qty > 1 ? nvFormatMoney(now / qty) + ' c/u' : '';
+      // Precio por juego redondeado a pesos (sin centavos): $66.633 c/u, no $66.633,33.
+      if (unit) unit.textContent = qty > 1 ? nvFormatMoney(Math.round(now / qty / 100) * 100) + ' c/u' : '';
     });
   }
 
