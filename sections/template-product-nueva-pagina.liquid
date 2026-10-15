@@ -112,7 +112,6 @@
   .nv-tiers-hero .nv-tier { padding: 12px 14px; gap: 12px; }
   .nv-tiers-hero .nv-tier-sub { font-size: 12.5px; }
   .nv-tier-unit { display: block; font-size: 12.5px; color: var(--nv-muted); }
-  .nv-price-note { margin: -4px 0 0; font-size: 13.5px; font-weight: 600; color: var(--nv-muted); }
   /* Fecha estimada de entrega junto al precio */
   .nv-eta { display: flex; align-items: center; gap: 8px; margin: 0; padding: 8px 12px; background: #fff; border: 1px solid var(--nv-line); border-radius: 10px; font-size: 14px; color: var(--nv-ink); }
   .nv-eta svg { flex: 0 0 auto; }
@@ -520,7 +519,6 @@
             {% if current_variant.compare_at_price > current_variant.price %}Ahorras {{ current_variant.compare_at_price | minus: current_variant.price | money_without_trailing_zeros }}{% endif %}
           </span>
         </div>
-        <p class="nv-price-note" id="nv-price-note" hidden></p>
         {%- if s.perks != blank -%}
           {%- assign nv_perks = s.perks | split: '|' -%}
           <div class="nv-perks">
@@ -1101,11 +1099,8 @@
     defaultSize: {{ s.default_size | json }},
     defaultColor: {{ s.default_color | json }},
     defaultQty: {{ s.default_qty | default: '1' | plus: 0 }},
-    unitPlural: {{ s.bundle_unit_plural | json }},
     tierWhy: { 1: {{ s.tier_why_1 | json }}, 2: {{ s.tier_why_2 | json }}, 3: {{ s.tier_why_3 | json }} }
   };
-  // Mientras se hace la selección inicial, la galería se queda en las portadas.
-  var nvKeepGallery = false;
 
   var lsVariantPrices = {
     {% for variant in product.variants %}
@@ -1229,7 +1224,7 @@
     document.getElementById('ls-val-' + optionIndex).textContent = value;
 
     updateAvailableOptions(optionIndex, value);
-    if (!nvKeepGallery && lsGalleryData.colorOptionIndex > 0 && optionIndex === lsGalleryData.colorOptionIndex) {
+    if (lsGalleryData.colorOptionIndex > 0 && optionIndex === lsGalleryData.colorOptionIndex) {
       applyLsGalleryVariantFilter(value);
     }
     if (swatch.classList.contains('ls-swatch-size')) nvHighlightSizeRow(value);
@@ -1311,7 +1306,7 @@
 
     nvShowVariantPrice(match.id);
 
-    if (!nvKeepGallery && lsGalleryData.colorOptionIndex > 0) {
+    if (lsGalleryData.colorOptionIndex > 0) {
       applyLsGalleryVariantFilter(match.options[lsGalleryData.colorOptionIndex - 1]);
     }
     nvRenderTiers();
@@ -1333,42 +1328,6 @@
       cmp.style.display = 'none';
       badge.style.display = 'none';
       if (floatBadge) floatBadge.style.display = 'none';
-    }
-  }
-
-  // Precio de arriba = total de la oferta elegida (ej. 3 juegos), igual al del anuncio y
-  // al que cobra ReleasIT. Con 1 unidad se muestra el precio normal de la variante.
-  function nvUpdateHeadPrice() {
-    var note = document.getElementById('nv-price-note');
-    var t = document.querySelector('#nv-tiers .nv-tier.active');
-    var qty = t ? parseInt(t.getAttribute('data-qty'), 10) || 1 : 1;
-    if (!t || qty <= 1 || !t.hasAttribute('data-now')) {
-      var v = nvCurrentVariant();
-      if (v) nvShowVariantPrice(v.id);
-      if (note) note.hidden = true;
-      return;
-    }
-    var now = parseFloat(t.getAttribute('data-now'));
-    var was = parseFloat(t.getAttribute('data-was'));
-    // Igual que con 1 unidad: el ahorro se mide contra el precio antes de descuento × cantidad.
-    var cv = nvCurrentVariant();
-    if (cv && cv.compare_at_price > cv.price) was = Math.max(was, cv.compare_at_price * qty);
-    var cmp = document.getElementById('ls-compare');
-    var badge = document.getElementById('ls-badge');
-    var floatBadge = document.getElementById('nv-badge-float');
-    document.getElementById('ls-price').textContent = nvFormatMoney(now);
-    if (was > now) {
-      cmp.textContent = nvFormatMoney(was); cmp.style.display = '';
-      badge.textContent = 'Ahorras ' + nvFormatMoney(was - now); badge.style.display = '';
-      if (floatBadge) { floatBadge.textContent = '-' + Math.round((was - now) * 100 / was) + '%'; floatBadge.style.display = ''; }
-    } else {
-      cmp.style.display = 'none';
-      badge.style.display = 'none';
-      if (floatBadge) floatBadge.style.display = 'none';
-    }
-    if (note) {
-      note.textContent = qty + ' ' + (nvConfig.unitPlural || '') + ' · ' + nvFormatMoney(now / qty) + ' c/u';
-      note.hidden = false;
     }
   }
 
@@ -1470,7 +1429,6 @@
       var unit = t.querySelector('.nv-tier-unit');
       if (unit) unit.textContent = qty > 1 ? nvFormatMoney(now / qty) + ' c/u' : '';
     });
-    nvUpdateHeadPrice();
   }
 
   // Cuando se abre el formulario de ReleasIT, marca en él la misma oferta de cantidad
@@ -1515,17 +1473,15 @@
     document.querySelectorAll('.nv-tier').forEach(function (t) { t.classList.toggle('active', t === tier); });
     document.getElementById('ls-quantity').value = tier.getAttribute('data-qty');
     document.getElementById('ls-quantity').dispatchEvent(new Event('change', { bubbles: true }));
-    nvUpdateHeadPrice();
   }
 
   /* ---------- Selección inicial ----------
-     Al abrir la página queda elegida la talla predeterminada (ej. Sencilla), el primer
-     color disponible y la oferta predeterminada (ej. 3 juegos): el cliente ve de entrada
-     el precio del anuncio y puede pedir con un solo toque. */
+     Al abrir la página queda elegida la talla predeterminada (ej. Sencilla), el color
+     predeterminado (ej. Gris Plata) con sus fotos, y la oferta predeterminada (ej. 3 juegos).
+     El precio de arriba es el de 1 unidad; el de la oferta se ve en su tarjeta. */
   function nvPreselectDefaults() {
     if (!nvConfig.preselect) return;
-    nvKeepGallery = true;
-    try { nvAutoSelectDefault(); } finally { nvKeepGallery = false; }
+    nvAutoSelectDefault();
     var tier = Array.prototype.filter.call(document.querySelectorAll('#nv-tiers .nv-tier'), function (t) {
       return parseInt(t.getAttribute('data-qty'), 10) === nvConfig.defaultQty;
     })[0];
