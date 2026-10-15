@@ -135,6 +135,7 @@
         "rsi_offer_name": "2 25",
         "preselect_on_load": true,
         "default_size": "Sencilla",
+        "default_color": "Gris Plata",
         "default_qty": "3",
         "tier_why_1": "Para estrenar cama",
         "tier_why_2": "Uno puesto y otro lavándose",

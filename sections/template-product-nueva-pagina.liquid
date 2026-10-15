@@ -1099,6 +1099,7 @@
   var nvConfig = {
     preselect: {{ s.preselect_on_load | json }},
     defaultSize: {{ s.default_size | json }},
+    defaultColor: {{ s.default_color | json }},
     defaultQty: {{ s.default_qty | default: '1' | plus: 0 }},
     unitPlural: {{ s.bundle_unit_plural | json }},
     tierWhy: { 1: {{ s.tier_why_1 | json }}, 2: {{ s.tier_why_2 | json }}, 3: {{ s.tier_why_3 | json }} }
@@ -1585,7 +1586,13 @@
     });
     var wantSencilla = sizeIdx >= 0 && selected[sizeIdx] === undefined;
     var defaultSize = lsNormalizeColor(nvConfig.defaultSize || 'Sencilla');
-    var pick = (wantSencilla && matches.filter(function (v) { return lsNormalizeColor(v.options[sizeIdx]) === defaultSize; })[0]) || matches[0];
+    var colorIdx = lsGalleryData.colorOptionIndex - 1;
+    var defaultColor = lsNormalizeColor(nvConfig.defaultColor);
+    var sizeMatches = wantSencilla ? matches.filter(function (v) { return lsNormalizeColor(v.options[sizeIdx]) === defaultSize; }) : matches;
+    var colorPick = defaultColor && colorIdx >= 0 && selected[colorIdx] === undefined
+      ? sizeMatches.filter(function (v) { return lsNormalizeColor(v.options[colorIdx]) === defaultColor; })[0]
+      : null;
+    var pick = colorPick || sizeMatches[0] || matches[0];
     if (!pick) return false;
     var order = pick.options.map(function (_, i) { return i; });
     if (sizeIdx > 0) { order.splice(sizeIdx, 1); order.unshift(sizeIdx); } // primero la talla, luego el color
@@ -2708,6 +2715,12 @@
       "id": "default_size",
       "label": "Talla elegida al abrir",
       "default": "Sencilla"
+    },
+    {
+      "type": "text",
+      "id": "default_color",
+      "label": "Color elegido al abrir",
+      "info": "Escríbelo igual que en el producto (ej. Gris Plata). Si no está disponible en esa talla, se elige el primero que sí."
     },
     {
       "type": "select",
