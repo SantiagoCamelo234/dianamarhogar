@@ -120,6 +120,17 @@
   .nv-howto-title { font-weight: 700; font-size: 14px; color: var(--nv-ink); }
   .nv-howto ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 12.5px; line-height: 1.35; color: var(--nv-text); counter-reset: nvh; }
   .nv-howto li { counter-increment: nvh; display: grid; gap: 6px; align-content: start; }
+  /* Reseñas con foto junto al botón de compra */
+  .nv-hrev { display: grid; gap: 8px; min-width: 0; }
+  .nv-hrev-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--nv-text); }
+  .nv-hrev-head a { color: var(--nv-ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+  .nv-hrev-list { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 4px; }
+  .nv-hrev-list::-webkit-scrollbar { display: none; }
+  .nv-hrev-card { flex: 0 0 72%; max-width: 280px; scroll-snap-align: start; margin: 0; background: #fff; border: 1px solid var(--nv-line); border-radius: 12px; overflow: hidden; display: grid; align-content: start; }
+  .nv-hrev-card img { width: 100%; height: 130px; object-fit: cover; display: block; cursor: zoom-in; }
+  .nv-hrev-card figcaption { padding: 10px 12px; display: grid; gap: 4px; }
+  .nv-hrev-card p { margin: 0; font-size: 13px; line-height: 1.4; color: var(--nv-ink); }
+  .nv-hrev-card span { font-size: 12px; color: var(--nv-muted); }
   .nv-howto li::before { content: counter(nvh); width: 24px; height: 24px; border-radius: 50%; background: var(--nv-ink); color: #fff; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }
   .nv-price-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-block: 4px; }
   .nv-price { font-size: 34px; font-weight: 800; color: var(--nv-ink); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -217,6 +228,8 @@
     .nv-promo-next { right: 10px; }
   }
   @media (prefers-reduced-motion: reduce) { .nv-promo-track.nv-anim { transition: none; } }
+  /* En computador el carrusel no se estira: mismo ancho que en celular */
+  @media (min-width: 900px) { .nv-promo-wrap:has(#nv-promo) { max-width: 520px; padding-inline: 10px; } }
 
   /* Problema */
   .nv-problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
@@ -624,6 +637,37 @@
           {% endform %}
         </div>
 
+        {%- comment -%}
+          Reseñas con foto junto al botón: la mayoría no baja hasta la sección de opiniones
+          (Clarity: en promedio se ve el 23 % de la página). Usa las mismas reseñas de abajo.
+        {%- endcomment -%}
+        {%- if s.show_hero_reviews and s.review_1_name != blank -%}
+          <div class="nv-hrev">
+            <div class="nv-hrev-head">
+              <span><span class="nv-stars">★★★★★</span> {{ s.rating_text }}</span>
+              <a href="#nv-resenas">Ver todas</a>
+            </div>
+            <div class="nv-hrev-list">
+              {%- assign nv_h = 0 -%}
+              {%- for i in (1..10) -%}
+                {%- assign rn = 'review_' | append: i | append: '_name' -%}
+                {%- assign rt = 'review_' | append: i | append: '_text' -%}
+                {%- assign rp = 'review_' | append: i | append: '_product_image' -%}
+                {%- if s[rn] != blank and s[rp] != blank and nv_h < s.hero_reviews_count -%}
+                  {%- assign nv_h = nv_h | plus: 1 -%}
+                  <figure class="nv-hrev-card">
+                    <img src="{{ s[rp] | image_url: width: 480 }}" alt="Foto de {{ s[rn] | escape }}" width="480" height="320" loading="lazy" onclick="nvOpenLightbox('{{ s[rp] | image_url: width: 1200 }}')">
+                    <figcaption>
+                      <p>"{{ s[rt] }}"</p>
+                      <span>{{ s[rn] }} · ✔ Compra verificada</span>
+                    </figcaption>
+                  </figure>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
         {%- if s.show_howto -%}
           <div class="nv-howto">
             <span class="nv-howto-title">{{ s.howto_title }}</span>
@@ -682,7 +726,39 @@
   {% if s.show_promo and nv_promo_count > 0 %}
     <section class="nv-promo" aria-label="Beneficios de las sábanas">
       <div class="nv-promo-wrap">
-        {% comment %} Las imágenes van una debajo de la otra (antes era un carrusel). {% endcomment %}
+        {% if s.promo_layout == 'carousel' and nv_promo_count > 1 %}
+        {% comment %} Carrusel: ocupa el alto de una sola imagen en lugar de las cuatro. {% endcomment %}
+        <div class="nv-promo-viewport" id="nv-promo" data-autoplay="{{ s.promo_autoplay | times: 1000 }}" style="--nv-promo-ratio: {{ nv_promo_first.aspect_ratio | default: 0.8 }};" tabindex="0" aria-roledescription="carrusel">
+          <div class="nv-promo-track">
+            {% assign nv_promo_n = 0 %}
+            {% for i in (1..4) %}
+              {% assign pk = 'promo_image_' | append: i %}
+              {% assign ak = 'promo_alt_' | append: i %}
+              {% if s[pk] != blank %}
+                {% assign nv_promo_n = nv_promo_n | plus: 1 %}
+                <div class="nv-promo-slide" role="group" aria-roledescription="imagen" aria-label="{{ nv_promo_n }} de {{ nv_promo_count }}">
+                  <img
+                    src="{{ s[pk] | image_url: width: 1080 }}"
+                    srcset="{{ s[pk] | image_url: width: 540 }} 540w, {{ s[pk] | image_url: width: 720 }} 720w, {{ s[pk] | image_url: width: 1080 }} 1080w"
+                    sizes="(max-width: 540px) calc(100vw - 20px), 500px"
+                    alt="{{ s[ak] | default: s[pk].alt | escape }}"
+                    width="{{ s[pk].width }}" height="{{ s[pk].height }}"
+                    loading="lazy" decoding="async"
+                    draggable="false">
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <button type="button" class="nv-promo-arrow nv-promo-prev" aria-label="Imagen anterior">‹</button>
+          <button type="button" class="nv-promo-arrow nv-promo-next" aria-label="Imagen siguiente">›</button>
+        </div>
+        <div class="nv-promo-dots" role="tablist" aria-label="Elegir imagen">
+          {% for i in (1..nv_promo_count) %}
+            <button type="button" class="nv-promo-dot {% if forloop.first %}active{% endif %}" role="tab" aria-label="Ver imagen {{ i }}" data-i="{{ forloop.index0 }}"></button>
+          {% endfor %}
+        </div>
+        {% else %}
+        {% comment %} Las imágenes van una debajo de la otra. {% endcomment %}
         <div class="nv-promo-stack">
           {% assign nv_promo_n = 0 %}
           {% for i in (1..4) %}
@@ -700,6 +776,7 @@
             {% endif %}
           {% endfor %}
         </div>
+        {% endif %}
       </div>
     </section>
   {% endif %}
@@ -1944,6 +2021,16 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "promo_layout",
+      "label": "Cómo se muestran las imágenes",
+      "options": [
+        { "value": "stack", "label": "Una debajo de la otra" },
+        { "value": "carousel", "label": "Carrusel (ocupa el alto de una sola imagen)" }
+      ],
+      "default": "stack"
+    },
+    {
       "type": "image_picker",
       "id": "promo_image_1",
       "label": "Imagen 1: Suavidad desde la primera noche"
@@ -2739,6 +2826,22 @@
       "max": 10,
       "step": 1,
       "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hero_reviews",
+      "label": "Mostrar reseñas con foto junto al botón de compra",
+      "default": false,
+      "info": "Usa las reseñas de la sección \"Opiniones\" que tienen foto del producto."
+    },
+    {
+      "type": "range",
+      "id": "hero_reviews_count",
+      "label": "Cuántas reseñas junto al botón",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
     },
     {
       "type": "checkbox",
