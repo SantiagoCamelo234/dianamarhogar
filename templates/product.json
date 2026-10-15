@@ -133,6 +133,21 @@
         "video_2_url": "https://cdn.shopify.com/videos/c/o/v/ffe32fb6d82c40be9549666f0899ed12.mp4",
         "show_bundles": true,
         "rsi_offer_name": "2 25",
+        "preselect_on_load": true,
+        "default_size": "Sencilla",
+        "default_qty": "3",
+        "tier_why_1": "Para estrenar cama",
+        "tier_why_2": "Uno puesto y otro lavándose",
+        "tier_why_3": "Para otra cama o para regalar",
+        "compact_gallery": true,
+        "show_eta": true,
+        "eta_min_days": 2,
+        "eta_max_days": 5,
+        "show_howto": true,
+        "howto_title": "Así funciona tu pedido",
+        "howto_1": "Llenas tus datos. Sin tarjeta.",
+        "howto_2": "Te llamamos para confirmar.",
+        "howto_3": "Pagas en efectivo cuando llega.",
         "bundles_title": "Lleva más juegos y ahorra más",
         "bundles_subtitle": "Ten un juego puesto y otro listo mientras lavas, o renueva todas las camas de la casa.",
         "bundle_unit_singular": "juego",
@@ -171,7 +186,8 @@
         "logistics_img_4": "shopify://shop_images/2001.png",
         "final_title": "Esta noche puedes dormir mejor",
         "final_text": "Pídelo ahora, recíbelo en 2 a 5 días hábiles y paga solo cuando llegue a tu puerta.",
-        "final_stock": "Unidades limitadas por color"
+        "final_stock": "Unidades limitadas por color",
+        "show_g3": false
       }
     }
   },
