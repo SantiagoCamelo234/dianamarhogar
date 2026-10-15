@@ -351,6 +351,25 @@
        pantalla. Clarity: en promedio solo se ve el 23 % de la página. */
     .nv-compact-gallery .ls-gallery { aspect-ratio: 5 / 4; }
     .nv-compact-gallery .ls-media-item img { object-fit: cover; }
+    /* Primera pantalla compacta: lo que decide la compra (precio, talla, color, oferta y
+       botón) va primero; el texto y los beneficios pasan debajo del botón. */
+    .nv-compact-gallery .ls-thumb-wrapper { width: 46px; height: 46px; }
+    .nv-compact-gallery .nv-buy { gap: 12px; }
+    .nv-compact-gallery .nv-buy > .nv-lead,
+    .nv-compact-gallery .nv-buy > .nv-pills { order: 3; }
+    .nv-compact-gallery .nv-buy > .nv-guarantee-mini,
+    .nv-compact-gallery .nv-buy > .nv-btn-ghost,
+    .nv-compact-gallery .nv-buy > .nv-trustline { order: 4; }
+    .nv-compact-gallery .nv-lead { font-size: 15px; }
+    .nv-compact-gallery .ls-form { gap: 14px; }
+    /* Tallas en una sola fila */
+    .nv-compact-gallery .ls-swatches:has(.ls-swatch-size) { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+    .nv-compact-gallery .ls-swatch-size { padding: 11px 0; font-size: 12.5px; text-align: center; }
+    /* Colores en círculos pequeños; el nombre se lee en "Color: …" */
+    .nv-compact-gallery .ls-swatches:has(.ls-swatch-color) { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px 4px; }
+    .nv-compact-gallery .ls-swatch-color { width: 38px; height: 38px; margin-bottom: 0; border-width: 2px; }
+    .nv-compact-gallery .nv-sw-name { display: none; }
+    .nv-compact-gallery .nv-tiers-hero .nv-tier { padding: 10px 12px; }
     .ls-thumb-wrapper { width: 58px; height: 58px; }
     .nv-buy { gap: 14px; }
     .nv-hero h1 { font-size: 25px; }
@@ -1330,6 +1349,9 @@
     }
     var now = parseFloat(t.getAttribute('data-now'));
     var was = parseFloat(t.getAttribute('data-was'));
+    // Igual que con 1 unidad: el ahorro se mide contra el precio antes de descuento × cantidad.
+    var cv = nvCurrentVariant();
+    if (cv && cv.compare_at_price > cv.price) was = Math.max(was, cv.compare_at_price * qty);
     var cmp = document.getElementById('ls-compare');
     var badge = document.getElementById('ls-badge');
     var floatBadge = document.getElementById('nv-badge-float');
@@ -2720,9 +2742,9 @@
     {
       "type": "checkbox",
       "id": "compact_gallery",
-      "label": "Foto principal más baja en celular",
+      "label": "Primera pantalla compacta en celular",
       "default": false,
-      "info": "Recorta la foto a 5:4 para que el precio y la oferta se vean sin bajar."
+      "info": "Foto 5:4, tallas en una fila, colores pequeños y el texto debajo del botón, para que el precio, la oferta y el botón se vean antes."
     },
     {
       "type": "checkbox",
