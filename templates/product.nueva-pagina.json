@@ -146,6 +146,8 @@
         "show_eta": true,
         "eta_min_days": 2,
         "eta_max_days": 5,
+        "hero_video_url": "https://cdn.shopify.com/videos/c/vp/4bb04ac4fe404d67a5a97f294b367369/4bb04ac4fe404d67a5a97f294b367369.HD-720p-4.5Mbps-97733675.mp4",
+        "hero_video_poster": "https://cdn.shopify.com/s/files/1/0958/6969/8335/files/preview_images/4bb04ac4fe404d67a5a97f294b367369.thumbnail.0000000000.jpg?v=1792077298&width=600",
         "hero_video_title": "Mira lo que trae el juego",
         "show_size_measure": true,
         "show_hero_reviews": true,

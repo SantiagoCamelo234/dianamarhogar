@@ -717,7 +717,7 @@
             {%- if s.hero_video != blank -%}
               {{ s.hero_video | video_tag: muted: true, loop: true, playsinline: true, controls: true, preload: 'none', image_size: '540x', class: 'nv-hvid-player' }}
             {%- else -%}
-              <video class="nv-hvid-player" src="{{ s.hero_video_url }}" muted loop playsinline controls preload="none"></video>
+              <video class="nv-hvid-player" src="{{ s.hero_video_url }}"{% if s.hero_video_poster != blank %} poster="{{ s.hero_video_poster }}"{% endif %} muted loop playsinline controls preload="none"></video>
             {%- endif -%}
           </div>
         {%- endif -%}
@@ -2941,6 +2941,12 @@
       "id": "hero_video_url",
       "label": "O enlace .mp4 del video",
       "info": "Solo si no elegiste un video arriba (ej. un enlace de Contenido > Archivos)."
+    },
+    {
+      "type": "text",
+      "id": "hero_video_poster",
+      "label": "Imagen de portada del video (enlace)",
+      "info": "Solo con el enlace .mp4. Se ve mientras el video empieza."
     },
     {
       "type": "text",
